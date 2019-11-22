@@ -1,5 +1,6 @@
 package ma.munisys.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -18,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class StorageService implements IStorageService {
 	
 	Logger log = LoggerFactory.getLogger(this.getClass().getName());
-	private final Path rootLocation = Paths.get("uploaded-certif");
+	private final Path rootLocation = Paths.get("upload-dir");
 
 	@Override
 	public void store(MultipartFile file, String file_name) {
@@ -54,8 +55,10 @@ public class StorageService implements IStorageService {
 	@Override
 	public void init() {
 		try {
+			if(!Files.exists(rootLocation))
 			Files.createDirectory(rootLocation);
 		} catch (IOException e) {
+			e.printStackTrace();
 			throw new RuntimeException("Could not initialize storage!");
 		}
 	}

@@ -10,14 +10,14 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-
+import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 
 @Entity
-
+@Table(name = "app_users")
 public class AppUser {
 	
 	@Id 
@@ -37,6 +37,8 @@ public class AppUser {
 	private Service service;
 	
 	private String img;
+	
+	private String sigle;
 	
 	
 	public AppUser() {
@@ -110,6 +112,16 @@ public class AppUser {
 
 	public void setImg(String img) {
 		this.img = img;
+	}
+	
+	
+
+	public String getSigle() {
+		return sigle;
+	}
+
+	public void setSigle(String sigle) {
+		this.sigle = sigle;
 	}
 
 	@Override

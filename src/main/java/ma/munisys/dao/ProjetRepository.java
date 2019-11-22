@@ -1,13 +1,105 @@
 package ma.munisys.dao;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import ma.munisys.entities.Projet;
 
 
 
 public interface ProjetRepository extends JpaRepository<Projet, Long> {
+	
+	@Query("select p from Projet p where  p.cloture = :y order by p.client")
+	public Page<Projet> getProjets(@Param("y") Boolean cloturer,Pageable pageable);
+	
+	
+	@Query("select p from Projet p where p.cloture = :y and (p.bu = :z or p.bu = :u) order by p.client")
+	public Collection<Projet> getProjetsByBu(@Param("y") Boolean cloturer,@Param("z")String bu1,@Param("u")String bu2);
+	
+	@Query("select p from Projet p where p.cloture = :y and (p.bu = :z or p.bu = :u) and (p.commercial = :g or p.chefProjet = :g) order by p.client")
+	public Collection<Projet> getProjetsByBuAndCommercial(@Param("y") Boolean cloturer,@Param("z")String bu1,@Param("u")String bu2,@Param("g")String commercial);
+	
+	@Query("select p from Projet p where p.cloture = :y and (p.bu = :z or p.bu = :u) and (p.commercial = :g or p.chefProjet = :g) order by p.client")
+	public Collection<Projet> getProjetsByBuAndChefProjet(@Param("y") Boolean cloturer,@Param("z")String bu1,@Param("u")String bu2,@Param("g")String chefProjet);
+
+	@Query("select p from Projet p where p.cloture = :y and p.statut = :z  order by p.client")
+	public Collection<Projet> getProjetsByStatut(@Param("y") Boolean cloturer,@Param("z")String statut);
+
+	@Query("select p from Projet p where p.cloture = :y and p.statut = :z and (p.commercial = :g or p.chefProjet = :g)  order by p.client")
+	public Collection<Projet> getProjetsByStatutAndCommercial(@Param("y") Boolean cloturer,@Param("z")String statut,@Param("g")String commercial);
+
+	@Query("select p from Projet p where p.cloture = :y and p.statut = :z and (p.commercial = :g or p.chefProjet = :g)  order by p.client")
+	public Collection<Projet> getProjetsByStatutAndChefProjet(@Param("y") Boolean cloturer,@Param("z")String statut,@Param("g")String chefProjet);
+
+	
+	@Query("select p from Projet p where p.cloture = :y  and p.chefProjet is null  order by p.client") 
+	public Collection<Projet> getProjetsByChefDeProjetIsNull(@Param("y") Boolean cloturer);
+	
+	@Query("select p from Projet p where p.cloture = :y  and p.chefProjet is not null order by p.client") 
+	public Collection<Projet> getProjetsByChefDeProjetNotNull(@Param("y") Boolean cloturer);
+
+
+	@Query("select p from Projet p where p.cloture = :y and  (p.bu = :z or p.bu = :u) and p.statut =:t order by p.client") 
+	public Collection<Projet> getProjetsByBuAndStatut(@Param("y") Boolean cloturer,@Param("z")String bu1,@Param("u")String bu2,@Param("t")String statut);
+	
+	@Query("select p from Projet p where p.cloture = :y and  (p.bu = :z or p.bu = :u) and p.statut =:t and (p.commercial = :g or p.chefProjet = :g) order by p.client") 
+	public Collection<Projet> getProjetsByBuAndStatutAndCommercial(@Param("y") Boolean cloturer,@Param("z")String bu1,@Param("u")String bu2,@Param("t")String statut,@Param("g")String commercial);
+	
+	
+	@Query("select p from Projet p where p.cloture = :y and  (p.bu = :z or p.bu = :u) and p.statut =:t and (p.commercial = :g or p.chefProjet = :g) order by p.client") 
+	public Collection<Projet> getProjetsByBuAndStatutAndchefProjet(@Param("y") Boolean cloturer,@Param("z")String bu1,@Param("u")String bu2,@Param("t")String statut,@Param("g")String chefProjet);
+	
+	@Query("select p from Projet p where p.cloture = :y  and p.chefProjet is not null and (p.bu =:x or p.bu =:z) order by p.client") 
+	public Collection<Projet> getProjetsByChefDeProjetNotNullAndBu(@Param("y") Boolean cloturer,@Param("x")String bu1,@Param("z")String bu2);
+	
+
+	@Query("select p from Projet p where p.cloture = :y  and p.chefProjet is null and (p.bu =:x or p.bu =:z) order by p.client") 
+	public Collection<Projet> getProjetsByChefDeProjetIsNullAndBu(@Param("y") Boolean cloturer, @Param("x") String bu1,@Param("z") String bu2);
+	
+	@Query("select p from Projet p where p.cloture = :y  and p.chefProjet is null and p.statut = :x order by p.client") 
+	public Collection<Projet> getProjetsByChefDeProjetIsNullAndStatut(@Param("y") Boolean cloturer,@Param("x")String statut);
+	
+	@Query("select p from Projet p where p.cloture = :y  and p.chefProjet is not null and p.statut =:t  order by p.client") 
+	public Collection<Projet> getProjetsByChefDeProjetNotNullAndStatut(@Param("y") Boolean cloturer,@Param("t")String statut);
+	
+	@Query("select p from Projet p where p.cloture = :y and  (p.bu = :z or p.bu = :u) and p.chefProjet is not null and p.statut =:t order by p.client") 
+	public Collection<Projet> getProjetsByChefDeProjetNotNullAndBuAndStatut(@Param("y") Boolean cloturer,@Param("z")String bu1,@Param("u")String bu2,@Param("t")String statut);
+	
+	@Query("select p from Projet p where p.cloture = :y and  (p.bu = :z or p.bu = :u) and p.chefProjet is null and p.statut =:t  order by p.client") 
+	public Collection<Projet> getProjetsByChefDeProjetIsNullAndBuAndStatut(@Param("y") Boolean cloturer,@Param("z")String bu1,@Param("u")String bu2,@Param("t")String statut);
+	
+	
+	@Query("select p from Projet p  order by p.client")
+	public Collection<Projet> getAllProjets();
+	
+	@Query("select p from Projet p where p.cloture = :y  and (p.commercial =:g or p.chefProjet =:g)  order by p.client")
+	public Collection<Projet> getAllProjetsByCommercialOrChefProjet(@Param("y") Boolean cloturer,@Param("g") String commercialOrChefProjet);
+	
+	
+	@Query("select p from Projet p where p.cloture = :y  order by p.client")
+	public Collection<Projet> getProjets(@Param("y") Boolean cloturer);
+	
+	
+	
+	
+	//@Query(value="select p from Projet p where p.etatProjet.id = 1 and p.cloture = :y and p.dateCmd >= :z @Param("z")Date dateCmd")
+	@Query(value="select p from Projet p where p.etatProjet.id = 1 and p.cloture = :y and p.dateCmd >= :z ")
+	public List<Projet> findAllProjetsByDateSup(@Param("y") Boolean cloturer,@Param("z")Date dateCmd );
+	
+	@Query(value="select p from Projet p where p.etatProjet.id = 1 and p.cloture = :y and p.dateCmd <= :z ")
+	public List<Projet> findAllProjetsByDateInf(@Param("y") Boolean cloturer,@Param("z")Date dateCmd );
+	
+	@Query(value="select p from Projet p where p.etatProjet.id = 1")
+	public List<Projet> findAllProjetsByDate();
+	
+	/*@Query(value="select p from Projet p where p.etatProjet.id = 1 and p.cloture = :y and p.commercial like :z or p.chefProjet like :z ")
+	public List<Projet> findAllProjetsByCommercialOrChefProjet(@Param("y") Boolean cloturer,@Param("z")String filtre )*/
 	
 	
 }
