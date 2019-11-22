@@ -1,0 +1,247 @@
+2019-09-15 00:53:29,759 INFO ma.munisys.EtatLvSvcApplication [main] Starting EtatLvSvcApplication on MacBook-Pro-de-Bouhafs.local with PID 1847 (/Users/bouhafs/eclipse-workspace/etatLv-svc/target/classes started by bouhafs in /Users/bouhafs/eclipse-workspace/etatLv-svc)
+2019-09-15 00:53:29,762 DEBUG ma.munisys.EtatLvSvcApplication [main] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
+2019-09-15 00:53:29,763 INFO ma.munisys.EtatLvSvcApplication [main] No active profile set, falling back to default profiles: default
+2019-09-15 00:53:40,157 INFO ma.munisys.EtatLvSvcApplication [main] Started EtatLvSvcApplication in 30.674 seconds (JVM running for 36.307)
+2019-09-15 00:53:40,264 DEBUG ma.munisys.service.EtatProjetServiceImpl [main] ServiceEtatProjet
+2019-09-15 00:53:40,277 DEBUG ma.munisys.service.EtatProjetServiceImpl [main] saving the first etat Projet
+2019-09-15 00:53:40,363 DEBUG ma.munisys.service.EtatProjetServiceImpl [main] ServiceEtatProjet
+2019-09-15 00:53:40,369 DEBUG ma.munisys.service.EtatProjetServiceImpl [main] saving new version of etat Projet
+2019-09-15 00:53:40,388 ERROR org.hibernate.engine.jdbc.spi.SqlExceptionHelper [main] Violation of PRIMARY KEY constraint 'PK__projet__A2AFDAD91B7E193D'. Cannot insert duplicate key in object 'dbo.projet'. The duplicate key value is (codeProjet).
+2019-09-15 00:53:40,393 ERROR org.hibernate.internal.ExceptionMapperStandardImpl [main] HHH000346: Error during managed flush [org.hibernate.exception.ConstraintViolationException: could not execute statement]
+2019-09-15 00:53:40,407 ERROR org.springframework.boot.SpringApplication [main] Application run failed
+java.lang.IllegalStateException: Failed to execute CommandLineRunner
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:784)
+	at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:765)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:319)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1204)
+	at ma.munisys.EtatLvSvcApplication.main(EtatLvSvcApplication.java:42)
+Caused by: org.springframework.dao.DataIntegrityViolationException: could not execute statement; SQL [n/a]; constraint [null]; nested exception is org.hibernate.exception.ConstraintViolationException: could not execute statement
+	at org.springframework.orm.jpa.vendor.HibernateJpaDialect.convertHibernateAccessException(HibernateJpaDialect.java:296)
+	at org.springframework.orm.jpa.vendor.HibernateJpaDialect.translateExceptionIfPossible(HibernateJpaDialect.java:253)
+	at org.springframework.orm.jpa.JpaTransactionManager.doCommit(JpaTransactionManager.java:536)
+	at org.springframework.transaction.support.AbstractPlatformTransactionManager.processCommit(AbstractPlatformTransactionManager.java:746)
+	at org.springframework.transaction.support.AbstractPlatformTransactionManager.commit(AbstractPlatformTransactionManager.java:714)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.commitTransactionAfterReturning(TransactionAspectSupport.java:534)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:305)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:98)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:688)
+	at ma.munisys.service.EtatProjetServiceImpl$$EnhancerBySpringCGLIB$$89e4a40c.saveEtatProjet(<generated>)
+	at ma.munisys.EtatLvSvcApplication.run(EtatLvSvcApplication.java:183)
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:781)
+	... 5 common frames omitted
+Caused by: org.hibernate.exception.ConstraintViolationException: could not execute statement
+	at org.hibernate.exception.internal.SQLStateConversionDelegate.convert(SQLStateConversionDelegate.java:112)
+	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:42)
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:113)
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:99)
+	at org.hibernate.engine.jdbc.internal.ResultSetReturnImpl.executeUpdate(ResultSetReturnImpl.java:178)
+	at org.hibernate.persister.entity.AbstractEntityPersister.insert(AbstractEntityPersister.java:3205)
+	at org.hibernate.persister.entity.AbstractEntityPersister.insert(AbstractEntityPersister.java:3719)
+	at org.hibernate.action.internal.EntityInsertAction.execute(EntityInsertAction.java:90)
+	at org.hibernate.engine.spi.ActionQueue.executeActions(ActionQueue.java:604)
+	at org.hibernate.engine.spi.ActionQueue.executeActions(ActionQueue.java:478)
+	at org.hibernate.event.internal.AbstractFlushingEventListener.performExecutions(AbstractFlushingEventListener.java:356)
+	at org.hibernate.event.internal.DefaultFlushEventListener.onFlush(DefaultFlushEventListener.java:39)
+	at org.hibernate.internal.SessionImpl.doFlush(SessionImpl.java:1483)
+	at org.hibernate.internal.SessionImpl.managedFlush(SessionImpl.java:512)
+	at org.hibernate.internal.SessionImpl.flushBeforeTransactionCompletion(SessionImpl.java:3321)
+	at org.hibernate.internal.SessionImpl.beforeTransactionCompletion(SessionImpl.java:2517)
+	at org.hibernate.engine.jdbc.internal.JdbcCoordinatorImpl.beforeTransactionCompletion(JdbcCoordinatorImpl.java:447)
+	at org.hibernate.resource.transaction.backend.jdbc.internal.JdbcResourceLocalTransactionCoordinatorImpl.beforeCompletionCallback(JdbcResourceLocalTransactionCoordinatorImpl.java:178)
+	at org.hibernate.resource.transaction.backend.jdbc.internal.JdbcResourceLocalTransactionCoordinatorImpl.access$300(JdbcResourceLocalTransactionCoordinatorImpl.java:39)
+	at org.hibernate.resource.transaction.backend.jdbc.internal.JdbcResourceLocalTransactionCoordinatorImpl$TransactionDriverControlImpl.commit(JdbcResourceLocalTransactionCoordinatorImpl.java:271)
+	at org.hibernate.engine.transaction.internal.TransactionImpl.commit(TransactionImpl.java:104)
+	at org.springframework.orm.jpa.JpaTransactionManager.doCommit(JpaTransactionManager.java:532)
+	... 15 common frames omitted
+Caused by: com.microsoft.sqlserver.jdbc.SQLServerException: Violation of PRIMARY KEY constraint 'PK__projet__A2AFDAD91B7E193D'. Cannot insert duplicate key in object 'dbo.projet'. The duplicate key value is (codeProjet).
+	at com.microsoft.sqlserver.jdbc.SQLServerException.makeFromDatabaseError(SQLServerException.java:259)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.getNextResult(SQLServerStatement.java:1547)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement.doExecutePreparedStatement(SQLServerPreparedStatement.java:548)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement$PrepStmtExecCmd.doExecute(SQLServerPreparedStatement.java:479)
+	at com.microsoft.sqlserver.jdbc.TDSCommand.execute(IOBuffer.java:7344)
+	at com.microsoft.sqlserver.jdbc.SQLServerConnection.executeCommand(SQLServerConnection.java:2713)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.executeCommand(SQLServerStatement.java:224)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.executeStatement(SQLServerStatement.java:204)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement.executeUpdate(SQLServerPreparedStatement.java:426)
+	at com.zaxxer.hikari.pool.ProxyPreparedStatement.executeUpdate(ProxyPreparedStatement.java:61)
+	at com.zaxxer.hikari.pool.HikariProxyPreparedStatement.executeUpdate(HikariProxyPreparedStatement.java)
+	at org.hibernate.engine.jdbc.internal.ResultSetReturnImpl.executeUpdate(ResultSetReturnImpl.java:175)
+	... 32 common frames omitted
+2019-09-15 00:55:34,795 INFO ma.munisys.EtatLvSvcApplication [main] Starting EtatLvSvcApplication on MacBook-Pro-de-Bouhafs.local with PID 1850 (/Users/bouhafs/eclipse-workspace/etatLv-svc/target/classes started by bouhafs in /Users/bouhafs/eclipse-workspace/etatLv-svc)
+2019-09-15 00:55:34,797 DEBUG ma.munisys.EtatLvSvcApplication [main] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
+2019-09-15 00:55:34,798 INFO ma.munisys.EtatLvSvcApplication [main] No active profile set, falling back to default profiles: default
+2019-09-15 00:55:45,363 INFO ma.munisys.EtatLvSvcApplication [main] Started EtatLvSvcApplication in 30.841 seconds (JVM running for 36.483)
+2019-09-15 00:55:45,467 DEBUG ma.munisys.service.EtatProjetServiceImpl [main] ServiceEtatProjet
+2019-09-15 00:55:45,480 DEBUG ma.munisys.service.EtatProjetServiceImpl [main] saving the first etat Projet
+2019-09-15 00:55:45,578 DEBUG ma.munisys.service.EtatProjetServiceImpl [main] ServiceEtatProjet
+2019-09-15 00:55:45,585 DEBUG ma.munisys.service.EtatProjetServiceImpl [main] saving new version of etat Projet
+2019-09-15 00:55:45,605 ERROR org.hibernate.engine.jdbc.spi.SqlExceptionHelper [main] Violation of PRIMARY KEY constraint 'PK__projet__A2AFDAD99EB0025A'. Cannot insert duplicate key in object 'dbo.projet'. The duplicate key value is (codeProjet).
+2019-09-15 00:55:45,611 ERROR org.hibernate.internal.ExceptionMapperStandardImpl [main] HHH000346: Error during managed flush [org.hibernate.exception.ConstraintViolationException: could not execute statement]
+2019-09-15 00:55:45,627 ERROR org.springframework.boot.SpringApplication [main] Application run failed
+java.lang.IllegalStateException: Failed to execute CommandLineRunner
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:784)
+	at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:765)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:319)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1204)
+	at ma.munisys.EtatLvSvcApplication.main(EtatLvSvcApplication.java:42)
+Caused by: org.springframework.dao.DataIntegrityViolationException: could not execute statement; SQL [n/a]; constraint [null]; nested exception is org.hibernate.exception.ConstraintViolationException: could not execute statement
+	at org.springframework.orm.jpa.vendor.HibernateJpaDialect.convertHibernateAccessException(HibernateJpaDialect.java:296)
+	at org.springframework.orm.jpa.vendor.HibernateJpaDialect.translateExceptionIfPossible(HibernateJpaDialect.java:253)
+	at org.springframework.orm.jpa.JpaTransactionManager.doCommit(JpaTransactionManager.java:536)
+	at org.springframework.transaction.support.AbstractPlatformTransactionManager.processCommit(AbstractPlatformTransactionManager.java:746)
+	at org.springframework.transaction.support.AbstractPlatformTransactionManager.commit(AbstractPlatformTransactionManager.java:714)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.commitTransactionAfterReturning(TransactionAspectSupport.java:534)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:305)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:98)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:688)
+	at ma.munisys.service.EtatProjetServiceImpl$$EnhancerBySpringCGLIB$$a109b3af.saveEtatProjet(<generated>)
+	at ma.munisys.EtatLvSvcApplication.run(EtatLvSvcApplication.java:183)
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:781)
+	... 5 common frames omitted
+Caused by: org.hibernate.exception.ConstraintViolationException: could not execute statement
+	at org.hibernate.exception.internal.SQLStateConversionDelegate.convert(SQLStateConversionDelegate.java:112)
+	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:42)
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:113)
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:99)
+	at org.hibernate.engine.jdbc.internal.ResultSetReturnImpl.executeUpdate(ResultSetReturnImpl.java:178)
+	at org.hibernate.persister.entity.AbstractEntityPersister.insert(AbstractEntityPersister.java:3205)
+	at org.hibernate.persister.entity.AbstractEntityPersister.insert(AbstractEntityPersister.java:3719)
+	at org.hibernate.action.internal.EntityInsertAction.execute(EntityInsertAction.java:90)
+	at org.hibernate.engine.spi.ActionQueue.executeActions(ActionQueue.java:604)
+	at org.hibernate.engine.spi.ActionQueue.executeActions(ActionQueue.java:478)
+	at org.hibernate.event.internal.AbstractFlushingEventListener.performExecutions(AbstractFlushingEventListener.java:356)
+	at org.hibernate.event.internal.DefaultFlushEventListener.onFlush(DefaultFlushEventListener.java:39)
+	at org.hibernate.internal.SessionImpl.doFlush(SessionImpl.java:1483)
+	at org.hibernate.internal.SessionImpl.managedFlush(SessionImpl.java:512)
+	at org.hibernate.internal.SessionImpl.flushBeforeTransactionCompletion(SessionImpl.java:3321)
+	at org.hibernate.internal.SessionImpl.beforeTransactionCompletion(SessionImpl.java:2517)
+	at org.hibernate.engine.jdbc.internal.JdbcCoordinatorImpl.beforeTransactionCompletion(JdbcCoordinatorImpl.java:447)
+	at org.hibernate.resource.transaction.backend.jdbc.internal.JdbcResourceLocalTransactionCoordinatorImpl.beforeCompletionCallback(JdbcResourceLocalTransactionCoordinatorImpl.java:178)
+	at org.hibernate.resource.transaction.backend.jdbc.internal.JdbcResourceLocalTransactionCoordinatorImpl.access$300(JdbcResourceLocalTransactionCoordinatorImpl.java:39)
+	at org.hibernate.resource.transaction.backend.jdbc.internal.JdbcResourceLocalTransactionCoordinatorImpl$TransactionDriverControlImpl.commit(JdbcResourceLocalTransactionCoordinatorImpl.java:271)
+	at org.hibernate.engine.transaction.internal.TransactionImpl.commit(TransactionImpl.java:104)
+	at org.springframework.orm.jpa.JpaTransactionManager.doCommit(JpaTransactionManager.java:532)
+	... 15 common frames omitted
+Caused by: com.microsoft.sqlserver.jdbc.SQLServerException: Violation of PRIMARY KEY constraint 'PK__projet__A2AFDAD99EB0025A'. Cannot insert duplicate key in object 'dbo.projet'. The duplicate key value is (codeProjet).
+	at com.microsoft.sqlserver.jdbc.SQLServerException.makeFromDatabaseError(SQLServerException.java:259)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.getNextResult(SQLServerStatement.java:1547)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement.doExecutePreparedStatement(SQLServerPreparedStatement.java:548)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement$PrepStmtExecCmd.doExecute(SQLServerPreparedStatement.java:479)
+	at com.microsoft.sqlserver.jdbc.TDSCommand.execute(IOBuffer.java:7344)
+	at com.microsoft.sqlserver.jdbc.SQLServerConnection.executeCommand(SQLServerConnection.java:2713)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.executeCommand(SQLServerStatement.java:224)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.executeStatement(SQLServerStatement.java:204)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement.executeUpdate(SQLServerPreparedStatement.java:426)
+	at com.zaxxer.hikari.pool.ProxyPreparedStatement.executeUpdate(ProxyPreparedStatement.java:61)
+	at com.zaxxer.hikari.pool.HikariProxyPreparedStatement.executeUpdate(HikariProxyPreparedStatement.java)
+	at org.hibernate.engine.jdbc.internal.ResultSetReturnImpl.executeUpdate(ResultSetReturnImpl.java:175)
+	... 32 common frames omitted
+2019-09-15 01:00:13,689 INFO ma.munisys.EtatLvSvcApplication [main] Starting EtatLvSvcApplication on MacBook-Pro-de-Bouhafs.local with PID 1853 (/Users/bouhafs/eclipse-workspace/etatLv-svc/target/classes started by bouhafs in /Users/bouhafs/eclipse-workspace/etatLv-svc)
+2019-09-15 01:00:13,692 DEBUG ma.munisys.EtatLvSvcApplication [main] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
+2019-09-15 01:00:13,692 INFO ma.munisys.EtatLvSvcApplication [main] No active profile set, falling back to default profiles: default
+2019-09-15 01:00:24,182 INFO ma.munisys.EtatLvSvcApplication [main] Started EtatLvSvcApplication in 30.768 seconds (JVM running for 36.4)
+2019-09-15 01:00:24,283 DEBUG ma.munisys.service.EtatProjetServiceImpl [main] ServiceEtatProjet
+2019-09-15 01:00:24,296 DEBUG ma.munisys.service.EtatProjetServiceImpl [main] saving the first etat Projet
+2019-09-15 01:00:24,389 DEBUG ma.munisys.service.EtatProjetServiceImpl [main] ServiceEtatProjet
+2019-09-15 01:00:24,396 DEBUG ma.munisys.service.EtatProjetServiceImpl [main] saving new version of etat Projet
+2019-09-15 01:00:24,415 ERROR org.hibernate.engine.jdbc.spi.SqlExceptionHelper [main] Violation of PRIMARY KEY constraint 'PK__projet__A2AFDAD9E4EA9C10'. Cannot insert duplicate key in object 'dbo.projet'. The duplicate key value is (codeProjet).
+2019-09-15 01:00:24,421 ERROR org.hibernate.internal.ExceptionMapperStandardImpl [main] HHH000346: Error during managed flush [org.hibernate.exception.ConstraintViolationException: could not execute statement]
+2019-09-15 01:00:24,435 ERROR org.springframework.boot.SpringApplication [main] Application run failed
+java.lang.IllegalStateException: Failed to execute CommandLineRunner
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:784)
+	at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:765)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:319)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1204)
+	at ma.munisys.EtatLvSvcApplication.main(EtatLvSvcApplication.java:42)
+Caused by: org.springframework.dao.DataIntegrityViolationException: could not execute statement; SQL [n/a]; constraint [null]; nested exception is org.hibernate.exception.ConstraintViolationException: could not execute statement
+	at org.springframework.orm.jpa.vendor.HibernateJpaDialect.convertHibernateAccessException(HibernateJpaDialect.java:296)
+	at org.springframework.orm.jpa.vendor.HibernateJpaDialect.translateExceptionIfPossible(HibernateJpaDialect.java:253)
+	at org.springframework.orm.jpa.JpaTransactionManager.doCommit(JpaTransactionManager.java:536)
+	at org.springframework.transaction.support.AbstractPlatformTransactionManager.processCommit(AbstractPlatformTransactionManager.java:746)
+	at org.springframework.transaction.support.AbstractPlatformTransactionManager.commit(AbstractPlatformTransactionManager.java:714)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.commitTransactionAfterReturning(TransactionAspectSupport.java:534)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:305)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:98)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:688)
+	at ma.munisys.service.EtatProjetServiceImpl$$EnhancerBySpringCGLIB$$189163d7.saveEtatProjet(<generated>)
+	at ma.munisys.EtatLvSvcApplication.run(EtatLvSvcApplication.java:183)
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:781)
+	... 5 common frames omitted
+Caused by: org.hibernate.exception.ConstraintViolationException: could not execute statement
+	at org.hibernate.exception.internal.SQLStateConversionDelegate.convert(SQLStateConversionDelegate.java:112)
+	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:42)
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:113)
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:99)
+	at org.hibernate.engine.jdbc.internal.ResultSetReturnImpl.executeUpdate(ResultSetReturnImpl.java:178)
+	at org.hibernate.persister.entity.AbstractEntityPersister.insert(AbstractEntityPersister.java:3205)
+	at org.hibernate.persister.entity.AbstractEntityPersister.insert(AbstractEntityPersister.java:3719)
+	at org.hibernate.action.internal.EntityInsertAction.execute(EntityInsertAction.java:90)
+	at org.hibernate.engine.spi.ActionQueue.executeActions(ActionQueue.java:604)
+	at org.hibernate.engine.spi.ActionQueue.executeActions(ActionQueue.java:478)
+	at org.hibernate.event.internal.AbstractFlushingEventListener.performExecutions(AbstractFlushingEventListener.java:356)
+	at org.hibernate.event.internal.DefaultFlushEventListener.onFlush(DefaultFlushEventListener.java:39)
+	at org.hibernate.internal.SessionImpl.doFlush(SessionImpl.java:1483)
+	at org.hibernate.internal.SessionImpl.managedFlush(SessionImpl.java:512)
+	at org.hibernate.internal.SessionImpl.flushBeforeTransactionCompletion(SessionImpl.java:3321)
+	at org.hibernate.internal.SessionImpl.beforeTransactionCompletion(SessionImpl.java:2517)
+	at org.hibernate.engine.jdbc.internal.JdbcCoordinatorImpl.beforeTransactionCompletion(JdbcCoordinatorImpl.java:447)
+	at org.hibernate.resource.transaction.backend.jdbc.internal.JdbcResourceLocalTransactionCoordinatorImpl.beforeCompletionCallback(JdbcResourceLocalTransactionCoordinatorImpl.java:178)
+	at org.hibernate.resource.transaction.backend.jdbc.internal.JdbcResourceLocalTransactionCoordinatorImpl.access$300(JdbcResourceLocalTransactionCoordinatorImpl.java:39)
+	at org.hibernate.resource.transaction.backend.jdbc.internal.JdbcResourceLocalTransactionCoordinatorImpl$TransactionDriverControlImpl.commit(JdbcResourceLocalTransactionCoordinatorImpl.java:271)
+	at org.hibernate.engine.transaction.internal.TransactionImpl.commit(TransactionImpl.java:104)
+	at org.springframework.orm.jpa.JpaTransactionManager.doCommit(JpaTransactionManager.java:532)
+	... 15 common frames omitted
+Caused by: com.microsoft.sqlserver.jdbc.SQLServerException: Violation of PRIMARY KEY constraint 'PK__projet__A2AFDAD9E4EA9C10'. Cannot insert duplicate key in object 'dbo.projet'. The duplicate key value is (codeProjet).
+	at com.microsoft.sqlserver.jdbc.SQLServerException.makeFromDatabaseError(SQLServerException.java:259)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.getNextResult(SQLServerStatement.java:1547)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement.doExecutePreparedStatement(SQLServerPreparedStatement.java:548)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement$PrepStmtExecCmd.doExecute(SQLServerPreparedStatement.java:479)
+	at com.microsoft.sqlserver.jdbc.TDSCommand.execute(IOBuffer.java:7344)
+	at com.microsoft.sqlserver.jdbc.SQLServerConnection.executeCommand(SQLServerConnection.java:2713)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.executeCommand(SQLServerStatement.java:224)
+	at com.microsoft.sqlserver.jdbc.SQLServerStatement.executeStatement(SQLServerStatement.java:204)
+	at com.microsoft.sqlserver.jdbc.SQLServerPreparedStatement.executeUpdate(SQLServerPreparedStatement.java:426)
+	at com.zaxxer.hikari.pool.ProxyPreparedStatement.executeUpdate(ProxyPreparedStatement.java:61)
+	at com.zaxxer.hikari.pool.HikariProxyPreparedStatement.executeUpdate(HikariProxyPreparedStatement.java)
+	at org.hibernate.engine.jdbc.internal.ResultSetReturnImpl.executeUpdate(ResultSetReturnImpl.java:175)
+	... 32 common frames omitted
+2019-09-15 11:13:03,776 INFO ma.munisys.EtatLvSvcApplication [main] Starting EtatLvSvcApplication on MacBook-Pro-de-Bouhafs.local with PID 1948 (/Users/bouhafs/eclipse-workspace/etatLv-svc/target/classes started by bouhafs in /Users/bouhafs/eclipse-workspace/etatLv-svc)
+2019-09-15 11:13:03,779 DEBUG ma.munisys.EtatLvSvcApplication [main] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
+2019-09-15 11:13:03,780 INFO ma.munisys.EtatLvSvcApplication [main] No active profile set, falling back to default profiles: default
+2019-09-15 11:13:14,846 INFO ma.munisys.EtatLvSvcApplication [main] Started EtatLvSvcApplication in 31.355 seconds (JVM running for 36.989)
+2019-09-15 11:13:14,859 ERROR org.springframework.boot.SpringApplication [main] Application run failed
+java.lang.IllegalStateException: Failed to execute CommandLineRunner
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:784)
+	at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:765)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:319)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1204)
+	at ma.munisys.EtatLvSvcApplication.main(EtatLvSvcApplication.java:42)
+Caused by: java.lang.RuntimeException: Could not initialize storage!
+	at ma.munisys.service.StorageService.init(StorageService.java:59)
+	at ma.munisys.EtatLvSvcApplication.run(EtatLvSvcApplication.java:48)
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:781)
+	... 5 common frames omitted
+2019-09-15 11:14:28,136 INFO ma.munisys.EtatLvSvcApplication [main] Starting EtatLvSvcApplication on MacBook-Pro-de-Bouhafs.local with PID 1949 (/Users/bouhafs/eclipse-workspace/etatLv-svc/target/classes started by bouhafs in /Users/bouhafs/eclipse-workspace/etatLv-svc)
+2019-09-15 11:14:28,138 DEBUG ma.munisys.EtatLvSvcApplication [main] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
+2019-09-15 11:14:28,138 INFO ma.munisys.EtatLvSvcApplication [main] No active profile set, falling back to default profiles: default
+2019-09-15 11:14:39,668 INFO ma.munisys.EtatLvSvcApplication [main] Started EtatLvSvcApplication in 31.805 seconds (JVM running for 37.436)
+2019-09-15 11:14:39,679 ERROR org.springframework.boot.SpringApplication [main] Application run failed
+java.lang.IllegalStateException: Failed to execute CommandLineRunner
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:784)
+	at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:765)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:319)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1204)
+	at ma.munisys.EtatLvSvcApplication.main(EtatLvSvcApplication.java:42)
+Caused by: java.lang.RuntimeException: Could not initialize storage!
+	at ma.munisys.service.StorageService.init(StorageService.java:59)
+	at ma.munisys.EtatLvSvcApplication.run(EtatLvSvcApplication.java:48)
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:781)
+	... 5 common frames omitted

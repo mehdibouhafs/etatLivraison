@@ -1,0 +1,16 @@
+2019-10-24 20:14:16,473 INFO ma.munisys.EtatLvSvcApplication [main] Starting EtatLvSvcApplication on MacBook-Pro-de-Bouhafs.local with PID 15498 (/Users/bouhafs/eclipse-workspace/etatLv-svc/target/classes started by bouhafs in /Users/bouhafs/eclipse-workspace/etatLv-svc)
+2019-10-24 20:14:16,473 INFO ma.munisys.EtatLvSvcApplication [main] Starting EtatLvSvcApplication on MacBook-Pro-de-Bouhafs.local with PID 15498 (/Users/bouhafs/eclipse-workspace/etatLv-svc/target/classes started by bouhafs in /Users/bouhafs/eclipse-workspace/etatLv-svc)
+2019-10-24 20:14:16,479 DEBUG ma.munisys.EtatLvSvcApplication [main] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
+2019-10-24 20:14:16,479 DEBUG ma.munisys.EtatLvSvcApplication [main] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
+2019-10-24 20:14:16,480 INFO ma.munisys.EtatLvSvcApplication [main] No active profile set, falling back to default profiles: default
+2019-10-24 20:14:16,480 INFO ma.munisys.EtatLvSvcApplication [main] No active profile set, falling back to default profiles: default
+2019-10-24 20:14:30,421 INFO ma.munisys.EtatLvSvcApplication [main] Started EtatLvSvcApplication in 39.353 seconds (JVM running for 39.972)
+2019-10-24 20:14:30,421 INFO ma.munisys.EtatLvSvcApplication [main] Started EtatLvSvcApplication in 39.353 seconds (JVM running for 39.972)
+2019-10-24 20:19:50,375 INFO ma.munisys.EtatLvSvcApplication [main] Starting EtatLvSvcApplication on MacBook-Pro-de-Bouhafs.local with PID 15509 (/Users/bouhafs/eclipse-workspace/etatLv-svc/target/classes started by bouhafs in /Users/bouhafs/eclipse-workspace/etatLv-svc)
+2019-10-24 20:19:50,375 INFO ma.munisys.EtatLvSvcApplication [main] Starting EtatLvSvcApplication on MacBook-Pro-de-Bouhafs.local with PID 15509 (/Users/bouhafs/eclipse-workspace/etatLv-svc/target/classes started by bouhafs in /Users/bouhafs/eclipse-workspace/etatLv-svc)
+2019-10-24 20:19:50,377 DEBUG ma.munisys.EtatLvSvcApplication [main] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
+2019-10-24 20:19:50,377 DEBUG ma.munisys.EtatLvSvcApplication [main] Running with Spring Boot v2.1.8.RELEASE, Spring v5.1.9.RELEASE
+2019-10-24 20:19:50,378 INFO ma.munisys.EtatLvSvcApplication [main] No active profile set, falling back to default profiles: default
+2019-10-24 20:19:50,378 INFO ma.munisys.EtatLvSvcApplication [main] No active profile set, falling back to default profiles: default
+2019-10-24 20:20:04,069 INFO ma.munisys.EtatLvSvcApplication [main] Started EtatLvSvcApplication in 39.066 seconds (JVM running for 39.673)
+2019-10-24 20:20:04,069 INFO ma.munisys.EtatLvSvcApplication [main] Started EtatLvSvcApplication in 39.066 seconds (JVM running for 39.673)
