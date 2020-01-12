@@ -23,17 +23,21 @@ public class Reunion implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@OneToOne
-	private Employer employer;
-	
 	
 	private Date dateCreation;
 	
 	@Column(columnDefinition = "TEXT")
-	private String sujet;
+	private String commentaire;
 	
-	private Date datePlannification;
+	private Date dateReunion;
 	
+	private String statut;
+	
+	private String client;
+	
+	private String collaborateur;
+	
+	private String fournisseur;
 	
 	public Reunion() {
 		
@@ -42,21 +46,6 @@ public class Reunion implements Serializable {
 
 	public Long getId() {
 		return id;
-	}
-
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-
-	public Employer getEmployer() {
-		return employer;
-	}
-
-
-	public void setEmployer(Employer employer) {
-		this.employer = employer;
 	}
 
 
@@ -70,24 +59,82 @@ public class Reunion implements Serializable {
 	}
 
 
-	public String getSujet() {
-		return sujet;
+	public String getCommentaire() {
+		return commentaire;
 	}
 
 
-	public void setSujet(String sujet) {
-		this.sujet = sujet;
+	public void setCommentaire(String commentaire) {
+		this.commentaire = commentaire;
 	}
 
 
-	public Date getDatePlannification() {
-		return datePlannification;
+	public Date getDateReunion() {
+		return dateReunion;
 	}
 
 
-	public void setDatePlannification(Date datePlannification) {
-		this.datePlannification = datePlannification;
+	public void setDateReunion(Date dateReunion) {
+		this.dateReunion = dateReunion;
 	}
+
+
+	public String getStatut() {
+		return statut;
+	}
+
+
+	public void setStatut(String statut) {
+		this.statut = statut;
+	}
+
+
+	public String getClient() {
+		return client;
+	}
+
+
+	public void setClient(String client) {
+		this.client = client;
+	}
+
+
+	public String getCollaborateur() {
+		return collaborateur;
+	}
+
+
+	public void setCollaborateur(String collaborateur) {
+		this.collaborateur = collaborateur;
+	}
+
+
+	public String getFournisseur() {
+		return fournisseur;
+	}
+
+
+	public void setFournisseur(String fournisseur) {
+		this.fournisseur = fournisseur;
+	}
+
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+
+	@Override
+	public String toString() {
+		return "Reunion [id=" + id + ", dateCreation=" + dateCreation + ", commentaire=" + commentaire
+				+ ", dateReunion=" + dateReunion + ", statut=" + statut + ", client=" + client + ", collaborateur="
+				+ collaborateur + ", fournisseur=" + fournisseur + "]";
+	}
+
+
+	
+	
+	
 
 
 

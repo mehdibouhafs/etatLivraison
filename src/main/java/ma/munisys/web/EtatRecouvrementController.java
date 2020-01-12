@@ -1,6 +1,8 @@
 package ma.munisys.web;
 
 import java.util.Collection;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -23,6 +25,26 @@ public class EtatRecouvrementController {
 	@Autowired
 	private EtatRecouvrementService etatRecouvrementService;
 	
+	@RequestMapping(value="/getDistinctClientDocument",method=RequestMethod.GET)
+	public List<String> getDistinctClient() {
+		return etatRecouvrementService.getDistinctClient();
+	}
+
+	@RequestMapping(value="/getDistinctCommercialDocument",method=RequestMethod.GET)
+	public List<String> getDistinctCommercial() {
+		return etatRecouvrementService.getDistinctCommercial();
+	}
+
+	@RequestMapping(value="/getDistinctChefProjetDocument",method=RequestMethod.GET)
+	public List<String> getDistinctChefProjet() {
+		return etatRecouvrementService.getDistinctChefProjet();
+	}
+
+	@RequestMapping(value="/getDistinctAnneePiece",method=RequestMethod.GET)
+	public List<String> getDistinctAnneePiece() {
+		return etatRecouvrementService.getDistinctAnneePiece();
+	}
+
 	@RequestMapping(value="/getDocumentsByCommercialOrChefProjet",method=RequestMethod.GET)
 	public Collection<Document> getDocumentsByCommercialOrChefProjet(@RequestParam(name="idEtatRecouvrement",defaultValue="1")Long idEtatFacture,@RequestParam(name="cloturer",defaultValue="false") Boolean cloturer,
 			 @RequestParam(name="commercialOrChefProjet") String commercialOrChefProjet) {
@@ -66,8 +88,9 @@ public class EtatRecouvrementController {
 	}
 	
 	@RequestMapping(value="/getDocuments",method=RequestMethod.GET)
-	public Collection<Document> getDocumentsWithoutPagination(@RequestParam(name="idEtatRecouvrement",defaultValue="1") Long idEtatRecouvrement,@RequestParam(name="cloturer",defaultValue="false") Boolean cloturer) {
-		return  etatRecouvrementService.getDocumentsFromEtatRecouvrement(idEtatRecouvrement,cloturer);
+	public Collection<Document> getDocumentsWithoutPagination(@RequestParam(name="idEtatRecouvrement",defaultValue="1") Long idEtatRecouvrement,@RequestParam(name="cloturer",defaultValue="false") Boolean cloturer,@RequestParam(name = "statut") String statut, 
+			@RequestParam(name = "commercial") String commercial,@RequestParam(name = "client") String client,@RequestParam(name = "chefProjet") String chefProjet,@RequestParam(name = "chargeRecouvrement") String chargeRecouvrement,@RequestParam(name = "anneePiece") String anneePiece) {
+		return  etatRecouvrementService.getDocumentsFromEtatRecouvrement(idEtatRecouvrement, cloturer, chargeRecouvrement, commercial, chefProjet, client, statut,anneePiece);
 	}
 	
 	@RequestMapping(value="/documents",method=RequestMethod.PUT)
@@ -81,7 +104,7 @@ public class EtatRecouvrementController {
 			c.setDocument(document);
 		}
 		
-		return etatRecouvrementService.updateDocument(document.getNumPiece(), document);
+		return etatRecouvrementService.updateDocument(document.getCodePiece(), document);
 	}
 	
 	

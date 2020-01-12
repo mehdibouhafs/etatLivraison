@@ -1,5 +1,6 @@
 package ma.munisys.dao;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -29,6 +30,9 @@ public interface UserRepository extends JpaRepository<AppUser, String> {
 	
 	@Query("SELECT u.lastName FROM AppUser u  WHERE u.username=:x")
 	public String findNameByUser(@Param("x")String username);
+	
+	@Query(value = "SELECT u FROM AppUser u WHERE u.service.servName IN :names")
+	public List<AppUser> findUserByServices(@Param("names") Collection<String> names);
 	
 	
 }

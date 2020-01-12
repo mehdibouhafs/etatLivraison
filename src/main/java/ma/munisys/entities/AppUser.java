@@ -1,6 +1,7 @@
 package ma.munisys.entities;
 
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -123,6 +124,8 @@ public class AppUser {
 	public void setSigle(String sigle) {
 		this.sigle = sigle;
 	}
+	
+	
 
 	@Override
 	public String toString() {

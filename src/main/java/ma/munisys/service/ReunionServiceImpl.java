@@ -37,8 +37,8 @@ public class ReunionServiceImpl implements ReunionService {
 		
 		if(r != null) {
 			reunion.setId(idReunion);
-			
-			reunionRepository.saveAndFlush(reunion);
+			System.out.println("reunion " + reunion.toString());
+			reunionRepository.save(reunion);
 		}else {
 			throw new RuntimeException("don't find reunion");
 		}

@@ -45,7 +45,7 @@ public class DBA {
         return connection;
     }
     
-    public static ResultSet request(String req){
+    public static ResultSet request(String req) throws SQLException{
         
         
         try {
@@ -60,5 +60,15 @@ public class DBA {
         return result;
         
     }
+
+	public static Connection getConnection() {
+		return connection;
+	}
+
+	public static void setConnection(Connection connection) {
+		DBA.connection = connection;
+	}
+    
+    
 
 }

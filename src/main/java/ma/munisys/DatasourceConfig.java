@@ -15,9 +15,10 @@ public class DatasourceConfig {
           //.url("jdbc:sqlserver://localhost;databaseName=etatprojet")
           //.username("sa")
           //.password("reallyStrongPwd123")
-          .url("jdbc:sqlserver://tripoli;databaseName=MGOUVPROD")
+          .url("jdbc:sqlserver://tripoli;databaseName=MGOUVDEV")
           .username("munitime")
           .password("123456")
+          
           .build(); 
     }
 }

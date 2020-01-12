@@ -16,38 +16,37 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "commentaires")
-public class Commentaire  implements Serializable{
+public class Commentaire implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@Column(columnDefinition = "TEXT")
 	private String content;
-	
+
 	private Date date;
-	
-	
+
 	private String employer;
-	
+
 	@ManyToOne
 	private AppUser user;
-	
+
 	@ManyToOne
 	private Projet projet;
-	
+
 	@ManyToOne
 	private Document document;
-	
-	
+
 	public Commentaire() {
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -84,7 +83,6 @@ public class Commentaire  implements Serializable{
 		return serialVersionUID;
 	}
 
-	
 	public String getEmployer() {
 		return employer;
 	}
@@ -101,6 +99,7 @@ public class Commentaire  implements Serializable{
 	public void setProjet(Projet projet) {
 		this.projet = projet;
 	}
+
 	@JsonIgnore
 	public Document getDocument() {
 		return document;
@@ -110,12 +109,19 @@ public class Commentaire  implements Serializable{
 		this.document = document;
 	}
 
-	
-	
+	@Override
+	public boolean equals(Object obj) {
 
-	
-	
-	
-	
-	
+		Commentaire c = (Commentaire) obj;
+
+		if (c!=null &&c.getContent().equals(this.getContent()) && c.getDate().equals(this.getDate())
+				&& c.getEmployer().equals(this.getEmployer())
+				&& c.getUser().getUsername().equals(this.getUser().getUsername())) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
 }

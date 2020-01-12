@@ -33,6 +33,9 @@ public class Projet implements Serializable
     private String codeCommercial;
     private String commercial;
     private String chefProjet;
+    @Column(columnDefinition = "TEXT")
+    private String conditionFacturation;
+    private Double montantResteAReceptionnner;
     @ManyToOne
     private EtatProjet etatProjet;
     private String bu;
@@ -78,6 +81,19 @@ public class Projet implements Serializable
     private String infoFournisseur;
     @Column(columnDefinition = "TEXT")
     private String infoProjet;
+    
+    private String priorite;
+    
+    private boolean decloturedByUser;
+    
+    @Column(nullable = false)
+    private boolean cloturedByUser;
+    
+    private Date datePvReceptionProvisoire;
+    
+    private Date datePvReceptionDefinitive;
+    
+    
     
     public Projet() {
         this.commentaires = new HashSet<Commentaire>();
@@ -661,4 +677,70 @@ public class Projet implements Serializable
     public void setPrestationCommande(final Double prestationCommande) {
         this.prestationCommande = prestationCommande;
     }
+
+	public String getPriorite() {
+		return priorite;
+	}
+
+	public void setPriorite(String priorite) {
+		this.priorite = priorite;
+	}
+
+	public boolean isDecloturedByUser() {
+		return decloturedByUser;
+	}
+
+	public void setDecloturedByUser(boolean decloturedByUser) {
+		this.decloturedByUser = decloturedByUser;
+	}
+
+	public Date getDatePvReceptionProvisoire() {
+		return datePvReceptionProvisoire;
+	}
+
+	public void setDatePvReceptionProvisoire(Date datePvReceptionProvisoire) {
+		this.datePvReceptionProvisoire = datePvReceptionProvisoire;
+	}
+
+	public Date getDatePvReceptionDefinitive() {
+		return datePvReceptionDefinitive;
+	}
+
+	public void setDatePvReceptionDefinitive(Date datePvReceptionDefinitive) {
+		this.datePvReceptionDefinitive = datePvReceptionDefinitive;
+	}
+
+	public String getConditionFacturation() {
+		return conditionFacturation;
+	}
+
+	public void setConditionFacturation(String conditionFacturation) {
+		this.conditionFacturation = conditionFacturation;
+	}
+
+	public Double getMontantResteAReceptionnner() {
+		return montantResteAReceptionnner;
+	}
+
+	public void setMontantResteAReceptionnner(Double montantResteAReceptionnner) {
+		this.montantResteAReceptionnner = montantResteAReceptionnner;
+	}
+
+	public boolean isCloturedByUser() {
+		return cloturedByUser;
+	}
+
+	public void setCloturedByUser(boolean cloturedByUser) {
+		this.cloturedByUser = cloturedByUser;
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+    
 }

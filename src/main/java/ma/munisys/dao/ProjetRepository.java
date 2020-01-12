@@ -7,13 +7,14 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ma.munisys.entities.Projet;
 
 
 
-public interface ProjetRepository extends JpaRepository<Projet, Long> {
+public interface ProjetRepository extends JpaRepository<Projet, String>,JpaSpecificationExecutor<Projet>  {
 	
 	@Query("select p from Projet p where  p.cloture = :y order by p.client")
 	public Page<Projet> getProjets(@Param("y") Boolean cloturer,Pageable pageable);
@@ -41,8 +42,16 @@ public interface ProjetRepository extends JpaRepository<Projet, Long> {
 	@Query("select p from Projet p where p.cloture = :y  and p.chefProjet is null  order by p.client") 
 	public Collection<Projet> getProjetsByChefDeProjetIsNull(@Param("y") Boolean cloturer);
 	
+	
+	@Query("select p from Projet p where p.cloture = :y  and p.chefProjet is null and p.commercial=:z  order by p.client") 
+	public Collection<Projet> getProjetsByChefDeProjetIsNullAndCommercial(@Param("y") Boolean cloturer,@Param("z")String commercial);
+	
+	
 	@Query("select p from Projet p where p.cloture = :y  and p.chefProjet is not null order by p.client") 
 	public Collection<Projet> getProjetsByChefDeProjetNotNull(@Param("y") Boolean cloturer);
+
+	@Query("select p from Projet p where p.cloture = :y  and p.chefProjet is not null and p.commercial=:z order by p.client") 
+	public Collection<Projet> getProjetsByChefDeProjetNotNullAndCommercial(@Param("y") Boolean cloturer,@Param("z")String commercial);
 
 
 	@Query("select p from Projet p where p.cloture = :y and  (p.bu = :z or p.bu = :u) and p.statut =:t order by p.client") 
@@ -85,9 +94,7 @@ public interface ProjetRepository extends JpaRepository<Projet, Long> {
 	@Query("select p from Projet p where p.cloture = :y  order by p.client")
 	public Collection<Projet> getProjets(@Param("y") Boolean cloturer);
 	
-	
-	
-	
+
 	//@Query(value="select p from Projet p where p.etatProjet.id = 1 and p.cloture = :y and p.dateCmd >= :z @Param("z")Date dateCmd")
 	@Query(value="select p from Projet p where p.etatProjet.id = 1 and p.cloture = :y and p.dateCmd >= :z ")
 	public List<Projet> findAllProjetsByDateSup(@Param("y") Boolean cloturer,@Param("z")Date dateCmd );
@@ -97,6 +104,17 @@ public interface ProjetRepository extends JpaRepository<Projet, Long> {
 	
 	@Query(value="select p from Projet p where p.etatProjet.id = 1")
 	public List<Projet> findAllProjetsByDate();
+	
+	
+	@Query(value="select distinct p.client from Projet p where p.client !='' and p.client IS NOT NULL")
+	public List<String> getDistinctClient();
+	
+	@Query(value="select distinct p.commercial from Projet p where p.commercial !='' and p.commercial IS NOT NULL")
+	public List<String> getDistinctCommercial();
+	
+	@Query(value="select distinct p.chefProjet from Projet p where p.chefProjet !='' and p.chefProjet IS NOT NULL")
+	public List<String> getDistinctChefProjet();
+	
 	
 	/*@Query(value="select p from Projet p where p.etatProjet.id = 1 and p.cloture = :y and p.commercial like :z or p.chefProjet like :z ")
 	public List<Projet> findAllProjetsByCommercialOrChefProjet(@Param("y") Boolean cloturer,@Param("z")String filtre )*/

@@ -1,6 +1,7 @@
 package ma.munisys.web;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ma.munisys.EtatLvSvcApplication;
+import ma.munisys.dao.FournisseuRepository;
 import ma.munisys.dto.Analyse;
 import ma.munisys.entities.Commentaire;
 import ma.munisys.entities.EtatProjet;
+import ma.munisys.entities.Fournisseur;
 import ma.munisys.entities.Projet;
 import ma.munisys.entities.Reunion;
 import ma.munisys.service.EtatProjetService;
@@ -27,12 +30,32 @@ public class EtatProjetController {
 
 	@Autowired
 	private EtatProjetService etatProjetService;
+	
+	@Autowired
+	private FournisseuRepository fournisseuRepository;
+
+	@RequestMapping(value="/getDistinctClientProjet",method=RequestMethod.GET)
+	public List<String> getDistinctClient() {
+		return etatProjetService.getDistinctClient();
+	}
+
+	@RequestMapping(value="/getDistinctCommercialProjet",method=RequestMethod.GET)
+	public List<String> getDistinctCommercial() {
+		return etatProjetService.getDistinctCommercial();
+	}
+
+	@RequestMapping(value="/getDistinctChefProjetProjet",method=RequestMethod.GET)
+	public List<String> getDistinctChefProjet() {
+		return etatProjetService.getDistinctChefProjet();
+	}
+
 
 	@RequestMapping(value = "/getProjetsByBu", method = RequestMethod.GET)
 	public Collection<Projet> getProjetsByBu(Boolean cloturer, @RequestParam(name = "bu1") String bu1,
 			@RequestParam(name = "bu2") String bu2) {
 		return etatProjetService.getProjetsByBu(cloturer, bu1, bu2);
 	}
+	
 
 	@RequestMapping(value = "/getProjetsByStatut", method = RequestMethod.GET)
 	public Collection<Projet> getProjetsByStatut(
@@ -149,11 +172,15 @@ public class EtatProjetController {
 			@RequestParam(name = "idEtatProjet", defaultValue = "1") Long idEtatProjet,
 			@RequestParam(name = "cloturer", defaultValue = "false") Boolean cloturer,
 			@RequestParam(name = "bu1") String bu1, @RequestParam(name = "bu2") String bu2,
-			@RequestParam(name = "statut") String statut, @RequestParam(name = "chefProjet") String chefProjet,
-			@RequestParam(name = "commercialOrChefProjet") String commercialOrChefProjet) {
+			@RequestParam(name = "statut") String statut, 
+			@RequestParam(name = "commercial") String commercial,@RequestParam(name = "client") String client,@RequestParam(name = "chefProjet") String chefProjet
+			,@RequestParam(name="affectationChefProjet") String affectationChefProjet) {
 		Collection<Projet> projets = null;
+		
+		return this.etatProjetService.getProjetsByPredicate(idEtatProjet, cloturer, bu1, bu2, statut, commercial, chefProjet, client,affectationChefProjet);
+		
 
-		if (!commercialOrChefProjet.equals("undefined")) {
+		/*if (!commercialOrChefProjet.equals("undefined")) {
 			if (!bu1.equals("undefined") && !statut.equals("undefined")) {
 				projets = etatProjetService.getProjetsByBuAndStatutAndCommercial(cloturer, bu1, bu2, statut,
 						commercialOrChefProjet);
@@ -247,9 +274,9 @@ public class EtatProjetController {
 				}
 
 			}
-		}
-
-		return projets;
+		}*/
+		
+	
 
 	}
 
@@ -275,10 +302,27 @@ public class EtatProjetController {
 
 		return etatProjetService.updateProjet(projet.getCodeProjet(), projet);
 	}
+	
+	@RequestMapping(value = "/declotureProjet", method = RequestMethod.PUT)
+	public Projet declotureProjet(@RequestParam(name="codeProjet") String codeProjet) {
+		
+		return etatProjetService.declotureProjet(codeProjet );
+	}
+	
+	@RequestMapping(value = "/clotureProjet", method = RequestMethod.PUT)
+	public Projet clotureProjet(@RequestParam(name="codeProjet") String codeProjet) {
+		
+		return etatProjetService.clotureProjet(codeProjet );
+	}
 
 	@RequestMapping(value = "/reunions", method = RequestMethod.GET)
 	public Collection<Reunion> getAllReunions() {
 		return reunionService.getAllReunions();
+	}
+	
+	@RequestMapping(value = "/fournisseurs", method = RequestMethod.GET)
+	public Collection<Fournisseur> getAllFournisseurs() {
+		return fournisseuRepository.getAllFournisseurs();
 	}
 
 	@RequestMapping(value = "/reunions", method = RequestMethod.POST)
@@ -303,5 +347,15 @@ public class EtatProjetController {
 		etatProjetService.loadProjetsFromSap();
 		return "{'statut':'ok'}";
 	}
+
+	public FournisseuRepository getFournisseuRepository() {
+		return fournisseuRepository;
+	}
+
+	public void setFournisseuRepository(FournisseuRepository fournisseuRepository) {
+		this.fournisseuRepository = fournisseuRepository;
+	}
+	
+	
 
 }

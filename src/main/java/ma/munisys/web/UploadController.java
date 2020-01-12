@@ -42,6 +42,7 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 
 import ma.munisys.entities.Document;
 import ma.munisys.entities.EtatProjet;
+import ma.munisys.entities.Produit;
 import ma.munisys.entities.Projet;
 import ma.munisys.service.EtatProjetService;
 import ma.munisys.service.EtatRecouvrementService;
@@ -230,6 +231,63 @@ public class UploadController {
 	         
 	       
 	    }
+	
+	
+	
+	@PostMapping("/exportProduitsExcel")
+	@ResponseBody
+	public ResponseEntity<Resource> exportProduitsExcel(@RequestBody List<Produit> produits)  {
+		     
+	    XSSFWorkbook workbook = null;
+	    Resource file = null;
+	    String fileName = null;
+	    /* Here I got the object structure (pulling it from DAO layer) that I want to be export as part of Excel. */
+	    //vehicleLastSeenByCampaignReport.setCvsSummary(cvsSummary);
+	    try{
+	        /* Logic to Export Excel */
+	        LocalDateTime localDate = LocalDateTime.now();
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm"); 
+	         fileName = "EtatStock"+ "-" + localDate.format(formatter) + ".xlsx";
+	        //response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+	        
+	        OutputStream out;
+	        workbook = (XSSFWorkbook) storageService.generateWorkBookStock(produits);
+	        
+	        
+	        FileOutputStream fileOut = new FileOutputStream("upload-dir/"+fileName);
+	        workbook.write(fileOut);
+	        fileOut.close();
+	        workbook.close();
+	         file = storageService.loadFile(fileName);
+	        
+	        /* Export Excel logic end */
+	        
+	             
+	        } catch (Exception ecx) {
+	        	ecx.printStackTrace();
+	           // vehicleLastSeenByCampaignReport vehicleCampaignReport = new VehicleLastSeenByCampaignReport();
+	            //vehicleCampaignReport.setErrorMessage("Campaign Not Found");
+	            //return  ResponseEntity.;
+	        }/*finally {
+	            if (null != workbook) {
+	                try {
+	                    workbook.close();
+	                     //file.getFile().delete(); 
+	                } catch (Exception e) {
+	                	e.printStackTrace();
+	                  //  logger.error("Error Occurred while exporting to XLS ", eio);
+	                }
+	            }
+	        }*/
+	    return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+				.body(file);
+	         
+	       
+	    }
+	
+	
+	
 	
 
 	

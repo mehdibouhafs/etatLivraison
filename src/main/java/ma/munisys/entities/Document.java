@@ -22,8 +22,11 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "documents")
+@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 public class Document implements Serializable {
 	
 	@Id
@@ -47,7 +50,6 @@ public class Document implements Serializable {
 	private String codeProjet;
 	
 	private String projet;
-	
 	
 	
 	private String codeCommercial;
@@ -157,6 +159,12 @@ public class Document implements Serializable {
 	
 	@OneToOne
 	private AppUser updatedBy;
+	
+	private String priorite;
+	
+	private String categorie;
+	
+	private String typeBloquage;
 	
 	
 	
@@ -846,6 +854,36 @@ public class Document implements Serializable {
 
 	public void setInfoProjet(String infoProjet) {
 		this.infoProjet = infoProjet;
+	}
+	
+	
+
+	public String getPriorite() {
+		return priorite;
+	}
+
+	public void setPriorite(String priorite) {
+		this.priorite = priorite;
+	}
+
+	
+	
+	public String getCategorie() {
+		return categorie;
+	}
+
+	public void setCategorie(String categorie) {
+		this.categorie = categorie;
+	}
+	
+	
+
+	public String getTypeBloquage() {
+		return typeBloquage;
+	}
+
+	public void setTypeBloquage(String typeBloquage) {
+		this.typeBloquage = typeBloquage;
 	}
 
 	@Override

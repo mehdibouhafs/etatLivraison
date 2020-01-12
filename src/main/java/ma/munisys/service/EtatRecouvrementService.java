@@ -21,7 +21,7 @@ public interface EtatRecouvrementService {
 	
 	public Page<Document> getDocumentsFromEtatRecouvrement(Long idEtatRecouvrement,Boolean cloture,int page,int size);
 	
-	public Collection<Document> getDocumentsFromEtatRecouvrement(Long idEtatRecouvrement,Boolean cloture);
+	public Collection<Document> getDocumentsFromEtatRecouvrement(Long idEtatRecouvrement, Boolean cloturer,String chargeRecouvrement,String commercial,String chefProjet,String client,String statut,String annee);
 	
 	public Set<Document> getDocumentsFromInputFile(String fileName);
 	
@@ -38,7 +38,7 @@ public interface EtatRecouvrementService {
 	
 	public Document updateDocument(String idDocument, Document document);
 	
-	
+	public List<String> getDistinctAnneePiece();
 	
 	public List<Document> findAllDocuments();
 	
@@ -60,7 +60,13 @@ public interface EtatRecouvrementService {
 	public Collection<Document> getDocumentsByCodeProjet( Long idEtatFacture, Boolean cloturer,String codeProjet);
 	
 	
+	public List<String> getDistinctClient();
 	
+	
+	public List<String> getDistinctCommercial();
+	
+	
+	public List<String> getDistinctChefProjet();
 	
 
 

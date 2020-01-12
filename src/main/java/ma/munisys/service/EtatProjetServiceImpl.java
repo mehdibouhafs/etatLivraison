@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,9 +17,21 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.StringJoiner;
+
+import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.apache.commons.collections4.map.HashedMap;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -38,12 +51,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sap.db.jdbcext.wrapper.ResultSetMetaData;
 
+import ma.munisys.dao.DocumentRepository;
 import ma.munisys.dao.EtatProjetRepository;
+import ma.munisys.dao.EventRepository;
 import ma.munisys.dao.ProjetRepository;
 import ma.munisys.dao.ServiceRepository;
+import ma.munisys.dao.UserRepository;
+import ma.munisys.entities.AppUser;
 import ma.munisys.entities.Detail;
+import ma.munisys.entities.Document;
 import ma.munisys.entities.Employer;
 import ma.munisys.entities.EtatProjet;
+import ma.munisys.entities.Event;
 import ma.munisys.entities.Header;
 import ma.munisys.entities.Projet;
 import ma.munisys.entities.Service;
@@ -58,6 +77,18 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 
 	@Autowired
 	private ProjetRepository projetRepository;
+	
+	@Autowired
+	private DocumentRepository documentRepository;
+	
+	@PersistenceContext
+    private EntityManager em;
+	
+	@Autowired
+	private EventRepository eventRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
 
 	public Collection<Projet> getProjetsByBuAndCommercial(Boolean cloturer, String bu1, String bu2, String commercial) {
 		return projetRepository.getProjetsByBuAndCommercial(cloturer, bu1, bu2, commercial);
@@ -81,7 +112,8 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 	}
 
 	public Collection<Projet> getProjetsByBuAndStatutAndChefProjet(Boolean cloturer, String bu1, String bu2,
-			String statut, String chefProjet) {
+			String statut, 
+			String chefProjet) {
 		return projetRepository.getProjetsByBuAndStatutAndchefProjet(cloturer, bu1, bu2, statut, chefProjet);
 	}
 
@@ -99,6 +131,8 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 	
 	@Autowired
 	private EmployeService employeService;
+	
+	
 
 	/*
 	 * @Override public void checkIfProjetClotured(Projet projet) {
@@ -255,7 +289,10 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 
 		if (lastEtatProjet != null && lastEtatProjet.getProjets() != null && !lastEtatProjet.getProjets().isEmpty()) {
 			for (Projet projet : lastEtatProjet.getProjets()) {
-				projet.setCloture(true);
+				if(!projet.isDecloturedByUser()) {
+					projet.setCloture(true);
+				}
+				
 			}
 		}
 
@@ -332,7 +369,7 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 			// System.out.println("lastEtatProjet header " + lastEtatProjet.getHeaders());
 
 			for (Projet projet : newEtatProjet.getProjets()) {
-				projet.setCloture(false);
+					projet.setCloture(false);
 				
 				addOrUpdateProjet(lastEtatProjet, projet);
 			}
@@ -381,7 +418,14 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 			projet.setInfoClient(lastProjet.getInfoClient());
 			projet.setInfoFournisseur(lastProjet.getInfoFournisseur());
 			projet.setInfoProjet(lastProjet.getInfoProjet());
-					
+			projet.setPriorite(lastProjet.getPriorite());
+			projet.setDatePvReceptionDefinitive(lastProjet.getDatePvReceptionDefinitive());;
+			projet.setDatePvReceptionProvisoire(lastProjet.getDatePvReceptionProvisoire());
+			if(lastProjet.isCloturedByUser()) {
+				
+			projet.setCloture(lastProjet.isCloture());
+			}
+			
 			lastEtatProjet.getProjets().remove(lastProjet);
 			System.out.println("lastEtatProjet.getProjets() " + lastEtatProjet.getProjets());
 			System.out.println("projet comm must be " + projet.getCommercial());
@@ -459,10 +503,97 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 	}
 
 	@Override
+	@Transactional
 	public Projet updateProjet(String idProjet, Projet projet) {
 
+		
+		
 		projet.setCodeProjet(idProjet);
-		return projetRepository.save(projet);
+		
+		
+		
+		Projet lastProjet = projetRepository.findById(idProjet).get();
+		
+		
+		StringJoiner stringJoiner = new StringJoiner(" || ");
+		if(lastProjet.getDateFinProjet()==null ) {
+			
+			if(projet.getDateFinProjet()!=null) {
+				 
+				stringJoiner.add("Modification de la date de Fin du projet");
+			}
+			
+			
+		}else {
+			
+			if(projet.getDateFinProjet()!=null ) {
+				if(!lastProjet.getDateFinProjet().equals(projet.getDateFinProjet())){
+					stringJoiner.add("Modification de la date de Fin du projet");
+				}
+				
+			}else {
+				stringJoiner.add("Modification de la date de Fin du projet");
+			}
+			
+		}
+		
+		if(!lastProjet.getCommentaires().equals(projet.getCommentaires())) {
+			stringJoiner.add("Ajout de commentaires");
+		}
+			
+		if(stringJoiner.length()>0) {
+			Collection<AppUser> users = userRepository.findUserByServices(Arrays.asList("Commercial","Chef Projet","SI","Direction"));
+			System.out.println("size user " + users.size());
+			System.out.println("users : " + users );
+			
+			Date date =new Date();
+			for(AppUser appUser : users) {
+				
+				boolean addNotification=false;
+				
+				if( appUser.getService().getServName().equals("Commercial") || appUser.getService().getServName().equals("Chef Projet")) {
+					if( (projet.getCommercial()!=null && projet.getCommercial().equals(appUser.getLastName()) || (projet.getChefProjet()!=null && projet.getChefProjet().equals(appUser.getUsername())) )) {
+						addNotification = true;	
+					}
+					
+				}else {
+					addNotification = true;
+				}
+				
+				if(addNotification) {
+					Event event=new Event();
+					event.setProjet(projet);
+					event.setStatut(false);
+					event.setCreatedBy(projet.getUpdatedBy());
+					event.setActions(stringJoiner.toString());
+					event.setDate(date);
+					event.setUser(appUser);
+					
+					
+					Collection<Event> events = eventRepository.getEventProjet(appUser.getUsername(), projet.getCodeProjet());
+					if(events!=null && events.size()>0)
+					eventRepository.deleteAll(events);
+					
+					
+					eventRepository.save(event);
+				}
+				
+				
+				
+			}
+		}
+			
+		
+		Projet p = projetRepository.save(projet);
+		Collection<Document> documents = documentRepository.getDocumentsByCodeProjet( projet.getCodeProjet());
+		if(documents!=null) {
+			for(Document d : documents ) {
+				d.setDatePvProvisoire(projet.getDatePvReceptionProvisoire());
+				d.setDatePrevuReceptionDefinitive(projet.getDatePvReceptionDefinitive());
+				documentRepository.save(d);
+			}
+		}
+		return p;
 	}
 
 	@Override
@@ -622,17 +753,74 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 		return projetRepository.getAllProjets();
 	}
 	
+	public Map<String,String> importInfoFournisseurFromSAP() {
+		
+		Map<String, String> commentaireInfoFour = new HashedMap<String, String>();
+ 		ResultSet rs1 = null;
+		try {
+            final String req1 = "SELECT * FROM DB_MUNISYS.\"V_INFO_ACH\"";
+             rs1 = DBA.request(req1);
+            final java.sql.ResultSetMetaData rsmd = rs1.getMetaData();
+            for (int columnCount = rsmd.getColumnCount(), i = 1; i <= columnCount; ++i) {
+                final String name = rsmd.getColumnName(i);
+                System.out.println("column Name " + name);
+            }
+            
+            while (rs1.next()) {
+            	
+                 if (rs1.getString(1)!=null && !rs1.getString(1).equals("null") && rs1.getString(9) != null && !rs1.getString(9).equals("null")) {
+                	 System.out.println(rs1.getString(9));
+                	 
+                	 String newInfoFourniseur = rs1.getString(9);
+                	 
+                	 if(commentaireInfoFour.get(rs1.getString(1))!=null) {
+                		 
+                		 String lastInfos = commentaireInfoFour.get(rs1.getString(1));
+                		 String newInfo = lastInfos + "\n"+newInfoFourniseur;
+                		 
+                		 commentaireInfoFour.put(rs1.getString(1), newInfo);
+                		 
+                		 
+                	 }else {
+                		 commentaireInfoFour.put(rs1.getString(1), newInfoFourniseur);
+                	 }
+                	 
+                 }
+            		
+            }
+            
+           
+		} catch (Exception e) {
+                System.out.println(e.getMessage());
+         }finally {
+			if(rs1!=null) {
+				try {
+					rs1.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		 return commentaireInfoFour;
+		
+	}
+	
 	@Override
+	@javax.transaction.Transactional
 	public  void loadProjetsFromSap() {
     	System.out.println("load projet from SAP");
          Set<Projet> projets = new HashSet<Projet>();
          EtatProjet etatProjet = new EtatProjet();
         etatProjet.setId(Long.valueOf(1L));
         etatProjet.setLastUpdate(new Date());
+        Map<String,String> commentairesInfoProjet =  this.importInfoFournisseurFromSAP();
+        ResultSet rs1 = null ;
         try {
-            final String req1 = "SELECT * FROM DB_MUNISYS.\"V_OPEN_PRJ\"";
-            final ResultSet rs1 = DBA.request(req1);
-            final java.sql.ResultSetMetaData rsmd = rs1.getMetaData();
+             String req1 = "SELECT * FROM DB_MUNISYS.\"V_OPEN_PRJ\"";
+              rs1 = DBA.request(req1);
+             java.sql.ResultSetMetaData rsmd = rs1.getMetaData();
             for (int columnCount = rsmd.getColumnCount(), i = 1; i <= columnCount; ++i) {
                 final String name = rsmd.getColumnName(i);
                 System.out.println("column Name " + name);
@@ -711,6 +899,20 @@ public class EtatProjetServiceImpl implements EtatProjetService {
                     p.setRalJrsPrestCalc(Double.valueOf(rs1.getDouble(23)));
                 }
                 
+                if (rs1.getString(24) != null && !rs1.getString(24).equals("null")) {
+                    p.setConditionFacturation(rs1.getString(24));
+                }
+                
+                /*
+                if (rs1.getString(25) != null && !rs1.getString(25).equals("null")) {
+                    p.setMontantResteAReceptionnner(rs1.getDouble(25));
+                }*/
+                
+                if(commentairesInfoProjet.get(p.getCodeProjet())!=null){
+                	p.setInfoFournisseur(commentairesInfoProjet.get(p.getCodeProjet()));
+                }
+                
+                
                 p.setEtatProjet(etatProjet);
                 projets.add(p);
                 
@@ -725,7 +927,18 @@ public class EtatProjetServiceImpl implements EtatProjetService {
         }
         catch (Exception e) {
             e.printStackTrace();
-        }
+        }finally {
+        	if(rs1!=null) {
+        		try {
+					rs1.close();
+					DBA.getConnection().close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        	}
+        	
+		}
     }
 
 	@Override
@@ -802,6 +1015,311 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 		return projetRepository.getProjetsByChefDeProjetNotNullAndStatut(cloturer, statut1);
 	}
 
+	public Collection<Projet> getProjetsByPredicate( Long idEtatProjet,
+			Boolean cloturer,
+			 String bu1, String bu2,
+			 String statut,
+			 String commercial,String chefProjet,String client,String affectationChefProjet){
+		
+		if(!commercial.equals("undefined") && affectationChefProjet.equals("true")) {
+			this.projetRepository.getProjetsByChefDeProjetNotNullAndCommercial(cloturer, commercial);
+		}
+		
+		if(!commercial.equals("undefined") && affectationChefProjet.equals("false")) {
+			this.projetRepository.getProjetsByChefDeProjetIsNullAndCommercial(cloturer, commercial);
+		}
+		
+		if(affectationChefProjet.equals("true")){
+			return this.getProjetsByChefDeProjetNotNull(cloturer);
+		}
+		
+		if(affectationChefProjet.equals("false")){
+			return this.getProjetsByChefDeProjetIsNull(cloturer);
+		}
+		
+		
+		if(bu1.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+			      && commercial.equals("undefined") && client.equals("undefined") ){
+		     	return this.getProjets(cloturer);
+		     	
+		     }
+
+		     // filtre par bu uniquement.  A
+		     if(!bu1.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+			      && commercial.equals("undefined") && client.equals("undefined") ){
+
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byBu(bu1).or(ProjetSpecification.byBu(bu2))));
+		     }
+
+		 	 // filtre par statut uniquement B 
+		     if(bu1.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+			      && commercial.equals("undefined") && client.equals("undefined") ){
+		    	 return 	projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byStatut(statut)));
+		     }
+
+		 	// filtre par chefProjet uniquement C 
+		     if(bu1.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+			      && commercial.equals("undefined") && client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byChefProjet(chefProjet)));
+		     }
+
+		 	// filtre par commercial uniquement D 
+		     if(bu1.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+			      && !commercial.equals("undefined") && client.equals("undefined") ){
+		    	 return 	projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byCommercial(commercial)));
+		     }
+
+		 	// filtre par client uniquement E
+		     if(bu1.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+			      && commercial.equals("undefined") && !client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byClient(client)));
+		     }
+
+
+		 	// filtre par bu et statut uniquement.  AB
+		     if(!bu1.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+			      && commercial.equals("undefined") && client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byBu(bu1).or(ProjetSpecification.byBu(bu2)).and(ProjetSpecification.byStatut(statut))));
+		     }
+
+		 	// filtre par bu et chefProjet uniquement.  AC
+		     if(!bu1.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+			      && commercial.equals("undefined") && client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byBu(bu1).or(ProjetSpecification.byBu(bu2)).and(ProjetSpecification.byChefProjet(chefProjet))));
+		     }
+
+		 // filtre par bu et commercial uniquement.  AD
+		     if(!bu1.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+			      && !commercial.equals("undefined") && client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byBu(bu1).or(ProjetSpecification.byBu(bu2)).and(ProjetSpecification.byCommercial(commercial))));
+
+		     }
+		 // filtre par bu et client uniquement.  AE
+		     if(!bu1.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+			      && commercial.equals("undefined") && !client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byBu(bu1).or(ProjetSpecification.byBu(bu2)).and(ProjetSpecification.byClient(client))));
+		     }
+
+
+
+
+		 	// filtre par statut et chefProjet uniquement.  BC
+		     if(bu1.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+			      && commercial.equals("undefined") && client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byStatut(statut).and(ProjetSpecification.byChefProjet(chefProjet))));
+		     }
+
+		 	// filtre par statut et commercial uniquement.  BD
+		     if(bu1.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+			      && !commercial.equals("undefined") && client.equals("undefined") ){
+		    	 return	projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byStatut(statut).and(ProjetSpecification.byCommercial(commercial))));
+		     }
+
+		 	// filtre par statut et client uniquement.  BE
+		     if(bu1.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+			      && commercial.equals("undefined") && !client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byStatut(statut).and(ProjetSpecification.byClient(client))));
+		     }
+
+
+		 	// filtre par chefProjet et commercial uniquement.  CD
+		     if(bu1.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+			      && !commercial.equals("undefined") && client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byChefProjet(chefProjet).and(ProjetSpecification.byCommercial(commercial))));
+		     }
+
+		 	// filtre par chefProjet et client uniquement.  CE
+		     if(bu1.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+			      && commercial.equals("undefined") && !client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byChefProjet(chefProjet).and(ProjetSpecification.byClient(client))));
+		     }
+
+		 	// filtre par commercial et client uniquement.  DE
+		     if(bu1.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+			      && !commercial.equals("undefined") && !client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byCommercial(commercial).and(ProjetSpecification.byClient(client))));
+		     }
+
+		 	// filtre par bu et statut et chefProjet uniquement.  ABC
+		     if(!bu1.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+			      && commercial.equals("undefined") && client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byBu(bu1).or(ProjetSpecification.byBu(bu2)).and(ProjetSpecification.byStatut(statut).and(ProjetSpecification.byChefProjet(chefProjet)))));
+
+		     }
+
+		 // filtre par bu et statut et commercial uniquement.  ABD
+		     if(!bu1.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+			      && !commercial.equals("undefined") && client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byBu(bu1).or(ProjetSpecification.byBu(bu2)).and(ProjetSpecification.byStatut(statut).and(ProjetSpecification.byCommercial(commercial)))));
+		     }
+
+		  // filtre par bu et statut et client uniquement.  ABE
+		     if(!bu1.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+			      && commercial.equals("undefined") && !client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byBu(bu1).or(ProjetSpecification.byBu(bu2)).and(ProjetSpecification.byStatut(statut).and(ProjetSpecification.byClient(client)))));
+		     }
+		  // filtre par bu et chefProjet et client uniquement.  ACD
+		     if(!bu1.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+			      && !commercial.equals("undefined") && client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byBu(bu1).or(ProjetSpecification.byBu(bu2)).and(ProjetSpecification.byChefProjet(chefProjet).and(ProjetSpecification.byCommercial(commercial)))));
+		     }
+
+
+		 // filtre par bu et chefProjet et client uniquement.  ACE
+		     if(!bu1.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+			      && commercial.equals("undefined") && !client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byBu(bu1).or(ProjetSpecification.byBu(bu2)).and(ProjetSpecification.byCommercial(commercial).and(ProjetSpecification.byClient(client)))));
+		     }
+		 
+		 
+		 // filtre par bu et commercial et client uniquement.  ADE
+		     if(!bu1.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+			      && !commercial.equals("undefined") && !client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byBu(bu1).or(ProjetSpecification.byBu(bu2)).and(ProjetSpecification.byCommercial(commercial).and(ProjetSpecification.byClient(client)))));
+		     }
+
+
+		 	// filtre par statut et chefProjet et commercial uniquement.  BCD
+		     if(bu1.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+			      && !commercial.equals("undefined") && client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byStatut(statut).and(ProjetSpecification.byChefProjet(chefProjet).and(ProjetSpecification.byCommercial(commercial)))));
+		     }
+
+		 	// filtre par statut et chefProjet et client uniquement.  BCE
+		     if(bu1.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+			      && !commercial.equals("undefined") && !client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byStatut(statut).and(ProjetSpecification.byCommercial(commercial).and(ProjetSpecification.byClient(client)))));
+		    
+		     }
+		     
+		  // filtre par statut et client et commercial uniquement.  BDE
+		     if(bu1.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+			      && !commercial.equals("undefined") && !client.equals("undefined") ){
+		     		projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byStatut(statut).and(ProjetSpecification.byCommercial(commercial).and(ProjetSpecification.byClient(client)))));
+		    
+		     }
+
+		 	// filtre par chefProjet et commercial et client uniquement.  CDE
+		     if(bu1.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+			      && !commercial.equals("undefined") && !client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byChefProjet(chefProjet).and(ProjetSpecification.byCommercial(commercial).and(ProjetSpecification.byClient(client)))));
+		    
+		     }
+
+
+		 	// filtre par bu et statut et chefProjet et commercial uniquement.  ABCD
+		     if(!bu1.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+			      && !commercial.equals("undefined") && client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byBu(bu1).or(ProjetSpecification.byBu(bu2))
+		     		.and(ProjetSpecification.byStatut(statut).and(ProjetSpecification.byChefProjet(chefProjet).and(ProjetSpecification.byCommercial(commercial))))));
+		    
+
+		     }
+
+		 	// filtre par bu et statut et chefProjet et client uniquement.  ABCE
+		     if(!bu1.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+			      && commercial.equals("undefined") && !client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byBu(bu1).or(ProjetSpecification.byBu(bu2))
+		     		.and(ProjetSpecification.byStatut(statut).and(ProjetSpecification.byChefProjet(chefProjet).and(ProjetSpecification.byClient(client))))));
+		     }
+
+		 	// filtre par bu et statut et commercial et client uniquement.  ABDE
+		     if(!bu1.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+			      && !commercial.equals("undefined") && !client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byBu(bu1).or(ProjetSpecification.byBu(bu2))
+		     		.and(ProjetSpecification.byStatut(statut).and(ProjetSpecification.byCommercial(commercial).and(ProjetSpecification.byClient(client))))));
+		     }
+
+		 	
+		 	// filtre par bu et chefProjet et commercial et client uniquement.  ACDE
+		     if(!bu1.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+			      && !commercial.equals("undefined") && !client.equals("undefined") ){
+		    	 return	projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byBu(bu1).or(ProjetSpecification.byBu(bu2))
+		     		.and(ProjetSpecification.byChefProjet(chefProjet).and(ProjetSpecification.byCommercial(commercial).and(ProjetSpecification.byClient(client))))));
+		     }
+
+
+
+		 	// filtre par statut et chefProjet et commercial  et client uniquement.  BCDE
+		     if(bu1.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+			      && !commercial.equals("undefined") && !client.equals("undefined") ){
+		    	 return	projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byStatut(statut)
+		     		.and(ProjetSpecification.byChefProjet(chefProjet).and(ProjetSpecification.byCommercial(commercial).and(ProjetSpecification.byClient(client))))));
+		     
+
+		     }
+
+		     // filtre par bu et statut et chefProjet et commercial et client uniquement.  ABCDE
+		     if(!bu1.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+			      && !commercial.equals("undefined") && !client.equals("undefined") ){
+		     return	projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byBu(bu1).or(ProjetSpecification.byBu(bu2))
+		     		.and(ProjetSpecification.byStatut(statut).and(ProjetSpecification.byChefProjet(chefProjet).and(ProjetSpecification.byCommercial(commercial).and(ProjetSpecification.byClient(client)))))));
+
+		     }
+			return null;
+		
+		
+		
+		
+		
+	}
+
+	@Override
+	public List<String> getDistinctClient() {
+		// TODO Auto-generated method stub
+		return projetRepository.getDistinctClient();
+	}
+
+	@Override
+	public List<String> getDistinctCommercial() {
+		// TODO Auto-generated method stub
+		return projetRepository.getDistinctCommercial();
+	}
+
+	@Override
+	public List<String> getDistinctChefProjet() {
+		// TODO Auto-generated method stub
+		return projetRepository.getDistinctChefProjet();
+	}
+
+	@Override
+	public Projet declotureProjet(String idProjet) {
+		// TODO Auto-generated method stub
+		Projet p = projetRepository.getOne(idProjet);
+		p.setCloturedByUser(false);
+		p.setCloture(false);
+		p.setDecloturedByUser(true);
+		return projetRepository.save(p);
+		
+	}
+	
+	@Override
+	public Projet clotureProjet(String idProjet) {
+		// TODO Auto-generated method stub
+		Projet p = projetRepository.getOne(idProjet);
+		
+		p.setCloture(true);
+		p.setDecloturedByUser(false);
+		p.setCloturedByUser(true);
+		p.setFacturation(p.getMontantCmd());
+		p.setRestAlivrer(0.0);
+		p.setLivrerNonFacture(0.0);
+		p.setLivreFacturePayer(p.getMontantCmd());
+		
+		return projetRepository.save(p);
+		
+	}
+
+	public EventRepository getEventRepository() {
+		return eventRepository;
+	}
+
+	public void setEventRepository(EventRepository eventRepository) {
+		this.eventRepository = eventRepository;
+	}
+	
+	
+	
 	
 	
 	

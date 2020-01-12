@@ -17,6 +17,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.StringJoiner;
+
 import javax.persistence.EntityNotFoundException;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -38,10 +40,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ma.munisys.dao.EtatRecouvrementRepository;
+import ma.munisys.dao.EventRepository;
+import ma.munisys.dao.UserRepository;
 import ma.munisys.dao.DocumentRepository;
+import ma.munisys.entities.AppUser;
 import ma.munisys.entities.Detail;
 import ma.munisys.entities.EtatRecouvrement;
+import ma.munisys.entities.Event;
 import ma.munisys.entities.Header;
+import ma.munisys.entities.Projet;
 import ma.munisys.entities.Document;
 import ma.munisys.utils.Constants;
 
@@ -53,6 +60,12 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 
 	@Autowired
 	private DocumentRepository documentRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
+	
+	@Autowired
+	private EventRepository eventRepository;
 
 	@Autowired
 	private EtatRecouvrementRepository etatRecouvrementRepository;
@@ -315,16 +328,24 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		Document lastDocument = findDocumentFromEtatRecouvrement(lastEtatRecouvrement, document.getNumPieceByTypeDocument());
 		if (lastDocument != null) {
 			//document.setCodePiece(lastDocument.getCodePiece());
-			document.setStatut(lastDocument.getStatut());
+			if(lastDocument.getStatut()!=null) {
+				document.setStatut(lastDocument.getStatut());
+			}
+			
 			document.setMotif(lastDocument.getMotif());
 			document.setMontantGarantie(lastDocument.getMontantGarantie());
 			document.setMontantProvision(lastDocument.getMontantProvision());
 			document.setDateFinGarantie(lastDocument.getDateFinGarantie());
+			if(lastDocument.getDatePrevuEncaissement()!=null)
 			document.setDatePrevuEncaissement(lastDocument.getDatePrevuEncaissement());
 			document.setDureeGarantie(lastDocument.getDureeGarantie());
 			document.setAction(lastDocument.getAction());
 			document.setResponsable(lastDocument.getResponsable());
+			
+			if(lastDocument.getDateDepot()!=null)
 			document.setDateDepot(lastDocument.getDateDepot());
+			
+			
 			document.setMotifChangementDate(lastDocument.getMotifChangementDate());
 			document.setCommentaires(lastDocument.getCommentaires());
 			document.setDatePvProvisoire(lastDocument.getDatePvProvisoire()); ;
@@ -333,6 +354,8 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 			document.setInfoChefProjetOrCommercial(lastDocument.getInfoChefProjetOrCommercial());
 			document.setInfoClient(lastDocument.getInfoClient());
 			document.setInfoProjet(lastDocument.getInfoProjet());
+			document.setPriorite(lastDocument.getPriorite());
+			document.setTypeBloquage(lastDocument.getTypeBloquage());
 			
 			lastEtatRecouvrement.getDocuments().remove(lastDocument);
 			System.out.println("document must be " + document);
@@ -404,15 +427,466 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 	}
 
 	@Override
-	public Collection<Document> getDocumentsFromEtatRecouvrement(Long idEtatRecouvrement, Boolean cloture) {
-		return documentRepository.getDocuments(idEtatRecouvrement, cloture);
+	public Collection<Document> getDocumentsFromEtatRecouvrement(Long idEtatRecouvrement, Boolean cloturer,String chargeRecouvrement,String commercial,String chefProjet,String client,String statut,String annee) {
+		 
+		// aucun filtre
+	       if(chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.getDocuments(idEtatRecouvrement, cloturer);
+	        
+	       }
+
+	       // filtre par chargeRecouvrement uniquement.  A
+	       if(!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined")  ){
+
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement))));
+	       }
+
+	     // filtre par statut uniquement B 
+	       if(chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byStatut(statut)));
+	       }
+
+	    // filtre par chefProjet uniquement C 
+	       if(chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChefProjet(chefProjet)));
+	       }
+
+	    // filtre par commercial uniquement D 
+	       if(chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byCommercial(commercial)));
+	       }
+
+	        // filtre par client uniquement E
+	       if(chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byClient(client)));
+	       }
+
+	       // filtre par annee uniquement F
+	       if(chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byAnnee(annee)));
+	       }
+
+
+	    // filtre par chargeRecouvrement et statut uniquement.  AB
+	       if(!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)).and(DocumentSpecification.byStatut(statut))));
+	       }
+
+	    // filtre par chargeRecouvrement et chefProjet uniquement.  AC
+	       if(!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)).and(DocumentSpecification.byChefProjet(chefProjet))));
+	       }
+
+	   // filtre par chargeRecouvrement et commercial uniquement.  AD
+	       if(!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)).and(DocumentSpecification.byCommercial(commercial))));
+
+	       }
+	   // filtre par chargeRecouvrement et client uniquement.  AE
+	       if(!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)).and(DocumentSpecification.byClient(client))));
+	       }
+
+	       // filtre par chargeRecouvrement et annee uniquement.  AF
+	       if(!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)).and(DocumentSpecification.byAnnee(annee))));
+	       }
+
+	    // filtre par statut et chefProjet uniquement.  BC
+	       if(chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byChefProjet(chefProjet))));
+	       }
+
+	    // filtre par statut et commercial uniquement.  BD
+	       if(chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byCommercial(commercial))));
+	       }
+
+	    // filtre par statut et client uniquement.  BE
+	       if(chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byClient(client))));
+	       }
+
+	       // filtre par statut et client uniquement.  BF
+	       if(chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byAnnee(annee))));
+	       }
+	       
+	       
+
+
+	    // filtre par chefProjet et commercial uniquement.  CD
+	       if(chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byCommercial(commercial))));
+	       }
+
+	    // filtre par chefProjet et client uniquement.  CE
+	       if(chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byClient(client))));
+	       }
+
+	       // filtre par chefProjet et client uniquement.  CF
+	       if(chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byAnnee(annee))));
+	       }
+
+	    // filtre par commercial et client uniquement.  DE
+	       if(chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byClient(client))));
+	       }
+
+	       // filtre par commercial et annee uniquement.  DF
+	       if(chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byAnnee(annee))));
+	       }
+	       
+	    // filtre par client et annee uniquement.  FE
+	       if(chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byClient(client).and(DocumentSpecification.byAnnee(annee))));
+	       }
+
+	    // filtre par chargeRecouvrement et statut et chefProjet uniquement.  ABC
+	       if(!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)).and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byChefProjet(chefProjet)))));
+
+	       }
+
+	   // filtre par chargeRecouvrement et statut et commercial uniquement.  ABD
+	       if(!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)).and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byCommercial(commercial)))));
+	       }
+
+	    // filtre par chargeRecouvrement et statut et client uniquement.  ABE
+	       if(!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)).and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byClient(client)))));
+	       }
+
+	       // filtre par chargeRecouvrement et statut et annee uniquement.  ABF
+	       if(!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)).and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byAnnee(annee)))));
+	       }
+
+	       // filtre par chargeRecouvrement et chefProjet et client uniquement.  ACD
+	       if(!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)).and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byCommercial(commercial)))));
+	       }
+
+	   // filtre par chargeRecouvrement et chefProjet et commercial uniquement.  ACE
+	       if(!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)).and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byCommercial(commercial)))));
+	       }
+
+
+
+	       // filtre par chargeRecouvrement et chefProjet et annee uniquement.  ACF
+	       if(!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)).and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byAnnee(annee)))));
+	       }
+	   
+	   
+
+	   // filtre par chargeRecouvrement et commercial et client uniquement.  ADE
+	       if(!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)).and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byClient(client)))));
+	       }
+
+	       // filtre par chargeRecouvrement et commercial et annee uniquement.  ADF
+	       if(!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)).and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byAnnee(annee)))));
+	       }
+
+
+	    // filtre par statut et chefProjet et commercial uniquement.  BCD
+	       if(chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byCommercial(commercial)))));
+	       }
+
+	    // filtre par statut et chefProjet et client uniquement.  BCE
+	       if(chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") ){
+	          return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byClient(client)))));
+	      
+	       }
+
+	       // filtre par statut et chefProjet et annee uniquement.  BCF
+	       if(chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") ){
+	          return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byAnnee(annee)))));
+	      
+	       }
+
+	       // filtre par statut et commercial et client uniquement.  BDE
+	       if(chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") ){
+	          return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byClient(client)))));
+	      
+	       }
+
+	       // filtre par statut et commercial et annee uniquement.  BDF
+	       if(chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") ){
+	          return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byAnnee(annee)))));
+	      
+	       }
+
+	    // filtre par chefProjet et commercial et client uniquement.  CDE
+	       if(chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") ){
+	          return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byClient(client).and(DocumentSpecification.byCommercial(commercial)))));
+	      
+	       }
+
+	       // filtre par chefProjet et commercial et anee uniquement.  CDF
+	       if(chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") ){
+	          return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byAnnee(annee)))));
+	      
+	       }
+	       
+	    // filtre par  commercialet client et anee uniquement.  DFE
+	       if(chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined") ){
+	          return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byClient(client).and(DocumentSpecification.byAnnee(annee)))));
+	      
+	       }
+
+
+	    // filtre par chargeRecouvrement et statut et chefProjet et commercial uniquement.  ABCD
+	       if(!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement))
+	          .and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byCommercial(commercial))))));
+	      
+
+	       }
+
+	    // filtre par chargeRecouvrement et statut et chefProjet et client uniquement.  ABCE
+	       if(!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement))
+	          .and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byClient(client))))));
+	       }
+
+
+	       // filtre par chargeRecouvrement et statut et chefProjet et annee uniquement.  ABCF
+	       if(!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement))
+	          .and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byAnnee(annee))))));
+	       }
+
+	    // filtre par chargeRecouvrement et statut et commercial et client uniquement.  ABDE
+	       if(!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement))
+	          .and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byClient(client))))));
+	       }
+
+	        // filtre par chargeRecouvrement et statut et commercial et annee uniquement.  ABDF
+	       if(!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement))
+	          .and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byAnnee(annee))))));
+	       }
+
+	    
+	    // filtre par chargeRecouvrement et chefProjet et commercial et client uniquement.  ACDE
+	       if(!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement))
+	          .and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byClient(client))))));
+	       }
+
+	       // filtre par chargeRecouvrement et chefProjet et commercial et client uniquement.  ACDF
+	       if(!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement))
+	          .and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byAnnee(annee))))));
+	       }
+
+
+
+	    // filtre par statut et chefProjet et commercial  et client uniquement.  BCDE
+	       if(chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byStatut(statut)
+	          .and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byClient(client))))));
+	       
+
+	       }
+
+
+	    // filtre par statut et chefProjet et commercial  et annee uniquement.  BCDF
+	       if(chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byStatut(statut)
+	          .and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byAnnee(annee))))));
+	       
+
+	       }
+	       
+	       // filtre par  chefProjet et commercial client  et annee uniquement.  CDFE
+	       if(chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChefProjet(chefProjet)
+	        		.and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byClient(client).and(DocumentSpecification.byAnnee(annee))))));
+	       
+	       }
+
+
+
+	       // filtre par chargeRecouvrement et statut et chefProjet et commercial et client uniquement.  ABCDE
+	       if(!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement))
+	          .and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byClient(client)))))));
+
+	       }
+
+	       // filtre par chargeRecouvrement et statut et chefProjet et commercial et annee uniquement.  ABCDF
+	       if(!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement))
+	          .and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byClient(client).and(DocumentSpecification.byAnnee(annee))))))));
+
+	       }
+
+	       // filtre par chargeRecouvrement  et chefProjet et commercial et client et  annee uniquement.  ACDEF
+	       if(!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement))
+	          .and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byClient(client).and(DocumentSpecification.byAnnee(annee))))))));
+
+	       }
+
+	       // filtre par statut et chefProjet et commercial et client et annee uniquement.  BCDEF
+	       if(chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement))
+	          .and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byClient(client).and(DocumentSpecification.byAnnee(annee))))))));
+
+	       }
+
+	       // filtre par chargeRecouvrement et statut et chefProjet et commercial et client et annee uniquement.  ABCDEF
+	       if(!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+	          && !commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined") ){
+	        return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement).or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement))
+	          .and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byClient(client).and(DocumentSpecification.byAnnee(annee))))))));
+
+	       }
+		return null;
+
+
+
+
+
+
+
+
+
+		 
 	}
 
 	@Override
+	@Transactional
 	public Document updateDocument(String idDocument, Document document) {
 
-		document.setNumPiece(idDocument);
-		return documentRepository.save(document);
+		document.setCodePiece(idDocument);
+		
+		Document lastDocument = documentRepository.findById(idDocument).get();
+		
+		StringJoiner stringJoiner = new StringJoiner(" || ");
+		
+		
+		if(!lastDocument.getCommentaires().equals(document.getCommentaires())) {
+			stringJoiner.add("Ajout de commentaires");
+		}
+			
+		if(stringJoiner.length()>0) {
+			Collection<AppUser> users = userRepository.findUserByServices(Arrays.asList("Commercial","Chef Projet","SI","Direction"));
+			System.out.println("size user " + users.size());
+			System.out.println("users : " + users );
+			
+			Date date =new Date();
+			for(AppUser appUser : users) {
+				
+				
+				boolean addNotification=false;
+				
+				if( appUser.getService().getServName().equals("Commercial") || appUser.getService().getServName().equals("Chef Projet")) {
+					if( (document.getCommercial()!=null && document.getCommercial().equals(appUser.getLastName()) || (document.getChefProjet()!=null && document.getChefProjet().equals(appUser.getUsername())) )) {
+						addNotification = true;	
+					}
+					
+				}else {
+					addNotification = true;
+				}
+				
+				if(addNotification) {
+				
+				Event event=new Event();
+				Document c =new Document();
+				c.setCodePiece(idDocument);
+				event.setDocument(c);
+				event.setStatut(false);
+				event.setCreatedBy(document.getUpdatedBy());
+				event.setActions(stringJoiner.toString());
+				event.setDate(date);
+				event.setUser(appUser);
+				
+				
+				Collection<Event> events = eventRepository.getEventDocument(appUser.getUsername(), document.getCodePiece());
+				if(events!=null && events.size()>0)
+				eventRepository.deleteAll(events);
+				eventRepository.save(event);
+				}
+			}
+		}
+		
+		
+		
+		Document rs = documentRepository.save(document);
+		if(document.getClient()!=null && document.getInfoClient()!=null && !document.getInfoClient().isEmpty()) {
+			for(Document doc : getDocumentsByClient(1L, false, document.getClient())) {
+				doc.setInfoClient(document.getInfoClient());
+				documentRepository.save(doc);
+			}
+		}
+		
+		
+		return rs;
 	}
 
 
@@ -497,6 +971,30 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 			String commercialOrChefProjet) {
 		// TODO Auto-generated method stub
 		return documentRepository.getDocumentsByCommercialOrChefProjet(idEtatFacture, cloturer, commercialOrChefProjet);
+	}
+
+	@Override
+	public List<String> getDistinctAnneePiece() {
+		// TODO Auto-generated method stub
+		return documentRepository.getDistinctAnneePiece();
+	}
+
+	@Override
+	public List<String> getDistinctClient() {
+		// TODO Auto-generated method stub
+		return documentRepository.getDistinctClient();
+	}
+
+	@Override
+	public List<String> getDistinctCommercial() {
+		// TODO Auto-generated method stub
+		return documentRepository.getDistinctCommercial();
+	}
+
+	@Override
+	public List<String> getDistinctChefProjet() {
+		// TODO Auto-generated method stub
+		return documentRepository.getDistinctChefProjet();
 	}
 
 }

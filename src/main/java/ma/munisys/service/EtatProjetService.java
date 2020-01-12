@@ -4,7 +4,10 @@ package ma.munisys.service;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
 
@@ -16,7 +19,13 @@ import ma.munisys.entities.Projet;
 
 public interface EtatProjetService {
 		
+	public  Map<String,String>  importInfoFournisseurFromSAP();
 	
+	public Collection<Projet> getProjetsByPredicate(Long idEtatProjet,
+			Boolean cloturer,
+			 String bu1, String bu2,
+			 String statut,
+			 String commercial,String chefProjet,String client,String affectationChefProjet);
 	//public void checkIfProjetClotured(Projet projet);
 	
 	public Page<Projet> getProjetsFromEtatProjet(Boolean cloture,int page,int size);
@@ -39,6 +48,10 @@ public interface EtatProjetService {
 	public void deleteHeaderFromEtatProjet(Long idEtatProjet, Header header);
 	
 	public Projet updateProjet(String idProjet, Projet projet);
+	
+	public Projet declotureProjet(String idProjet);
+	
+	public Projet clotureProjet(String idProjet);
 	
 	public List<Projet> findAllProjetsByDateSup(Boolean cloturer, Date dateCmd);
 	
@@ -117,7 +130,13 @@ public interface EtatProjetService {
 
 	public Collection<Projet> getAllProjetsByCommercialOrChefProjet(Boolean cloturer, String commercialOrChefProjet) ;
 
+	public List<String> getDistinctClient();
 	
+	
+	public List<String> getDistinctCommercial();
+	
+	
+	public List<String> getDistinctChefProjet();
 	
 
 

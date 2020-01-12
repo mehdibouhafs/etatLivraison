@@ -1,10 +1,13 @@
 package ma.munisys;
 
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.util.Set;
 import java.text.SimpleDateFormat;
 import ma.munisys.sap.dao.DBA;
+
+import java.util.Calendar;
 import java.util.Date;
 
 import ma.munisys.entities.AppUser;
@@ -30,6 +33,7 @@ import ma.munisys.dao.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import ma.munisys.service.EtatProjetService;
 import ma.munisys.service.EtatRecouvrementService;
+import ma.munisys.service.ProduitService;
 import ma.munisys.dao.EtatProjetRepository;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -43,7 +47,10 @@ import org.springframework.context.annotation.Bean;
 public class EtatLvSvcApplication extends SpringBootServletInitializer implements CommandLineRunner
 {
     private static EtatProjetRepository etatProjetRepositoryStatic;
+    
     private static EtatProjetService etatProjetServiceStatic;
+    
+    private static ProduitService produitServiceStatic;
     
     private static EtatRecouvrementService etatRecouvrementServiceStatic;
     @Autowired
@@ -64,6 +71,8 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
     CommentaireRepository commentaireRepository;
     @Autowired
     ServiceRepository serviceRepository;
+    @Autowired
+    ProduitService produitService;
     
    
     
@@ -71,7 +80,9 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
         SpringApplication.run((Class)EtatLvSvcApplication.class, args);
          etatProjetServiceStatic.loadProjetsFromSap();
         //loadFromSap();
-        loadDocumentsFromSap();
+        //loadDocumentsFromSap();
+        //etatProjetServiceStatic.importInfoFournisseurFromSAP();
+         //3 produitServiceStatic.loadProduitFromSap();
     }
     
     @PostConstruct
@@ -79,10 +90,11 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
         EtatLvSvcApplication.etatProjetRepositoryStatic = this.etatProjetRepository;
         EtatLvSvcApplication.etatProjetServiceStatic = this.etatProjetService;
         EtatLvSvcApplication.etatRecouvrementServiceStatic = this.etatRecouvrementService;
+        EtatLvSvcApplication.produitServiceStatic = this.produitService;
     }
     
     @Bean // ce bean sera utilise n'importe ou
-	public BCryptPasswordEncoder getBCPE() {
+	public BCryptPasswordEncoder getBCPE() { 
 		return new BCryptPasswordEncoder();
 	}
 	
@@ -131,6 +143,31 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
     }
     
     
+    @Scheduled(cron = "0 0 1 * * *")
+    public static void loadProduitFromSap() {
+        System.out.println("STARTING TASK Produits CRON ");
+        //loadProjetsFromSap();
+        //etatProjetServiceStatic.loadProjetsFromSap();
+        //loadDocumentsFromSap();
+        EtatLvSvcApplication.produitServiceStatic.loadProduitFromSap();
+        System.out.println("ENDING TASK Produits CRON ");
+    }
+    
+    @Scheduled(cron = "0 0 13 * * *")
+    public static void loadProduitFromSap2() {
+        System.out.println("STARTING TASK Produits CRON ");
+        //loadProjetsFromSap();
+        //etatProjetServiceStatic.loadProjetsFromSap();
+        //loadDocumentsFromSap();
+        EtatLvSvcApplication.produitServiceStatic.loadProduitFromSap();
+        System.out.println("ENDING TASK Produits CRON ");
+    }
+    
+    
+    
+    
+    
+    
     
     
     public static void loadDocumentsFromSap() {
@@ -138,9 +175,10 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
         EtatRecouvrement etatRecouvrement = new EtatRecouvrement();
         etatRecouvrement.setId(Long.valueOf(1L));
         etatRecouvrement.setLastUpdate(new Date());
+         ResultSet rs1 = null;
        try {
            final String req1 = "SELECT * FROM DB_MUNISYS.\"V_BALANCE\"";
-           final ResultSet rs1 = DBA.request(req1);
+            rs1 = DBA.request(req1);
            final ResultSetMetaData rsmd = rs1.getMetaData();
            for (int columnCount = rsmd.getColumnCount(), i = 1; i <= columnCount; ++i) {
                 String name = rsmd.getColumnName(i);
@@ -150,14 +188,14 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
            while (rs1.next()) {
                 Document d = new Document();
                 
-               
-               
+              
                if (rs1.getString(1) != null && !rs1.getString(1).equals("null")) {
                    d.setNumPiece(rs1.getString(1));
                }
                if (rs1.getString(2) != null && !rs1.getString(2).equals("null")) {
             	   
                    d.setDatePiece(sp.parse(rs1.getString(2).split("\\s+")[0]));
+                   d.setDateDepot(d.getDatePiece());
                    
                }
                if (rs1.getString(3) != null && !rs1.getString(3).equals("null")) {
@@ -200,6 +238,19 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
                
                if (rs1.getString(13) != null && !rs1.getString(13).equals("null")) {
             	   d.setMontantOuvert(rs1.getDouble(13));
+            	   
+            	   if( rs1.getDouble(13) <= 200000) {
+            		   d.setCategorie("C");
+            	   }
+            	   if( rs1.getDouble(13) > 200000 && rs1.getDouble(13) <1000000) {
+            		   d.setCategorie("B");
+            	   }
+            	   
+            	   if(rs1.getDouble(13) >= 1000000) {
+            		   d.setCategorie("A");
+            	   }
+            	   
+            	   
                }
                if (rs1.getString(14) != null && !rs1.getString(14).equals("null")) {
                   d.setChargerRecouvrement( rs1.getString(14));
@@ -219,11 +270,34 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
                   
                   
                   d.setDateEcheance(sp.parse(rs1.getString(18).split("\\s+")[0]));
+                  
                }
                
                if (rs1.getString(19) != null && !rs1.getString(19).equals("null")) {
                    d.setConditionDePaiement(rs1.getString(19));
+                   
+                  
+                   
                 }
+               
+               if(d.getTypeDocument()!=null && d.getTypeDocument().equals("Facture")) {
+            	   
+            	   d.setDateDepot(d.getDatePiece());
+            	   
+            	   if(d.getConditionDePaiement()!=null && d.getDatePiece()!=null && d.getConditionDePaiement().equals("- Base de paiement -")) {
+            		   
+            		   Calendar c = Calendar.getInstance();
+            		   c.setTime(d.getDatePiece());
+            		   
+            		   c.add(Calendar.MONTH,3);
+            		   
+            		   d.setDatePrevuEncaissement(c.getTime());
+            		   
+            	   }else {
+            		   if(d.getDateEcheance()!=null)
+            		   d.setDatePrevuEncaissement(d.getDateEcheance());
+            	   }
+               }
                	
                if (rs1.getString(20) != null && !rs1.getString(20).equals("null")) {
                   
@@ -235,7 +309,8 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
                 }
                
                if (rs1.getString(22) != null && !rs1.getString(22).equals("null")) {
-                   d.setTypeCaution(rs1.getString(22));
+    
+            	   d.setTypeCaution(rs1.getString(22));
                 }
                if (rs1.getString(23) != null && !rs1.getString(23).equals("null")) {
                    d.setDateLiberationCaution(sp.parse(rs1.getString(23).split("\\s+")[0]));
@@ -243,6 +318,10 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
                if (rs1.getString(24) != null && !rs1.getString(24).equals("null")) {
                    d.setMontantCaution(rs1.getDouble(24));
                 }
+               
+               if(d.getStatut()==null) {
+            	   d.setStatut("Non Traitée par CR");
+               }
                
                d.setEtatRecouvrement(etatRecouvrement);
                documents.add(d);
@@ -260,8 +339,29 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
        }
        catch (Exception e) {
            e.printStackTrace();
-       }
+       }finally {
+       	if(rs1!=null) {
+    		try {
+				rs1.close();
+				DBA.getConnection().close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    	
+	}
    }
+
+	public ProduitService getProduitService() {
+		return produitService;
+	}
+
+	public void setProduitService(ProduitService produitService) {
+		this.produitService = produitService;
+	}
+    
+    
 
 	
     
