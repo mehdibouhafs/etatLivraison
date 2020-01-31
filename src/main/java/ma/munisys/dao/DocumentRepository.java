@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import ma.munisys.dto.DocumentAnalyse;
+import ma.munisys.dto.EtatEncaissement;
 import ma.munisys.entities.Document;
 import ma.munisys.entities.Projet;
 
@@ -65,5 +68,32 @@ public interface DocumentRepository extends JpaRepository<Document, String>,JpaS
 	
 	@Query(value="select distinct p.chefProjet from Document p where p.chefProjet !='' and p.chefProjet IS NOT NULL ")
 	public List<String> getDistinctChefProjet();
+	
+	
+	@Query("select new ma.munisys.dto.DocumentAnalyse(p.statut,count(p),sum(p.montantOuvert)) from Document p where p.cloture = :y and p.client =:x group by p.statut" )
+	public List<DocumentAnalyse> getCountSumDocumentsByClient(@Param("y") Boolean cloturer,@Param("x") String client);
+	
+	
+	@Query("select p from Document p where p.cloture = :y and p.client =:x and MONTH(p.datePiece)=:u and YEAR(p.datePiece)=:i and p.typeDocument='Encaissement' order by p.datePiece")
+	public Collection<Document> getDocumentByClientOnDate(@Param("y") Boolean cloturer,@Param("x") String client,@Param("u") int month,@Param("i") int year);
+	
+	@Query(value="SELECT d.client as 'client',(SELECT sum(montant_ouvert) FROM [MGOUVDEV].[dbo].[documents] d1 where d1.client = d.client\r\n" + 
+			" and month(d1.date_piece)< month(DATEADD(month,1,getDate())) and\r\n" + 
+			"  year(d1.date_piece) = year(getDate())) as 'montantMois0', \r\n"+
+			 "(SELECT sum(montant_ouvert) FROM [MGOUVDEV].[dbo].[documents] d1 where d1.client = d.client\r\n" + 
+			" and month(d1.date_piece)= month(DATEADD(month,1,getDate())) and\r\n" + 
+			"  year(d1.date_piece) = year(DATEADD(month,1,getDate()))) as 'montantMois1', \r\n" + 
+			"  (SELECT sum(montant_ouvert) FROM [MGOUVDEV].[dbo].[documents] d1 where d1.client = d.client\r\n" + 
+			" and month(d1.date_piece)= month(DATEADD(month,2,getDate())) and\r\n" + 
+			"  year(d1.date_piece) = year(DATEADD(month,2,getDate()))) as 'montantMois2',\r\n" + 
+			"  (SELECT sum(montant_ouvert) FROM [MGOUVDEV].[dbo].[documents] d1 where d1.client = d.client\r\n" + 
+			" and month(d1.date_piece)= month(DATEADD(month,3,getDate())) and\r\n" + 
+			"  year(d1.date_piece) = year(DATEADD(month,3,getDate()))) as 'montantMois3',\r\n" + 
+			"  (SELECT sum(montant_ouvert) FROM [MGOUVDEV].[dbo].[documents] d1 where d1.client = d.client\r\n" + 
+			" and month(d1.date_piece)= month(DATEADD(month,4,getDate())) and\r\n" + 
+			"  year(d1.date_piece) = year(DATEADD(month,4,getDate()))) as 'montantMois4',\r\n" + 
+			" 'Fevrier 'as 'mois1','Mars 'as 'mois2','Avril' as 'mois3','Mai 'as 'mois4','Avant Période' as 'mois0'"+
+			"  FROM [MGOUVDEV].[dbo].[documents] d where d.type_document ='Encaissement' and d.cloture=0 group by d.client",nativeQuery = true)
+	public Collection<EtatEncaissement> getEncaissemenForNextMonths();
 	
 }

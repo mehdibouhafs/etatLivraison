@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ma.munisys.entities.Projet;
@@ -114,6 +115,17 @@ public interface ProjetRepository extends JpaRepository<Projet, String>,JpaSpeci
 	
 	@Query(value="select distinct p.chefProjet from Projet p where p.chefProjet !='' and p.chefProjet IS NOT NULL")
 	public List<String> getDistinctChefProjet();
+	
+	@Modifying
+	@Query("update Projet p set p.cloture = :statut,p.cloturedByUser=:cloturedByUser,p.decloturedByUser = :decloturedByUser where p.codeProjet = :codeProjet")
+	public int updateStatutProjet(@Param("statut") boolean statut,@Param("cloturedByUser") boolean cloturedByUser,@Param("decloturedByUser") boolean decloturedByUser, @Param("codeProjet") String codeProjet);
+	
+	
+	@Modifying
+	@Query("update Projet p set p.cloture = :statut,p.cloturedByUser=:cloturedByUser,p.decloturedByUser = :decloturedByUser,p.restAlivrer=:ral,p.livrerNonFacture=:lnf,p.facturation=:facturation,p.livreFacturePayer=:lfp where p.codeProjet = :codeProjet")
+	
+	
+	public int updateStatutProjetMontant(@Param("statut") boolean statut,@Param("cloturedByUser") boolean cloturedByUser,@Param("decloturedByUser") boolean decloturedByUser,@Param("facturation") Double facturation,@Param("lnf") Double lnf,@Param("lfp") Double lfp,@Param("ral") Double ral, @Param("codeProjet") String codeProjet);
 	
 	
 	/*@Query(value="select p from Projet p where p.etatProjet.id = 1 and p.cloture = :y and p.commercial like :z or p.chefProjet like :z ")

@@ -1,17 +1,33 @@
 package ma.munisys.web;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.poi.util.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import ma.munisys.EtatLvSvcApplication;
+import ma.munisys.dto.DocumentAnalyse;
 import ma.munisys.entities.Commentaire;
 import ma.munisys.entities.EtatRecouvrement;
 import ma.munisys.entities.Document;
@@ -25,10 +41,16 @@ public class EtatRecouvrementController {
 	@Autowired
 	private EtatRecouvrementService etatRecouvrementService;
 	
+	
+
+
+
 	@RequestMapping(value="/getDistinctClientDocument",method=RequestMethod.GET)
 	public List<String> getDistinctClient() {
 		return etatRecouvrementService.getDistinctClient();
 	}
+	
+	
 
 	@RequestMapping(value="/getDistinctCommercialDocument",method=RequestMethod.GET)
 	public List<String> getDistinctCommercial() {
@@ -113,6 +135,196 @@ public class EtatRecouvrementController {
 		EtatLvSvcApplication.loadDocumentsFromSap();
 		return  "ok";
 	}
+	
+	
+	
+	@RequestMapping("/exportReleveClient")
+	@ResponseBody
+	public void exportDocumentsExcel(HttpServletResponse response,@RequestParam(name="client") String client)  {
+		     
+	   
+	      Resource file =  etatRecouvrementService.getReleveClient(client);
+	      
+	      
+	      response.setContentType("application/pdf");
+	      response.setHeader("Content-disposition", "attachment; filename=\"" + file.getFilename() + "\"");
+
+	      OutputStream out;
+		try {
+			out = response.getOutputStream();
+			 FileInputStream in = new FileInputStream(file.getFile());
+
+		      // copy from in to out
+		      IOUtils.copy(in,out);
+
+		      out.close();
+		      in.close();
+		      
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			File f;
+			try {
+				f = file.getFile();
+				Files.delete(f.toPath());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		      
+		}
+	     
+	   /* return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+				.body(file);*/
+	         
+	       
+	    }
+	
+	@RequestMapping(value="/getCountSumDocumentsByClient",method=RequestMethod.GET)
+	public List<DocumentAnalyse> getCountSumDocumentsByClient(@RequestParam(name="cloturer",defaultValue="false")Boolean cloturer,@RequestParam(name="client") String client) {
+		
+		return etatRecouvrementService.getCountSumDocumentsByClient(cloturer, client);
+	}
+
+	@RequestMapping(value="/getDocumentByClientOnDate",method=RequestMethod.GET)
+	public Collection<Document> getDocumentByClientOnDate(@RequestParam(name="cloturer",defaultValue="false")Boolean cloturer,@RequestParam(name="client") String client,@RequestParam(name="month") int month,@RequestParam(name="year") int year) {
+		return etatRecouvrementService.getDocumentByClientOnDate(cloturer, client, month, year);
+	}
+	
+	
+	@RequestMapping("/exportSituationDocumentsByClient")
+	@ResponseBody
+	public void exportSituationDocumentsByClient(HttpServletResponse response,@RequestParam(name="client") String client)  {
+		     
+	   
+	      Resource file =  etatRecouvrementService.getSituationDocumentsByClient(false, client);
+	      
+	      
+	      response.setContentType("application/pdf");
+	      response.setHeader("Content-disposition", "attachment; filename=\"" + file.getFilename() + "\"");
+
+	      OutputStream out;
+		try {
+			out = response.getOutputStream();
+			 FileInputStream in = new FileInputStream(file.getFile());
+
+		      // copy from in to out
+		      IOUtils.copy(in,out);
+
+		      out.close();
+		      in.close();
+		      
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			File f;
+			try {
+				f = file.getFile();
+				Files.delete(f.toPath());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		      
+		}
+	     
+	   /* return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+				.body(file);*/
+	         
+	       
+	    }
+	
+	@RequestMapping("/exportSituationDocumentsByClientDate")
+	@ResponseBody
+	public void exportSituationDocumentsByClient(HttpServletResponse response,@RequestParam(name="client") String client,@RequestParam(name="month") int month,@RequestParam(name="year") int year)  {
+		     
+	   
+	      Resource file =  etatRecouvrementService.getSituationDocumentsByClient(false, client, month, year);
+	      
+	      response.setContentType("application/pdf");
+	      response.setHeader("Content-disposition", "attachment; filename=\"" + file.getFilename() + "\"");
+
+	      OutputStream out;
+		try {
+			out = response.getOutputStream();
+			 FileInputStream in = new FileInputStream(file.getFile());
+
+		      // copy from in to out
+		      IOUtils.copy(in,out);
+
+		      out.close();
+		      in.close();
+		      
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			File f;
+			try {
+				f = file.getFile();
+				Files.delete(f.toPath());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		      
+		}
+	     
+	   /* return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+				.body(file);*/
+	         
+	       
+	    }
+	
+	
+	
+	@RequestMapping("/exportEncaissementNextMonth")
+	@ResponseBody
+	public void exportEncaissementNextMonth(HttpServletResponse response)  {
+		     
+	   
+	      Resource file =  etatRecouvrementService.getRapportEncaissementNextMonths();
+	      
+	      response.setContentType("application/pdf");
+	      response.setHeader("Content-disposition", "attachment; filename=\"" + file.getFilename() + "\"");
+
+	      OutputStream out;
+		try {
+			out = response.getOutputStream();
+			 FileInputStream in = new FileInputStream(file.getFile());
+
+		      // copy from in to out
+		      IOUtils.copy(in,out);
+
+		      out.close();
+		      in.close();
+		      
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			File f;
+			try {
+				f = file.getFile();
+				Files.delete(f.toPath());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		      
+		}
+	     
+	   /* return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+				.body(file);*/
+	         
+	       
+	    }
 	
 
 

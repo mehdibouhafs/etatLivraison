@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -46,11 +47,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.sap.db.jdbcext.wrapper.ResultSetMetaData;
-
 import ma.munisys.dao.DocumentRepository;
 import ma.munisys.dao.EtatProjetRepository;
 import ma.munisys.dao.EventRepository;
@@ -419,12 +416,13 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 			projet.setInfoFournisseur(lastProjet.getInfoFournisseur());
 			projet.setInfoProjet(lastProjet.getInfoProjet());
 			projet.setPriorite(lastProjet.getPriorite());
-			projet.setDatePvReceptionDefinitive(lastProjet.getDatePvReceptionDefinitive());;
+			projet.setDatePvReceptionDefinitive(lastProjet.getDatePvReceptionDefinitive());
 			projet.setDatePvReceptionProvisoire(lastProjet.getDatePvReceptionProvisoire());
-			if(lastProjet.isCloturedByUser()) {
-				
-			projet.setCloture(lastProjet.isCloture());
-			}
+			
+			
+			
+			
+			
 			
 			lastEtatProjet.getProjets().remove(lastProjet);
 			System.out.println("lastEtatProjet.getProjets() " + lastEtatProjet.getProjets());
@@ -720,7 +718,19 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 	        final EtatProjet lastEtatProjet = this.etatProjetRepository.findById(1L).orElse(null);
 	        if (lastEtatProjet != null && lastEtatProjet.getProjets() != null && !lastEtatProjet.getProjets().isEmpty()) {
 	            for (final Projet projet : lastEtatProjet.getProjets()) {
-	                projet.setCloture(true);
+	                
+	            	
+	            	
+	    			if(!projet.isDecloturedByUser()) 
+	            		projet.setCloture(true);
+	            		//projet.setDecloturedByUser(false);
+	            		//projet.setCloturedByUser(false);
+	            		projet.setFacturation(100.00);
+	            		projet.setRestAlivrer(0.0);
+	            		projet.setLivrerNonFacture(0.0);
+	            		projet.setLivreFacturePayer(projet.getMontantCmd());
+	            	
+	            	
 	            }
 	        }
 	        if (lastEtatProjet == null) {
@@ -1283,30 +1293,46 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 	}
 
 	@Override
-	public Projet declotureProjet(String idProjet) {
+	
+	public Projet declotureProjet(Projet p) {
 		// TODO Auto-generated method stub
-		Projet p = projetRepository.getOne(idProjet);
-		p.setCloturedByUser(false);
-		p.setCloture(false);
-		p.setDecloturedByUser(true);
-		return projetRepository.save(p);
+		
+		
+		int i = projetRepository.updateStatutProjet(false, false, true, p.getCodeProjet());
+		
+		System.out.println("i " + i);
+		
+		
+		return projetRepository.findById(p.getCodeProjet()).get();
+		 
 		
 	}
 	
 	@Override
-	public Projet clotureProjet(String idProjet) {
+	@Transactional
+	public Projet clotureProjet(Projet p) {
 		// TODO Auto-generated method stub
-		Projet p = projetRepository.getOne(idProjet);
+		EtatProjet etatProjet = new EtatProjet();
+		etatProjet.setId(1L);
+		p.setEtatProjet(etatProjet);
 		
-		p.setCloture(true);
+		
+		int i = projetRepository.updateStatutProjetMontant(true, true, false, 100.00, 0.00, p.getMontantCmd(), 0.00, p.getCodeProjet());
+		
+		
+		return projetRepository.findById(p.getProjet()).get();
+		
+		/*p.setCloture(true);
 		p.setDecloturedByUser(false);
 		p.setCloturedByUser(true);
-		p.setFacturation(p.getMontantCmd());
+		p.setFacturation(100.00);
 		p.setRestAlivrer(0.0);
 		p.setLivrerNonFacture(0.0);
 		p.setLivreFacturePayer(p.getMontantCmd());
-		
-		return projetRepository.save(p);
+		Projet c = projetRepository.save(p);
+		//projetRepository.flush();
+		//System.out.println("cloture projet " + c.isCloture());
+		return c;*/
 		
 	}
 

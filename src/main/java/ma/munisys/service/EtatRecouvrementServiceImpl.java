@@ -1,20 +1,30 @@
 package ma.munisys.service;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -33,6 +43,8 @@ import org.hibernate.validator.internal.util.privilegedactions.GetInstancesFromS
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
@@ -42,6 +54,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ma.munisys.dao.EtatRecouvrementRepository;
 import ma.munisys.dao.EventRepository;
 import ma.munisys.dao.UserRepository;
+import ma.munisys.dto.DocumentAnalyse;
+import ma.munisys.dto.EtatEncaissement;
 import ma.munisys.dao.DocumentRepository;
 import ma.munisys.entities.AppUser;
 import ma.munisys.entities.Detail;
@@ -51,6 +65,16 @@ import ma.munisys.entities.Header;
 import ma.munisys.entities.Projet;
 import ma.munisys.entities.Document;
 import ma.munisys.utils.Constants;
+import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 @Service // spring pas javax
 @Transactional
@@ -997,4 +1021,259 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		return documentRepository.getDistinctChefProjet();
 	}
 
+	@Override
+	public Resource getReleveClient(String client) {
+		// TODO Auto-generated method stub
+		 LocalDateTime localDate = LocalDateTime.now();
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm"); 
+		 
+	        String nameFile = "releve_"+client+"_"+localDate.format(formatter)+".pdf";
+	        String outPutFile  = "rapport/"+nameFile;
+		List<Document> documentsClient = documentRepository.findAll(DocumentSpecification.isCloture(false).and(DocumentSpecification.byClient(client)));
+		
+		JRBeanCollectionDataSource jrBeanCollectionDataSource = new JRBeanCollectionDataSource(documentsClient);
+		
+		Map<String, Object> parameters = new HashMap<String,Object>();
+		parameters.put("collectionDataSource", jrBeanCollectionDataSource);	
+		parameters.put("client",client);
+		FileOutputStream fileOutputStream = null;
+		InputStream inputS =null;
+		try {
+			 inputS= new FileInputStream("rapport/releveClient.jrxml");
+			JasperDesign jD =  JRXmlLoader.load(inputS);
+			JasperReport jasperReport = JasperCompileManager.compileReport(jD);
+			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters,new JREmptyDataSource());
+			
+			
+			/* Create PDF  */
+			
+			fileOutputStream = new FileOutputStream(new File(outPutFile));
+			
+			JasperExportManager.exportReportToPdfStream(jasperPrint, fileOutputStream);
+			
+			
+			return loadFile(nameFile);
+			
+			
+		} catch (FileNotFoundException | JRException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			try {
+				if(fileOutputStream!=null)
+				fileOutputStream.close();
+				if(inputS!=null) {
+					inputS.close();
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	
+		
+	return null;
+	}
+
+	private final Path rootLocation2 = Paths.get("rapport");
+	public Resource loadFile(String filename) {
+	    try {
+	      Path file = rootLocation2.resolve(filename);
+	      Resource resource = new UrlResource(file.toUri());
+	      if (resource.exists() || resource.isReadable()) {
+	        return resource;
+	      } else {
+	        throw new RuntimeException("FAIL!");
+	      }
+	    } catch (MalformedURLException e) {
+	      throw new RuntimeException("FAIL!");
+	    }
+	  }
+
+	@Override
+	public List<DocumentAnalyse> getCountSumDocumentsByClient(Boolean cloturer, String client) {
+		// TODO Auto-generated method stub
+		return documentRepository.getCountSumDocumentsByClient(cloturer, client);
+	}
+
+	@Override
+	public Collection<Document> getDocumentByClientOnDate(Boolean cloturer, String client, int month, int year) {
+		// TODO Auto-generated method stub
+		return documentRepository.getDocumentByClientOnDate(cloturer, client, month, year);
+	}
+
+	@Override
+	public Resource getSituationDocumentsByClient(Boolean cloturer, String client) {
+		// TODO Auto-generated method stub
+				 LocalDateTime localDate = LocalDateTime.now();
+			        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm"); 
+				 
+			        String nameFile = "releveStatut_"+client+"_"+localDate.format(formatter)+".pdf";
+			        String outPutFile  = "rapport/"+nameFile;
+				List<DocumentAnalyse> documentsClientAnalyse = documentRepository.getCountSumDocumentsByClient(false, client);
+				
+				JRBeanCollectionDataSource jrBeanCollectionDataSource = new JRBeanCollectionDataSource(documentsClientAnalyse);
+				
+				Map<String, Object> parameters = new HashMap<String,Object>();
+				parameters.put("collectionDataSource", jrBeanCollectionDataSource);	
+				parameters.put("client",client);
+				FileOutputStream fileOutputStream = null;
+				InputStream inputS =null;
+				try {
+					 inputS= new FileInputStream("rapport/situationByStatut.jrxml");
+					JasperDesign jD =  JRXmlLoader.load(inputS);
+					JasperReport jasperReport = JasperCompileManager.compileReport(jD);
+					JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters,new JREmptyDataSource());
+					
+					
+					/* Create PDF  */
+					
+					 fileOutputStream = new FileOutputStream(new File(outPutFile));
+					
+					JasperExportManager.exportReportToPdfStream(jasperPrint, fileOutputStream);
+					
+					
+					return loadFile(nameFile);
+					
+					
+				} catch (FileNotFoundException | JRException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}finally {
+					try {
+						if(fileOutputStream!=null)
+						fileOutputStream.close();
+						if(inputS!=null) {
+							inputS.close();
+						}
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+			
+				
+			return null;
+	}
+
+	@Override
+	public Resource getSituationDocumentsByClient(Boolean cloturer, String client, int month, int year) {
+		// TODO Auto-generated method stub
+				 LocalDateTime localDate = LocalDateTime.now();
+			        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm"); 
+				 
+			        String nameFile = "releveSituation_"+client+"_"+localDate.format(formatter)+".pdf";
+			        String outPutFile  = "rapport/"+nameFile;
+				Collection<Document> documentsClient = documentRepository.getDocumentByClientOnDate(cloturer, client, month, year);
+				
+				JRBeanCollectionDataSource jrBeanCollectionDataSource = new JRBeanCollectionDataSource(documentsClient);
+				
+				Map<String, Object> parameters = new HashMap<String,Object>();
+				parameters.put("collectionDataSource", jrBeanCollectionDataSource);	
+				parameters.put("client",client);
+				parameters.put("Mois",month + "/"+year);
+				FileOutputStream fileOutputStream = null;
+				InputStream inputS =null;
+				try {
+					 inputS= new FileInputStream("rapport/situationEncaissement.jrxml");
+					JasperDesign jD =  JRXmlLoader.load(inputS);
+					JasperReport jasperReport = JasperCompileManager.compileReport(jD);
+					JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters,new JREmptyDataSource());
+					
+					
+					/* Create PDF  */
+					
+					 fileOutputStream = new FileOutputStream(new File(outPutFile));
+					
+					JasperExportManager.exportReportToPdfStream(jasperPrint, fileOutputStream);
+					
+					
+					return loadFile(nameFile);
+					
+					
+				} catch (FileNotFoundException | JRException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}finally {
+					try {
+						if(fileOutputStream!=null)
+						fileOutputStream.close();
+						if(inputS!=null) {
+							inputS.close();
+						}
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+			
+				
+			return null;
+	}
+
+	@Override
+	public Collection<EtatEncaissement> getEncaissementNextMonth() {
+		return documentRepository.getEncaissemenForNextMonths();
+	}
+	
+	@Override
+	public Resource getRapportEncaissementNextMonths() {
+		// TODO Auto-generated method stub
+		 LocalDateTime localDate = LocalDateTime.now();
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm"); 
+		 
+	        String nameFile = "EtatEncaissementsPrevu_"+localDate.format(formatter)+".pdf";
+	        String outPutFile  = "rapport/"+nameFile;
+		Collection<EtatEncaissement> etatEncaisements = getEncaissementNextMonth();
+		
+		
+		
+		JRBeanCollectionDataSource jrBeanCollectionDataSource = new JRBeanCollectionDataSource(etatEncaisements);
+		
+		Map<String, Object> parameters = new HashMap<String,Object>();
+		parameters.put("collectionDataSource", jrBeanCollectionDataSource);	
+		parameters.put("objet","Etat d'encaissement pour les 4 prochains mois");
+		
+		FileOutputStream fileOutputStream = null;
+		InputStream inputS =null;
+		try {
+			 inputS= new FileInputStream("rapport/situationEncaissementClient.jrxml");
+			JasperDesign jD =  JRXmlLoader.load(inputS);
+			JasperReport jasperReport = JasperCompileManager.compileReport(jD);
+			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters,new JREmptyDataSource());
+			
+			
+			/* Create PDF  */
+			
+			fileOutputStream = new FileOutputStream(new File(outPutFile));
+			
+			JasperExportManager.exportReportToPdfStream(jasperPrint, fileOutputStream);
+			
+			
+			return loadFile(nameFile);
+			
+			
+		} catch (FileNotFoundException | JRException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			try {
+				if(fileOutputStream!=null)
+				fileOutputStream.close();
+				if(inputS!=null) {
+					inputS.close();
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	
+		
+	return null;
+	}
 }

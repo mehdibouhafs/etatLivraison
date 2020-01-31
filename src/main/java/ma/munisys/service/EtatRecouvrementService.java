@@ -5,10 +5,14 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
 
 import ma.munisys.entities.EtatRecouvrement;
+import ma.munisys.dto.DocumentAnalyse;
+import ma.munisys.dto.EtatEncaissement;
 import ma.munisys.entities.Document;
 import ma.munisys.entities.EtatProjet;
 import ma.munisys.entities.Header;
@@ -49,6 +53,15 @@ public interface EtatRecouvrementService {
 	public Collection<Document> getDocumentsByChefProjet( Long idEtatFacture, Boolean cloturer,String codeChefProjet);
 	
 	
+	public Resource getReleveClient(String client);
+	
+	
+	public Resource getSituationDocumentsByClient(Boolean cloturer, String client);
+	
+	public Resource getSituationDocumentsByClient(Boolean cloturer, String client, int month, int year);
+		
+	
+	
 	public Collection<Document> getDocumentsByClient( Long idEtatFacture, Boolean cloturer,String codeClient);
 	
 	public void updateDocumentsFromSap( EtatRecouvrement etatRecouvrement);
@@ -68,6 +81,13 @@ public interface EtatRecouvrementService {
 	
 	public List<String> getDistinctChefProjet();
 	
+	
+	
+	public List<DocumentAnalyse> getCountSumDocumentsByClient(Boolean cloturer, String client);
+	
+	public Collection<Document> getDocumentByClientOnDate( Boolean cloturer, String client,int month, int year);
+	
+	public Collection<EtatEncaissement> getEncaissementNextMonth();
 
-
+	public Resource getRapportEncaissementNextMonths();
 }

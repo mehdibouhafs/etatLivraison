@@ -49,9 +49,9 @@ public interface EtatProjetService {
 	
 	public Projet updateProjet(String idProjet, Projet projet);
 	
-	public Projet declotureProjet(String idProjet);
+	public Projet declotureProjet(Projet idProjet);
 	
-	public Projet clotureProjet(String idProjet);
+	public Projet clotureProjet(Projet idProjet);
 	
 	public List<Projet> findAllProjetsByDateSup(Boolean cloturer, Date dateCmd);
 	

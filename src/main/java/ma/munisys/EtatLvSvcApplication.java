@@ -74,7 +74,6 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
     @Autowired
     ProduitService produitService;
     
-   
     
     public static void main(final String[] args) {
         SpringApplication.run((Class)EtatLvSvcApplication.class, args);
@@ -162,13 +161,6 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
         EtatLvSvcApplication.produitServiceStatic.loadProduitFromSap();
         System.out.println("ENDING TASK Produits CRON ");
     }
-    
-    
-    
-    
-    
-    
-    
     
     public static void loadDocumentsFromSap() {
         Set<Document> documents = new HashSet<Document>();

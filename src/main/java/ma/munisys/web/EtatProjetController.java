@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import ma.munisys.EtatLvSvcApplication;
 import ma.munisys.dao.FournisseuRepository;
 import ma.munisys.dto.Analyse;
 import ma.munisys.entities.Commentaire;
@@ -22,6 +20,7 @@ import ma.munisys.entities.Fournisseur;
 import ma.munisys.entities.Projet;
 import ma.munisys.entities.Reunion;
 import ma.munisys.service.EtatProjetService;
+import ma.munisys.service.EtatProjetService2;
 import ma.munisys.service.ReunionService;
 
 @RestController
@@ -30,6 +29,9 @@ public class EtatProjetController {
 
 	@Autowired
 	private EtatProjetService etatProjetService;
+	
+	@Autowired
+	private EtatProjetService2 etatProjetService2;
 	
 	@Autowired
 	private FournisseuRepository fournisseuRepository;
@@ -304,15 +306,15 @@ public class EtatProjetController {
 	}
 	
 	@RequestMapping(value = "/declotureProjet", method = RequestMethod.PUT)
-	public Projet declotureProjet(@RequestParam(name="codeProjet") String codeProjet) {
+	public Projet declotureProjet(@RequestBody Projet projet) {
 		
-		return etatProjetService.declotureProjet(codeProjet );
+		return etatProjetService2.declotureProjet(projet );
 	}
 	
 	@RequestMapping(value = "/clotureProjet", method = RequestMethod.PUT)
-	public Projet clotureProjet(@RequestParam(name="codeProjet") String codeProjet) {
+	public Projet clotureProjet(@RequestBody Projet projet) {
 		
-		return etatProjetService.clotureProjet(codeProjet );
+		return etatProjetService2.clotureProjet(projet );
 	}
 
 	@RequestMapping(value = "/reunions", method = RequestMethod.GET)
