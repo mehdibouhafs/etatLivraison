@@ -47,7 +47,6 @@ public class DBA {
     
     public static ResultSet request(String req) throws SQLException{
         
-        
         try {
             connect();
             Statement stmt=connection.createStatement();

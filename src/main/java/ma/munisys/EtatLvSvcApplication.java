@@ -12,6 +12,7 @@ import java.util.Date;
 
 import ma.munisys.entities.AppUser;
 import ma.munisys.entities.Authorisation;
+import ma.munisys.entities.CommandeFournisseur;
 import ma.munisys.entities.Document;
 import ma.munisys.entities.EtatProjet;
 import ma.munisys.entities.EtatRecouvrement;
@@ -31,6 +32,9 @@ import ma.munisys.service.ReunionService;
 import ma.munisys.service.StorageService;
 import ma.munisys.dao.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import ma.munisys.service.CommandeFournisseurService;
+import ma.munisys.service.ContratService;
 import ma.munisys.service.EtatProjetService;
 import ma.munisys.service.EtatRecouvrementService;
 import ma.munisys.service.ProduitService;
@@ -53,6 +57,10 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
     private static ProduitService produitServiceStatic;
     
     private static EtatRecouvrementService etatRecouvrementServiceStatic;
+    
+    private static ContratService contratServiceStatic;
+    
+    private static CommandeFournisseurService commandeFournisseurServiceStatic;
     @Autowired
     EtatProjetRepository etatProjetRepository;
     @Autowired
@@ -73,6 +81,11 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
     ServiceRepository serviceRepository;
     @Autowired
     ProduitService produitService;
+    @Autowired
+    ContratService contratService;
+    
+    @Autowired
+    CommandeFournisseurService commandeFournisseurService;
     
     
     public static void main(final String[] args) {
@@ -90,6 +103,8 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
         EtatLvSvcApplication.etatProjetServiceStatic = this.etatProjetService;
         EtatLvSvcApplication.etatRecouvrementServiceStatic = this.etatRecouvrementService;
         EtatLvSvcApplication.produitServiceStatic = this.produitService;
+        EtatLvSvcApplication.contratServiceStatic = this.contratService;
+        EtatLvSvcApplication.commandeFournisseurServiceStatic = this.commandeFournisseurService;
     }
     
     @Bean // ce bean sera utilise n'importe ou
@@ -100,6 +115,8 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
     
     public void run(final String... args) throws Exception {
         this.storageService.init();
+        //contratService.loadContratFromSap();
+       // commandeFournisseurService.loadCommandeFournisseurFromSap();
        /* 
         Service service1= new Service();
         service1.setServName("SI");
@@ -139,6 +156,21 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
         //etatProjetServiceStatic.loadProjetsFromSap();
         loadDocumentsFromSap();
         System.out.println("ENDING TASK Documents CRON ");
+    }
+    
+    
+    @Scheduled(cron = "0 0 22 * * *")
+    public static void loadCommandeFournisseur() {
+        System.out.println("STARTING TASK commande fournisseur CRON ");
+        EtatLvSvcApplication.commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();
+        System.out.println("ENDING TASK comande fournisseur CRON ");
+    }
+    
+    @Scheduled(cron = "0 0 21 * * *")
+    public static void loadContrat() {
+        System.out.println("STARTING TASK contrat fournisseur CRON ");
+        EtatLvSvcApplication.contratServiceStatic.loadContratFromSap();
+        System.out.println("ENDING TASK contrat fournisseur CRON ");
     }
     
     
