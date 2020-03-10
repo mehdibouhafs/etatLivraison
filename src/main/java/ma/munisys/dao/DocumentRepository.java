@@ -23,11 +23,9 @@ public interface DocumentRepository extends JpaRepository<Document, String>,JpaS
 	public Page<Document> getDocuments(@Param("x") Long idEtatFacture,@Param("y") Boolean cloturer,Pageable pageable);
 	
 	
+	
 	@Query("select p from Document p where p.etatRecouvrement.id = :x and p.cloture = :y order by p.client")
 	public Collection<Document> getDocuments(@Param("x") Long idEtatFacture,@Param("y") Boolean cloturer);
-	
-	
-	
 	
 	@Query("select p from Document p where p.etatRecouvrement.id = :x and p.cloture = :y and p.chargerRecouvrement =:z order by p.client")
 	public Collection<Document> getDocumentsByChargeRecouvrement(@Param("x") Long idEtatFacture,@Param("y") Boolean cloturer,@Param("z")String chargeRecouvrement);

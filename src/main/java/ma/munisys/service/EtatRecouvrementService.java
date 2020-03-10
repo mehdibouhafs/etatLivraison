@@ -31,6 +31,9 @@ public interface EtatRecouvrementService {
 	
 	public Collection<Document> getDocumentsByCommercialOrChefProjet(Long idEtatFacture, Boolean cloturer,String commercialOrChefProjet);
 	
+	public Collection<Document> getDocumentsByNumDocument(Long idEtatFacture, Boolean cloturer,String numDocument);
+	
+	
 	public void addOrUpdateEtatRecouvrement(EtatRecouvrement etatRecouvrement);
 	
 	public void addOrUpdateDocument(EtatRecouvrement etatRecouvrement,Document document);

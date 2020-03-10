@@ -1,25 +1,30 @@
 package ma.munisys.entities;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
-import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.SortNatural;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-public class Contrat implements Serializable {
+@Table(name="contrats")
+public class Contrat implements Serializable,Cloneable {
 	
 	@Id
 	private Long numContrat;
@@ -30,8 +35,12 @@ public class Contrat implements Serializable {
 	
 	private String statut;
 	
+	@Temporal(TemporalType.DATE)
+	@Column(name="du")
 	private Date du;
-	
+
+	@Temporal(TemporalType.DATE)
+	@Column(name="au")
 	private Date au;
 	
 	private String description;
@@ -48,9 +57,13 @@ public class Contrat implements Serializable {
 	
 	private Double montantContrat;
 	
+	private String periodeFacturationLabel;
+	
 	private PeriodeFacturation periodeFacturation = PeriodeFacturation.UNKNOWN;
 	
 	private OccurenceFacturation occurenceFacturation = OccurenceFacturation.UNKNOWNPERIODE;
+	
+	private String occurenceFacturationLabel;
 	
 	private Double montantValueSi;
 	
@@ -66,16 +79,64 @@ public class Contrat implements Serializable {
 	
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "contrat", cascade = { CascadeType.ALL }, orphanRemoval = true)
     @OrderBy("date DESC")
-    private Set<CommentaireContrat> commentaires;
+    private Set<CommentaireContrat> commentaires = new HashSet<CommentaireContrat>();
 	
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "contrat", cascade = { CascadeType.ALL }, orphanRemoval = true)
 	@OrderBy("du ASC")
+	@SortNatural
 	private Set<Echeance> echeances;
 	
+	@JsonIgnore
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "contrat", cascade = { CascadeType.ALL }, orphanRemoval = true)
+	@OrderBy("du ASC")
+	private Set<Facture> factures;
 	
+	
+	@ManyToMany(mappedBy = "contrats", fetch = FetchType.EAGER)
+	@OrderBy("dateEnregistrement DESC")
+	private Set<CommandeFournisseur> commandesFournisseurs;
+	
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "contrat", cascade = { CascadeType.ALL }, orphanRemoval = true)
+	private Set<Piece> pieces;
+	
+	
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "contrat", cascade = { CascadeType.ALL }, orphanRemoval = true)
+	private Set<FactureEcheance> factureEcheances;
+	
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "contrat", cascade = { CascadeType.ALL }, orphanRemoval = true)
+    private Set<ContratModel> contratsModel;
+	
+	//tables factures
+	private Double montantFactureAn;
+	
+	//tables echeance
+	private Double montantRestFactureAn;
+	
+	
+	private Double montantProvisionFactureInfAnneeEnCours;
+	
+	
+	private Double montantProvisionAFactureInfAnneeEnCours;
+	
+	
+	private boolean sousTraiter;
+	
+	@Transient
+	private Double montantAnnuel;
+	
+	private Boolean cloture;
+	
+	private Date lastUpdate;
 	
 	
 	public Contrat() {
+		this.factures = new HashSet<Facture>();
+		this.echeances = new HashSet<Echeance>();
+		this.commandesFournisseurs= new HashSet<CommandeFournisseur>();
+		this.factureEcheances = new HashSet<FactureEcheance>();
+		this.commentaires = new HashSet<CommentaireContrat>();
+		this.contratsModel = new HashSet<ContratModel>();
+		
 		
 	}
 
@@ -252,6 +313,7 @@ public class Contrat implements Serializable {
 
 
 	public void setPeriodeFacturation(PeriodeFacturation periodeFacturation) {
+		
 		this.periodeFacturation = periodeFacturation;
 	}
 
@@ -268,6 +330,7 @@ public class Contrat implements Serializable {
 
 
 	public void setOccurenceFacturation(OccurenceFacturation occurenceFacturation) {
+		
 		this.occurenceFacturation = occurenceFacturation;
 	}
 
@@ -345,6 +408,31 @@ public class Contrat implements Serializable {
 
 
 	
+
+	
+
+
+	public String getPeriodeFacturationLabel() {
+		return periodeFacturationLabel;
+	}
+
+
+
+	public void setPeriodeFacturationLabel(String periodeFacturationLabel) {
+		this.periodeFacturationLabel = periodeFacturationLabel;
+	}
+
+
+
+	public String getOccurenceFacturationLabel() {
+		return occurenceFacturationLabel;
+	}
+
+
+
+	public void setOccurenceFacturationLabel(String occurenceFacturationLabel) {
+		this.occurenceFacturationLabel = occurenceFacturationLabel;
+	}
 
 	public Set<CommentaireContrat> getCommentaires() {
 		return commentaires;
@@ -498,9 +586,9 @@ public class Contrat implements Serializable {
 
 	
 	public  Integer getMonthContrat() {
-	 Integer nbMonth = 0;
+	 Integer nbMonth = null;
 		switch(this.periodeFacturation) {
-		case ANUELLE :  nbMonth =12; break;
+		case ANNUELLE :  nbMonth =12; break;
 		case SEMESTRIELLE : nbMonth=6;break;
 		case TRIMESTRIELLE: nbMonth=3; break;
 		case MENSUELLE :nbMonth=1;break;
@@ -508,6 +596,138 @@ public class Contrat implements Serializable {
 		
 		}
 		return nbMonth;
+	}
+	
+	public  Integer getTrancheFacturationByYear() {
+		 Integer tranche = null;
+		 switch(this.getPeriodeFacturation() ) {
+			case ANNUELLE : tranche = 1; break;
+			case SEMESTRIELLE : tranche =  2;break;//Months.monthsBetween(new DateTime(this.getDu()), new DateTime(this.getAu())).getMonths() / 6; break;
+			case TRIMESTRIELLE : tranche = 4;break;//Months.monthsBetween(new DateTime(this.getDu()), new DateTime(this.getAu())).getMonths() / 3 ;break;
+			case MENSUELLE :tranche = 12;break;//Months.monthsBetween(new DateTime(this.getDu()), new DateTime(this.getAu())).getMonths(); break;
+			default :tranche = null; break;
+			
+		}
+		 return tranche;
+		}
+
+	public void setEcheances(Set<Echeance> echeances) {
+		this.echeances = echeances;
+	}
+
+	public void setCommandesFournisseurs(Set<CommandeFournisseur> commandesFournisseurs) {
+		this.commandesFournisseurs = commandesFournisseurs;
+	}
+
+	public Double getMontantFactureAn() {
+		return montantFactureAn;
+	}
+
+
+
+	public void setMontantFactureAn(Double montantFactureAn) {
+		this.montantFactureAn = montantFactureAn;
+		/*if(montantFactureAn!=null) {
+			if(this.montantContrat-montantFactureAn>0) {
+				this.montantRestFactureAn  = this.getMontantContrat()-montantFactureAn;
+			}else {
+				this.montantRestFactureAn=0.0;
+			}
+		}*/
+	}
+
+
+
+	public Double getMontantRestFactureAn() {
+		return montantRestFactureAn;
+	}
+
+
+
+	public void setMontantRestFactureAn(Double montantRestFactureAn) {
+		this.montantRestFactureAn = montantRestFactureAn;
+	}
+
+
+
+	public Double getMontantProvisionFactureInfAnneeEnCours() {
+		return montantProvisionFactureInfAnneeEnCours;
+	}
+
+
+
+	public void setMontantProvisionFactureInfAnneeEnCours(Double montantProvisionFactureInfAnneeEnCours) {
+		this.montantProvisionFactureInfAnneeEnCours = montantProvisionFactureInfAnneeEnCours;
+	}
+
+
+
+	public Double getMontantProvisionAFactureInfAnneeEnCours() {
+		return montantProvisionAFactureInfAnneeEnCours;
+	}
+
+
+
+	public void setMontantProvisionAFactureInfAnneeEnCours(Double montantProvisionAFactureInfAnneeEnCours) {
+		this.montantProvisionAFactureInfAnneeEnCours = montantProvisionAFactureInfAnneeEnCours;
+	}
+
+
+
+	@Override
+	public String toString() {
+		return "Contrat [numContrat=" + numContrat + ", codePartenaire=" + codePartenaire + ", nomPartenaire="
+				+ nomPartenaire + ", statut=" + statut + ", du=" + du + ", au=" + au + ", description=" + description
+				+ ", nomSousTraitant=" + nomSousTraitant + ", contratSigne=" + contratSigne + ", codeProjet="
+				+ codeProjet + ", numMarche=" + numMarche + ", pilote=" + pilote + ", montantContrat=" + montantContrat
+				+ ", periodeFacturationLabel=" + periodeFacturationLabel + ", periodeFacturation=" + periodeFacturation
+				+ ", occurenceFacturation=" + occurenceFacturation + ", occurenceFacturationLabel="
+				+ occurenceFacturationLabel + ", montantValueSi=" + montantValueSi + ", montantValueRs="
+				+ montantValueRs + ", montantValueSw=" + montantValueSw + ", montantVolume=" + montantVolume
+				+ ", montantCablage=" + montantCablage + ", montantAssitanceAn=" + montantAssitanceAn
+				+ ", commentaires=" + commentaires + ", echeances=" + echeances + ", factures=" + factures
+				+ ", commandesFournisseurs=" + commandesFournisseurs + ", pieces=" + pieces + ", factureEcheances="
+				+ factureEcheances + ", montantFactureAn=" + montantFactureAn + ", montantRestFactureAn="
+				+ montantRestFactureAn + ", montantProvisionFactureInfAnneeEnCours="
+				+ montantProvisionFactureInfAnneeEnCours + ", montantProvisionAFactureInfAnneeEnCours="
+				+ montantProvisionAFactureInfAnneeEnCours + ", sousTraiter=" + sousTraiter + ", montantAnnuel="
+				+ montantAnnuel + ", cloture=" + cloture + ", lastUpdate=" + lastUpdate + "]";
+	}
+
+
+
+	public boolean isSousTraiter() {
+		return sousTraiter;
+	}
+
+
+
+	public void setSousTraiter(boolean sousTraiter) {
+		this.sousTraiter = sousTraiter;
+	}
+
+
+
+	public Double getMontantAnnuel() {
+		return montantAnnuel;
+	}
+
+
+
+	public void setMontantAnnuel(Double montantAnnuel) {
+		this.montantAnnuel = montantAnnuel;
+	}
+
+
+
+	public Boolean getCloture() {
+		return cloture;
+	}
+
+
+
+	public void setCloture(Boolean cloture) {
+		this.cloture = cloture;
 	}
 
 
@@ -518,9 +738,91 @@ public class Contrat implements Serializable {
 
 
 
-	public void setEcheances(Set<Echeance> echeances) {
-		this.echeances = echeances;
+	public Set<CommandeFournisseur> getCommandesFournisseurs() {
+		return commandesFournisseurs;
 	}
+
+
+	@JsonIgnore
+	public Set<Facture> getFactures() {
+		return factures;
+	}
+
+
+
+	public void setFactures(Set<Facture> factures) {
+		this.factures = factures;
+	}
+
+
+	
+	public Set<FactureEcheance> getFactureEcheances() {
+		return factureEcheances;
+	}
+
+
+
+	public void setFactureEcheances(Set<FactureEcheance> factureEcheances) {
+		this.factureEcheances = factureEcheances;
+	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		// TODO Auto-generated method stub
+		return (Contrat)super.clone();
+	}
+
+
+
+	public Set<Piece> getPieces() {
+		return pieces;
+	}
+
+
+
+	public void setPieces(Set<Piece> pieces) {
+		this.pieces = pieces;
+	}
+
+
+
+	public Date getLastUpdate() {
+		return lastUpdate;
+	}
+
+
+
+	public void setLastUpdate(Date lastUpdate) {
+		this.lastUpdate = lastUpdate;
+	}
+	
+	@JsonIgnore
+	public Set<ContratModel> getContratsModel() {
+		return contratsModel;
+	}
+
+
+
+	public void setContratsModel(Set<ContratModel> contratsModel) {
+		this.contratsModel = contratsModel;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+
+	
+	
+	
+	
+	
+	
 	
 	
 

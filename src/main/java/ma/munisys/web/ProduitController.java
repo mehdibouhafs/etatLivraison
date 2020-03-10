@@ -3,6 +3,8 @@ package ma.munisys.web;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -29,9 +31,14 @@ import ma.munisys.service.ReunionService;
 @RestController
 @CrossOrigin(origins = "*")
 public class ProduitController {
+	
+	private static final Logger LOGGER = LogManager.getLogger(ProduitController.class);
 
 	@Autowired
 	private ProduitService produitService;
+	
+	@Autowired
+	private EtatProjetService etatProjetService;
 	
 	@Autowired
 	private ProduitRepository produitRepository;
@@ -52,7 +59,7 @@ public class ProduitController {
 	public Produit updateProduits(@RequestBody Produit produit) {
 
 		
-
+		if(produit.getCommentaires()!=null)
 		for (CommentaireProduit c : produit.getCommentaires()) {
 			c.setProduit(produit);
 		}
@@ -74,6 +81,7 @@ public class ProduitController {
 
 	@RequestMapping(value = "/refreshProduit", method = RequestMethod.GET)
 	public String refreshProduits() {
+		etatProjetService.loadProjetsFromSap();
 		produitService.loadProduitFromSap();
 		return "{'statut':'ok'}";
 	}

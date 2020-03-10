@@ -295,7 +295,7 @@ public class Projet implements Serializable
                 }
                 case "Mnt CMD": {
                     if (detail.getValue() != null && !detail.getValue().isEmpty()) {
-                        System.out.println("mnt cmd " + this.convertToMontant(detail.getValue()));
+                        //System.out.println("mnt cmd " + this.convertToMontant(detail.getValue()));
                     }
                     this.montantCmd = Double.parseDouble(this.convertToMontant(detail.getValue()));
                     break;
@@ -318,7 +318,7 @@ public class Projet implements Serializable
                 }
                 case "Age (mois)": {
                     if (detail.getValue() != null && !detail.getValue().isEmpty()) {
-                        System.out.println("age " + detail.getValue());
+                       // System.out.println("age " + detail.getValue());
                         this.age = Double.parseDouble(this.convertToMontant(detail.getValue()));
                         break;
                     }
@@ -361,13 +361,13 @@ public class Projet implements Serializable
                     break;
                 }
                 default: {
-                    System.out.println("column not managed " + detail.getHeader().getLabel());
+                   // System.out.println("column not managed " + detail.getHeader().getLabel());
                     break;
                 }
             }
         }
         catch (Exception e) {
-            System.out.println(e.getMessage());
+           // System.out.println(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -379,7 +379,7 @@ public class Projet implements Serializable
                 dateRes = new SimpleDateFormat("dd/MM/yy").parse(date);
             }
             catch (ParseException e) {
-                System.out.println(e.getMessage());
+               // System.out.println(e.getMessage());
             }
         }
         return dateRes;

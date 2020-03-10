@@ -25,9 +25,9 @@ public class UserDetailServiceImpl implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		AppUser user = accountService.findUserByUsername(username);
-		System.out.println("User " + user.toString());
+		//System.out.println("User " + user.toString());
 		if(user == null) throw new UsernameNotFoundException(username);
-		System.out.println("user profiles " +accountService.findProfilesByUsers(username));
+		//System.out.println("user profiles " +accountService.findProfilesByUsers(username));
 		
 		Collection<GrantedAuthority> authorities = new ArrayList<>();
 		

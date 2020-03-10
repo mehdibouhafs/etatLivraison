@@ -49,6 +49,12 @@ public class DocumentSpecification {
 	     };
 	  }
 	
+	public static Specification<Document> byNumDocument(String codePiece) {
+	     return (root, query, cb) -> {
+	         return cb.equal(root.get("numPiece"), codePiece);
+	     };
+	  }
+	
 	public static Specification<Document> byAnnee(String anneePiece) {
 	     return (root, query, cb) -> {
 	         return cb.equal(root.get("anneePiece"), anneePiece);

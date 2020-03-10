@@ -25,7 +25,7 @@ public class ProjetService2 implements EtatProjetService2 {
 		
 		//int i = projetRepository.updateStatutProjet(false, false, true, p.getCodeProjet());
 		
-		//System.out.println("i " + i);
+		////System.out.println("i " + i);
 		
 		Projet p =projetRepository.findById(c.getCodeProjet()).get();
 		p.setCloture(false);
@@ -58,7 +58,7 @@ public class ProjetService2 implements EtatProjetService2 {
 		p.setLivreFacturePayer(p.getMontantCmd());
 		return projetRepository.save(p);
 		//projetRepository.flush();
-		//System.out.println("cloture projet " + c.isCloture());
+		////System.out.println("cloture projet " + c.isCloture());
 		//return c;
 	
 	}

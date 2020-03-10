@@ -1,10 +1,14 @@
 package ma.munisys.web;
 
+import java.security.Principal;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +30,9 @@ import ma.munisys.service.ReunionService;
 @RestController
 @CrossOrigin(origins = "*")
 public class EtatProjetController {
+	
+	private static final Logger LOGGER = LogManager.getLogger(EtatProjetController.class);
+	
 
 	@Autowired
 	private EtatProjetService etatProjetService;
@@ -292,8 +299,8 @@ public class EtatProjetController {
 	 */
 
 	@RequestMapping(value = "/projets", method = RequestMethod.PUT)
-	public Projet updateProjets(@RequestBody Projet projet) {
-
+	public Projet updateProjets(@RequestBody Projet projet,Authentication authentication) {
+		LOGGER.info("Updatating projet " + projet.getCodeProjet() + " by "+ authentication.getName());
 		EtatProjet etatProjet = new EtatProjet();
 		etatProjet.setId(1L);
 		projet.setEtatProjet(etatProjet);
@@ -306,19 +313,19 @@ public class EtatProjetController {
 	}
 	
 	@RequestMapping(value = "/declotureProjet", method = RequestMethod.PUT)
-	public Projet declotureProjet(@RequestBody Projet projet) {
+	public Projet declotureProjet(@RequestBody Projet projet,Authentication authentication) {
 		
 		return etatProjetService2.declotureProjet(projet );
 	}
 	
 	@RequestMapping(value = "/clotureProjet", method = RequestMethod.PUT)
-	public Projet clotureProjet(@RequestBody Projet projet) {
+	public Projet clotureProjet(@RequestBody Projet projet,Authentication authentication) {
 		
 		return etatProjetService2.clotureProjet(projet );
 	}
 
 	@RequestMapping(value = "/reunions", method = RequestMethod.GET)
-	public Collection<Reunion> getAllReunions() {
+	public Collection<Reunion> getAllReunions(Authentication authentication) {
 		return reunionService.getAllReunions();
 	}
 	
@@ -333,19 +340,22 @@ public class EtatProjetController {
 	}
 
 	@RequestMapping(value = "/reunions/{idReunion}", method = RequestMethod.DELETE)
-	public void deleteReunion(@PathVariable("idReunion") String idReunion) {
+	public void deleteReunion(@PathVariable("idReunion") String idReunion,Authentication authentication) {
+		LOGGER.info("Request for deleting reunion  by" +authentication.getName() );
 		Long idReunion2 = Long.parseLong(idReunion);
 		reunionService.deleteReunion(idReunion2);
 	}
 
 	@RequestMapping(value = "/reunions/{idReunion}", method = RequestMethod.PUT)
-	public Reunion modifierReunion(@PathVariable("idReunion") String idReunion, @RequestBody Reunion reunion) {
+	public Reunion modifierReunion(@PathVariable("idReunion") String idReunion, @RequestBody Reunion reunion, Authentication authentication) {
+		LOGGER.info("Request for updating reunion  by" +authentication.getName() );
 		Long idReunion2 = Long.parseLong(idReunion);
 		return reunionService.modifierReunion(idReunion2, reunion);
 	}
 
 	@RequestMapping(value = "/refreshProjets", method = RequestMethod.GET)
-	public String refreshProjects() {
+	public String refreshProjects(Authentication authentication) {
+		LOGGER.info("Request for refresh projects sap  by" +authentication.getName() );
 		etatProjetService.loadProjetsFromSap();
 		return "{'statut':'ok'}";
 	}

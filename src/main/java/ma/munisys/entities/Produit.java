@@ -1,6 +1,7 @@
 package ma.munisys.entities;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -79,7 +80,7 @@ public class Produit {
 	private AppUser updatedBy;
 
 	public Produit() {
-		super();
+		this.commentaires = new HashSet<CommentaireProduit>();
 	}
 
 	public String getId() {

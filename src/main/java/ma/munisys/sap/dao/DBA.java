@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.ResourceBundle.Control;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,12 +27,13 @@ public class DBA {
     static ResultSet result=null;
     public static Connection connect(){
         
-        
-        //ResourceBundle bundle= ResourceBundle.getBundle("configuration.config",locale);
-        String host = "130.24.31.12";
-        database = "DB_MUNISYS";
-        String login = Encryption.decrypt("FLFGRZ");
-        String password =Encryption.decrypt("Nqzva2015");
+        Locale locale = new Locale("en", "US");
+		ResourceBundle bundle= ResourceBundle.getBundle("config",locale);
+        //String host = "130.24.31.4";
+		String host = bundle.getString("Host");
+        database = bundle.getString("Database");
+        String login = Encryption.decrypt(bundle.getString("Login"));
+        String password =Encryption.decrypt(bundle.getString("Password"));
        
         try {
         	 Class.forName("com.sap.db.jdbc.Driver");

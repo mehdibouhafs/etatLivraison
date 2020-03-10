@@ -25,7 +25,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		
-		System.out.println("Before");
+		//System.out.println("Before");
 		
 		response.addHeader("Access-Control-Allow-Origin", "*");
 		response.addHeader("Access-Control-Allow-Headers", "Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers,authorization");
@@ -39,8 +39,8 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 				if(request.getParameter("token")!=null) {
 					response.addHeader("Access-Control-Allow-Credentials", "true");
 					String jwt = request.getParameter("token");
-					System.out.println("request with token " + jwt);
-					System.out.println("JWT " + jwt);
+					//System.out.println("request with token " + jwt);
+					//System.out.println("JWT " + jwt);
 					if(jwt==null || !jwt.startsWith(SecurityConstants.TOKEN_PREFIX)) {
 						filterChain.doFilter(request, response); return;
 					}else {
@@ -68,7 +68,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 					}else {
 			
 			String jwt = request.getHeader(SecurityConstants.HEADER_STRING);
-			System.out.println("JWT " + jwt);
+			//System.out.println("JWT " + jwt);
 			if(jwt==null || !jwt.startsWith(SecurityConstants.TOKEN_PREFIX)) {
 				filterChain.doFilter(request, response); return;
 			}else {

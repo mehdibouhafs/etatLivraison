@@ -18,6 +18,8 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.OneToOne;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -31,8 +33,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.util.FileSystemUtils;
@@ -50,7 +50,8 @@ import ma.munisys.entities.Projet;
 @Service
 public class StorageServiceImpl {
   
-  Logger log = LoggerFactory.getLogger(this.getClass().getName());
+	private static final Logger LOGGER = LogManager.getLogger(StorageServiceImpl.class);
+	
   private final Path rootLocation = Paths.get("upload-dir");
  
   public String store(MultipartFile file) {
@@ -126,8 +127,8 @@ public class StorageServiceImpl {
      String[] columnsComment = {"codeProjet","commentaire","date","utilisateur"};*/
      
      
-     String[] columns = {"N°Document","Type document","Age Document","Date Document","Client)",
-         "Code Projet","Projet","Commercial","chefProjet","Mnt Piéce","Mnt ouvert",
+     String[] columns = {"N°Document","Date Document","Client","Ref Client","Mnt Piéce","Mnt ouvert","Type document","Age Document",
+         "Code Projet","Projet","Commercial","chefProjet",
          "Age","Chargé recouvrement ","Montant Payé","Condition Paiement",
          "Caution","N°Caution","Type Caution","Montant Caution",
          "Date libération caution","Statut","Motif","Montant Garantie",
@@ -161,104 +162,104 @@ public class StorageServiceImpl {
 
          Cell cell0 = row.createCell(0);
          if(document.getNumPiece()!=null)
-        cell0.setCellValue(document.getNumPiece());
+        cell0.setCellValue(document.getNumPiece()); 
 
-         Cell cell1 = row.createCell(1);
-         if(document.getTypeDocument()!=null)
-         cell1.setCellValue(document.getTypeDocument());
-         
-         Cell cell2 =  row.createCell(2);
-        cell2.setCellValue(document.getAgePiece());
-         
-         Cell cell3= row.createCell(3);
+            Cell cell1= row.createCell(1);
          if(document.getDatePiece()!=null)
-        cell3.setCellValue(df.format(document.getDatePiece()));
-         
-         Cell cell4=  row.createCell(4);
+        cell1.setCellValue(df.format(document.getDatePiece())); 
+
+         Cell cell2=  row.createCell(2);
          if(document.getClient()!=null)
-        cell4 .setCellValue(document.getClient());
+        cell2 .setCellValue(document.getClient());
+
+        Cell cell3=  row.createCell(3);
+         if(document.getRefClient()!=null)
+        cell3 .setCellValue(document.getRefClient());
+
+         Cell cell4 = row.createCell(4);
+         cell4.setCellType(CellType.NUMERIC);
+         if(document.getMontantPiece()!=null)
+         cell4.setCellValue(document.getMontantPiece());
          
-         Cell cell5 = row.createCell(5);
-         if(document.getCodeProjet()!=null)
-         cell5.setCellValue(document.getCodeProjet());
+         Cell cell5= row.createCell(5);
+         cell5.setCellType(CellType.NUMERIC);
+         if(document.getMontantOuvert()!=null)
+         cell5.setCellValue(document.getMontantOuvert());
+
+         Cell cell6 = row.createCell(6);
+         if(document.getTypeDocument()!=null)
+         cell6.setCellValue(document.getTypeDocument());// 2
          
-         Cell cell6  =row.createCell(6);
-         if(document.getProjet()!=null)
-         cell6.setCellValue(document.getProjet());
+         Cell cell7 =  row.createCell(7);
+        cell7.setCellValue(document.getAgePiece()); // 3
          
-         Cell cell7 =row.createCell(7);
-       
-         if(document.getCommercial()!=null)
-           cell7.setCellValue(document.getCommercial());
          
          Cell cell8 = row.createCell(8);
-         if(document.getChefProjet()!=null)
-         cell8.setCellValue(document.getChefProjet());
+         if(document.getCodeProjet()!=null)
+         cell8.setCellValue(document.getCodeProjet());
          
-         Cell cell9 = row.createCell(9);
+         Cell cell9  =row.createCell(9);
+         if(document.getProjet()!=null)
+         cell9.setCellValue(document.getProjet());
          
-         if(document.getMontantPiece()!=null)
-         cell9.setCellType(CellType.NUMERIC);
-         cell9.setCellValue(document.getMontantPiece());
-         
-         Cell cell10= row.createCell(10);
-         cell10.setCellType(CellType.NUMERIC);
-         if(document.getMontantOuvert()!=null)
-         cell10.setCellValue(document.getMontantOuvert());
-        
+         Cell cell10 =row.createCell(10);
+         if(document.getCommercial()!=null)
+          cell10.setCellValue(document.getCommercial());
          
          Cell cell11 = row.createCell(11);
-         if(document.getAge()!=null)
-         cell11.setCellValue(document.getAge());
-         
+         if(document.getChefProjet()!=null)
+         cell11.setCellValue(document.getChefProjet());
+                 
          
          Cell cell12 = row.createCell(12);
-         if(document.getChargerRecouvrement()!=null)
-         cell12.setCellValue(document.getChargerRecouvrement());
+         if(document.getAge()!=null)
+         cell12.setCellValue(document.getAge());
+         
          
          Cell cell13 = row.createCell(13);
-         cell13.setCellType(CellType.NUMERIC);
-         if(document.getMontantPayer()!=null)
-         cell13.setCellValue(document.getMontantPayer());
+         if(document.getChargerRecouvrement()!=null)
+         cell13.setCellValue(document.getChargerRecouvrement());
          
          Cell cell14 = row.createCell(14);
-         if(document.getConditionDePaiement()!=null)
-         cell14.setCellValue(document.getConditionDePaiement());
+         cell14.setCellType(CellType.NUMERIC);
+         if(document.getMontantPayer()!=null)
+         cell14.setCellValue(document.getMontantPayer());
          
          Cell cell15 = row.createCell(15);
-         cell15.setCellType(CellType.BOOLEAN);
-         cell15.setCellValue(document.isCaution());
+         if(document.getConditionDePaiement()!=null)
+         cell15.setCellValue(document.getConditionDePaiement());
          
-         Cell cell16 =row.createCell(16);
+         Cell cell16 = row.createCell(16);
+         cell16.setCellType(CellType.BOOLEAN);
+         cell16.setCellValue(document.isCaution());
+         
+         Cell cell17 =row.createCell(17);
          if(document.getNumCaution()!=null)
-         cell16.setCellValue(document.getNumCaution());
+         cell17.setCellValue(document.getNumCaution());
          
          
-         
-         Cell cell17 = row.createCell(17);
-         if(document.getTypeCaution()!=null)
-         cell17.setCellValue(document.getTypeCaution());
          
          Cell cell18 = row.createCell(18);
-         cell18.setCellType(CellType.NUMERIC);
-         if(document.getMontantCaution()!=null)
-         cell18.setCellValue(document.getMontantCaution());
+         if(document.getTypeCaution()!=null)
+         cell18.setCellValue(document.getTypeCaution());
          
          Cell cell19 = row.createCell(19);
-         if(document.getDateLiberationCaution()!=null)
-         cell19.setCellValue(df.format(document.getDateLiberationCaution()));
+         cell19.setCellType(CellType.NUMERIC);
+         if(document.getMontantCaution()!=null)
+         cell19.setCellValue(document.getMontantCaution());
          
          Cell cell20 = row.createCell(20);
-         if(document.getStatut()!=null)
-         cell20.setCellValue(document.getStatut());
+         if(document.getDateLiberationCaution()!=null)
+         cell20.setCellValue(df.format(document.getDateLiberationCaution()));
          
          Cell cell21 = row.createCell(21);
          if(document.getStatut()!=null)
          cell21.setCellValue(document.getStatut());
          
          Cell cell22 = row.createCell(22);
-         if(document.getMotif() !=null)
+         if(document.getMotif()!=null)
          cell22.setCellValue(document.getMotif());
+         
          
          Cell cell23 = row.createCell(23);
          cell23.setCellType(CellType.NUMERIC);
@@ -539,34 +540,41 @@ public class StorageServiceImpl {
         
         
         cell115.setCellValue(produit.getBu());
-        
+
+
+
         Cell cell116 = row.createCell(16);
         cell116.setCellType(CellType.NUMERIC);
-        
-        cell116.setCellValue(produit.getMontant());
-        
+        cell116.setCellValue(produit.getQte());
+
         
         Cell cell117 = row.createCell(17);
+        cell117.setCellType(CellType.NUMERIC);
         
-        if(produit.getCommentaireArtcileProjet()!=null)
-        cell117.setCellValue(produit.getCommentaireArtcileProjet());
+        cell117.setCellValue(produit.getMontant());
+        
         
         Cell cell118 = row.createCell(18);
         
-        if(produit.getCommentaireLot()!=null)
-        cell118.setCellValue(produit.getCommentaireLot());
+        if(produit.getCommentaireArtcileProjet()!=null)
+        cell118.setCellValue(produit.getCommentaireArtcileProjet());
         
         Cell cell119 = row.createCell(19);
         
+        if(produit.getCommentaireLot()!=null)
+        cell119.setCellValue(produit.getCommentaireLot());
+        
+        Cell cell120 = row.createCell(20);
+        
         if(produit.getCommentaireReference()!=null)
-        cell119.setCellValue(produit.getCommentaireReference());
+        cell120.setCellValue(produit.getCommentaireReference());
         
         
         
         
         
          
-         Cell cell33 = row.createCell(20);
+         Cell cell121 = row.createCell(21);
          
          
       // Create an instance of SimpleDateFormat used for formatting 
@@ -592,8 +600,8 @@ public class StorageServiceImpl {
            
            XSSFRichTextString richString = new XSSFRichTextString(s.toString());
            
-           cell33.setCellType(CellType.STRING);
-           cell33.setCellValue(richString);
+           cell121.setCellType(CellType.STRING);
+           cell121.setCellValue(richString);
         
          
          }
@@ -601,7 +609,7 @@ public class StorageServiceImpl {
          //to enable newlines you need set a cell styles with wrap=true
          CellStyle cs = workbook.createCellStyle();
          cs.setWrapText(true);
-         cell33.setCellStyle(cs);
+         cell121.setCellStyle(cs);
          
     
         
@@ -708,154 +716,154 @@ public class StorageServiceImpl {
 
       Cell cell0 = row.createCell(0);
       if(projet.getCodeProjet()!=null)
-     cell0.setCellValue(projet.getCodeProjet());
+     cell0.setCellValue(projet.getCodeProjet()); //Code Projet
 
       Cell cell1 = row.createCell(1);
       if(projet.getProjet()!=null)
-      cell1.setCellValue(projet.getProjet());
+      cell1.setCellValue(projet.getProjet()); //Projet
       
       Cell cell2 =  row.createCell(2);
       if(projet.getDateCmd()!=null)
-     cell2.setCellValue(df.format(projet.getDateCmd()));
+     cell2.setCellValue(df.format(projet.getDateCmd()));//Date CMD
       
       Cell cell3= row.createCell(3);
       if(projet.getRefCom()!=null)
-     cell3.setCellValue(projet.getRefCom());
+     cell3.setCellValue(projet.getRefCom());//Ref.COM
       
       Cell cell4=  row.createCell(4);
       
-     cell4 .setCellValue(projet.getAge());
+     cell4 .setCellValue(projet.getAge());//Age (mois)
       
       Cell cell5 = row.createCell(5);
       if(projet.getCodeClient()!=null)
-      cell5.setCellValue(projet.getCodeClient());
+      cell5.setCellValue(projet.getCodeClient());//Code Client
       
       Cell cell6  =row.createCell(6);
       if(projet.getClient()!=null)
-     		 cell6.setCellValue(projet.getClient());
+     		 cell6.setCellValue(projet.getClient());//client
       
       Cell cell7 =row.createCell(7);
     
       if(projet.getCommercial()!=null)
-     	 cell7.setCellValue(projet.getCommercial());
+     	 cell7.setCellValue(projet.getCommercial());//commercial
       
       Cell cell8 = row.createCell(8);
-      cell8.setCellValue(projet.getChefProjet());
+      cell8.setCellValue(projet.getChefProjet());//chefprojet
       
       Cell cell9 = row.createCell(9);
       if(projet.getBu()!=null)
-      cell9.setCellValue(projet.getBu());
+      cell9.setCellValue(projet.getBu());// bu
       
       Cell cell10= row.createCell(10);
       cell10.setCellType(CellType.NUMERIC);
       if(projet.getMontantCmd()!=null)
-      cell10.setCellValue(projet.getMontantCmd());
+      cell10.setCellValue(projet.getMontantCmd()); // mnt cmd
      
       
       Cell cell11 = row.createCell(11);
       cell11.setCellType(CellType.NUMERIC);
       if(projet.getRestAlivrer()!=null)
-      cell11.setCellValue(projet.getRestAlivrer());
+      cell11.setCellValue(projet.getRestAlivrer());//ral
       
       
       Cell cell12 = row.createCell(12);
       cell12.setCellType(CellType.NUMERIC);
       if(projet.getLivrer()!=null)
-      cell12.setCellValue(projet.getLivrer());
+      cell12.setCellValue(projet.getLivrer());//liv
       
       Cell cell13 = row.createCell(13);
       cell13.setCellType(CellType.NUMERIC);
       if(projet.getLivrerNonFacture()!=null)
-      cell13.setCellValue(projet.getLivrerNonFacture());
+      cell13.setCellValue(projet.getLivrerNonFacture());// lnf
       
       Cell cell14 = row.createCell(14);
       cell14.setCellType(CellType.NUMERIC);
-      cell14.setCellValue(projet.getLivreFacturePayer());
+      cell14.setCellValue(projet.getLivreFacturePayer());// lfp
       
       Cell cell15 = row.createCell(15);
       cell15.setCellType(CellType.NUMERIC);
       if(projet.getMontantPayer()!=null)
-      cell15.setCellValue(projet.getMontantPayer());
+      cell15.setCellValue(projet.getMontantPayer());//mont paye
       
       
       
       Cell cell16 =row.createCell(16);
       if(projet.getFacturation()!=null)
       cell16.setCellType(CellType.NUMERIC);
-      cell16.setCellValue(projet.getFacturation());
+      cell16.setCellValue(projet.getFacturation());// facturation
       
       
       
       Cell cell17 = row.createCell(17);
       if(projet.getPrestationCommande()!=null)
-      cell17.setCellValue(projet.getPrestationCommande());
+      cell17.setCellValue(projet.getPrestationCommande());// prestation cmmd
       
       Cell cell18 = row.createCell(18);
       if(projet.getRalJrsPrestCalc()!=null)
-      cell18.setCellValue(projet.getRalJrsPrestCalc());
+      cell18.setCellValue(projet.getRalJrsPrestCalc());//RAL JRS PREST CALC
       
       Cell cell19 = row.createCell(19);
       if(projet.getFactEncours()!=null)
-      cell19.setCellValue(projet.getFactEncours());
+      cell19.setCellValue(projet.getFactEncours()); //Fact EC
       
       Cell cell20 = row.createCell(20);
       if(projet.getRisque()!=null)
-      cell20.setCellValue(projet.getRisque());
+      cell20.setCellValue(projet.getRisque()); // Risque
       
       Cell cell21 = row.createCell(21);
       if(projet.getMaintenance()!=null)
-      cell21.setCellValue(projet.getMaintenance());
+      cell21.setCellValue(projet.getMaintenance()); // maint
       
       Cell cell22 = row.createCell(22);
       if(projet.getDateFinProjet() !=null)
-      cell22.setCellValue(df.format(projet.getDateFinProjet()));
+      cell22.setCellValue(df.format(projet.getDateFinProjet())); // dateFinProjet
       
       Cell cell23 = row.createCell(23);
       if(projet.getCondPaiement() !=null)
-      cell23.setCellValue(projet.getCondPaiement());
+      cell23.setCellValue(projet.getCondPaiement());// condPaiement
       
       Cell cell24 = row.createCell(24);
       if(projet.getPreRequis() !=null)
-     cell24.setCellValue(projet.getPreRequis());
+     cell24.setCellValue(projet.getPreRequis()); //Prérequis
       
      Cell cell25= row.createCell(25);
      if(projet.getLivraison() !=null)
-     cell25.setCellValue(projet.getLivraison());
+     cell25.setCellValue(projet.getLivraison()); // livrasion
       
       
       Cell cell26 = row.createCell(26);
       if(projet.getAction() !=null)
-      cell26.setCellValue(projet.getAction());
+      cell26.setCellValue(projet.getAction()); // action
       
       Cell cell27 = row.createCell(27);
       if(projet.getGarantie() != null)
-      cell27.setCellValue(projet.getGarantie());
+      cell27.setCellValue(projet.getGarantie()); // garantie
       
      
       
       Cell cell28 = row.createCell(28);
       if(projet.getSyntheseProjet() != null)
-      cell28.setCellValue(projet.getSyntheseProjet());
+      cell28.setCellValue(projet.getSyntheseProjet());//synthseprojet
       
       Cell cell29 = row.createCell(29);
       if(projet.getAvantVente() != null) {
-     	 cell29.setCellValue(projet.getAvantVente());
+     	 cell29.setCellValue(projet.getAvantVente()); // avantVente
       }
      
      Cell cell30 = row.createCell(30);
      if(projet.getPerimetreProjet()!=null)
-      cell30.setCellValue(projet.getPerimetreProjet());
+      cell30.setCellValue(projet.getPerimetreProjet()); // perimetreprojet
       
       Cell cell31 = row.createCell(31);
       if(projet.getIntervenantPrincipal() !=null)
-      cell31.setCellValue(projet.getIntervenantPrincipal());
+      cell31.setCellValue(projet.getIntervenantPrincipal()); //Intervenant Principal
       
       Cell cell32 = row.createCell(32);
       cell32.setCellType(CellType.BOOLEAN);
       if(projet.getSuivre() == null) {
      	 cell32.setCellValue(false);
       }else {
-     	 cell32.setCellValue(projet.getSuivre());
+     	 cell32.setCellValue(projet.getSuivre());// ne plus suivre
       }
       
       Cell cell33 = row.createCell(33);
@@ -885,7 +893,7 @@ public class StorageServiceImpl {
 	         XSSFRichTextString richString = new XSSFRichTextString(s.toString());
 	         
 	         cell33.setCellType(CellType.STRING);
-	         cell33.setCellValue(richString);
+	         cell33.setCellValue(richString); // commentaires
 	      
       
       }
@@ -898,7 +906,7 @@ public class StorageServiceImpl {
       Cell cell34 = row.createCell(34);
       cell34.setCellType(CellType.NUMERIC);
       if(projet.getMontantStock()!=null)
-      cell34.setCellValue(projet.getMontantStock());
+      cell34.setCellValue(projet.getMontantStock()); // montantStock
       
  
      

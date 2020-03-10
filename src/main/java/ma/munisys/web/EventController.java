@@ -4,6 +4,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +21,8 @@ import ma.munisys.service.EventService;
 @RestController
 @CrossOrigin(origins="*")
 public class EventController {
+	
+	private static final Logger LOGGER = LogManager.getLogger(EventController.class);
 	
 	@Autowired
 	private EventService eventService;

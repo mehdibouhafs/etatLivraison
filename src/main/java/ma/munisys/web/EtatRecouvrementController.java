@@ -11,6 +11,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.util.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -18,6 +20,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +40,9 @@ import ma.munisys.service.EtatRecouvrementService;
 @RestController
 @CrossOrigin(origins="*")
 public class EtatRecouvrementController {
+	
+	private static final Logger LOGGER = LogManager.getLogger(EtatRecouvrementController.class);
+	
 	
 	@Autowired
 	private EtatRecouvrementService etatRecouvrementService;
@@ -72,6 +78,11 @@ public class EtatRecouvrementController {
 			 @RequestParam(name="commercialOrChefProjet") String commercialOrChefProjet) {
 		return etatRecouvrementService.getDocumentsByCommercialOrChefProjet(idEtatFacture, cloturer,
 				commercialOrChefProjet);
+	}
+	
+	@RequestMapping(value="/getDocumentsByNumDocument",method=RequestMethod.GET)
+	public Collection<Document> getDocumentsByNumDocument(@RequestParam(name="idEtatRecouvrement",defaultValue="1") Long idEtatFacture,@RequestParam(name="cloturer",defaultValue="false")  Boolean cloturer,@RequestParam(name="numDocument")  String numDocument) {
+		return etatRecouvrementService.getDocumentsByNumDocument(idEtatFacture, cloturer, numDocument);
 	}
 
 	@RequestMapping(value="/getDocumentsByChargeRecouvrement",method=RequestMethod.GET)
@@ -116,7 +127,7 @@ public class EtatRecouvrementController {
 	}
 	
 	@RequestMapping(value="/documents",method=RequestMethod.PUT)
-	public Document updateDocuments(@RequestBody Document document) {
+	public Document updateDocuments(@RequestBody Document document,Authentication authentication) {
 		
 		EtatRecouvrement etatRecouvrement = new EtatRecouvrement();
 		etatRecouvrement.setId(1L);
@@ -131,7 +142,7 @@ public class EtatRecouvrementController {
 	
 	
 	@RequestMapping(value="/refreshDocuments",method=RequestMethod.GET)
-	public String refreshProjects() {
+	public String refreshProjects(Authentication authentication) {
 		EtatLvSvcApplication.loadDocumentsFromSap();
 		return  "ok";
 	}
@@ -140,7 +151,7 @@ public class EtatRecouvrementController {
 	
 	@RequestMapping("/exportReleveClient")
 	@ResponseBody
-	public void exportDocumentsExcel(HttpServletResponse response,@RequestParam(name="client") String client)  {
+	public void exportDocumentsExcel(Authentication authentication,HttpServletResponse response,@RequestParam(name="client") String client)  {
 		     
 	   
 	      Resource file =  etatRecouvrementService.getReleveClient(client);

@@ -22,6 +22,8 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.jfree.util.Log;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
@@ -265,7 +267,6 @@ public class Document implements Serializable {
 				
 			}
 		}catch(Exception e ) {
-			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
 		
@@ -279,7 +280,7 @@ public class Document implements Serializable {
 			try {
 				dateRes = new SimpleDateFormat("dd/MM/yy").parse(date);
 			} catch (ParseException e) {
-				System.out.println(e.getMessage());
+				Log.debug("Error parsing "+ e.getMessage());
 			}  
 		}
 		return dateRes;

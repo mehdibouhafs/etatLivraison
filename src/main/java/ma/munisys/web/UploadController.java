@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -51,6 +53,9 @@ import ma.munisys.service.StorageServiceImpl;
 @Controller
 @CrossOrigin(origins="*")
 public class UploadController {
+	
+	
+	private static final Logger LOGGER = LogManager.getLogger(UploadController.class);
 	
 	@Autowired
 	StorageServiceImpl storageService;

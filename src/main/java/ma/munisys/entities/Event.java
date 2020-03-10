@@ -48,6 +48,10 @@ public class Event implements Serializable {
 	private Produit produit;
 	
 	private Boolean statut;
+	
+	/*@OneToOne
+
+	private Contrat contrat;*/
 
 	
 	public Event() {
@@ -143,7 +147,14 @@ public class Event implements Serializable {
 	public void setCreatedBy(AppUser createdBy) {
 		this.createdBy = createdBy;
 	}
-	
+
+
+	/*
+	 * public Contrat getContrat() { return contrat; }
+	 * 
+	 * 
+	 * public void setContrat(Contrat contrat) { this.contrat = contrat; }
+	 */
 	
 	
 

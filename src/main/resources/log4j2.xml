@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+    <Properties>
+        <Property name="LOG_PATTERN">%d [%-6p] %C{3}.%M(%F:%L) – %m%n</Property>
+        <Property name="APP_LOG_ROOT">c:/logs</Property>
+         <Property name="ENV">M-GouvDev</Property>
+    </Properties>
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}" />
+        </Console>
+        
+       
+        <appender name="rollingFile" class="org.apache.log4j.rolling.RollingFileAppender">
+    <rollingPolicy
+        class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
+        <param name="ActiveFileName" value="${APP_LOG_ROOT}/${ENV}/application.log" />
+        <param name="FileNamePattern" value="${APP_LOG_ROOT}/${ENV}/application.%d{dd-MMM}.log.gz" />
+   		
+    </rollingPolicy>
+    <param name="MaxBackupIndex" value="5"/>
+    <triggeringPolicy
+        class="org.apache.log4j.rolling.SizeBasedTriggeringPolicy">
+        <param name="MaxFileSize" value="20MB" />
+        <param name="MaxBackupIndex" value="5"/>
+    </triggeringPolicy>
+    <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d [%-6p] %C{3}.%M(%F:%L) – %m%n" />
+    </layout>
+</appender>
+        
+  
+    </Appenders>
+    <Loggers>
+        <logger name="ma.munisys" level="info" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="rollingFile" />
+        </logger>
+        <root level="info">
+   		 <AppenderRef ref="console" />
+		</root>
+        
+    </Loggers>
+</Configuration>

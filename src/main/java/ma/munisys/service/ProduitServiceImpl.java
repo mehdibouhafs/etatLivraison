@@ -12,25 +12,35 @@ import java.util.StringJoiner;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ma.munisys.dao.EventRepository;
 import ma.munisys.dao.ProduitRepository;
+import ma.munisys.dao.ProjetRepository;
 import ma.munisys.dao.UserRepository;
 import ma.munisys.entities.AppUser;
 import ma.munisys.entities.Event;
 import ma.munisys.entities.Produit;
+import ma.munisys.entities.Projet;
 import ma.munisys.sap.dao.DBA;
 
 @Service
 public class ProduitServiceImpl implements ProduitService {
-
+	
+	private static final Logger LOGGER = LogManager.getLogger(ProduitServiceImpl.class);
+	
 	@Autowired
 	private ProduitRepository produitRepository;
 	
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private ProjetRepository projetRepository;
 	
 	@Autowired
 	private EventRepository eventRepository;
@@ -43,7 +53,7 @@ public class ProduitServiceImpl implements ProduitService {
 	@Transactional
 	public void loadProduitFromSap() {
 
-		System.out.println("load projet from SAP");
+		LOGGER.info("load stock from SAP");
 		Set<Produit> produits = new HashSet<Produit>();
 
 		ResultSet rs1 = null;
@@ -53,7 +63,7 @@ public class ProduitServiceImpl implements ProduitService {
 			java.sql.ResultSetMetaData rsmd = rs1.getMetaData();
 			for (int columnCount = rsmd.getColumnCount(), i = 1; i <= columnCount; ++i) {
 				final String name = rsmd.getColumnName(i);
-				System.out.println("column Name " + name);
+				//System.out.println("column Name " + name);
 			}
 
 			while (rs1.next()) {
@@ -109,7 +119,7 @@ public class ProduitServiceImpl implements ProduitService {
 					p.setChefProjet(rs1.getString(14));
 				}
 				if (rs1.getString(15) != null && !rs1.getString(15).equals("null")) {
-					System.out.println("codeProjet " + rs1.getString(1) + " dateCMD " + rs1.getString(3));
+					//System.out.println("codeProjet " + rs1.getString(1) + " dateCMD " + rs1.getString(3));
 					SimpleDateFormat sp = new SimpleDateFormat("yyyy-MM-dd");
 					p.setDateCmd(sp.parse(rs1.getString(15).split("\\s+")[0]));
 				}
@@ -129,15 +139,15 @@ public class ProduitServiceImpl implements ProduitService {
 					p.setMontant(rs1.getDouble(20));
 				}
 				if (rs1.getString(21) != null && !rs1.getString(21).equals("null")) {
-					System.out.println("codeProjet " + rs1.getString(1) + " dateCMD " + rs1.getString(3));
+					//System.out.println("codeProjet " + rs1.getString(1) + " dateCMD " + rs1.getString(3));
 					SimpleDateFormat sp = new SimpleDateFormat("yyyy-MM-dd");
 					p.setDateEntre(sp.parse(rs1.getString(21).split("\\s+")[0]));
 				}
 
 				if (p.getCodeMagasin() != null && p.getItemCode() != null && p.getNumLot() != null) {
 					p.setId(p.getCodeMagasin() + p.getItemCode() + p.getNumLot());
-					System.out.println("id " + p.getId());
-					System.out.println("produit " + p.toString());
+					//System.out.println("id " + p.getId());
+					//System.out.println("produit " + p.toString());
 
 					produits.add(p);
 				}
@@ -153,7 +163,7 @@ public class ProduitServiceImpl implements ProduitService {
 				produitRepository.save(p);
 			}
 
-			System.out.println("produits " + produits);
+			//System.out.println("produits " + produits);
 			int j = 0;
 			for (Produit p : produits) {
 
@@ -170,6 +180,7 @@ public class ProduitServiceImpl implements ProduitService {
 							p.setCommentaireLot(lastProduit.getCommentaireLot());
 					}
 				} catch (Exception e) {
+					LOGGER.error("error load stock from SAP" + e.getMessage());
 					e.printStackTrace();
 				}
 
@@ -192,11 +203,20 @@ public class ProduitServiceImpl implements ProduitService {
 			
 			produitRepository.deleteAll(produitRepository.findAll(ProduitSpecification.byQteEqualsZero()));
 				
-			
+			Collection<Projet> projets = projetRepository.findAll();
+			for(Projet p : projets) {
+				
+				Double sumStock = produitRepository.getMontantStock(p.getCodeProjet());
+				if(sumStock!=null)
+				p.setMontantStock(sumStock);
+				
+			}
+			projetRepository.saveAll(projets);
 
-			System.out.println("dupp " + dupplicatedId);
+			//System.out.println("dupp " + dupplicatedId);
 
 		} catch (Exception e) {
+			LOGGER.error("error " + e.getMessage());
 			e.printStackTrace();
 		} finally {
 			if (rs1 != null) {
@@ -205,6 +225,7 @@ public class ProduitServiceImpl implements ProduitService {
 					DBA.getConnection().close();
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
+					LOGGER.error("error " + e.getMessage());
 					e.printStackTrace();
 				}
 			}
@@ -915,7 +936,7 @@ public class ProduitServiceImpl implements ProduitService {
 	@Override
 	@Transactional
 	public Produit saveProduit(String idProduit, Produit produit) {
-		// TODO Auto-generated method stub
+		LOGGER.info("save Product " + idProduit);
 		produit.setId(idProduit);
 		
 		
@@ -930,8 +951,8 @@ public class ProduitServiceImpl implements ProduitService {
 			
 		if(stringJoiner.length()>0) {
 			Collection<AppUser> users = userRepository.findUserByServices(Arrays.asList("Commercial","Chef Projet","SI","Direction"));
-			System.out.println("size user " + users.size());
-			System.out.println("users : " + users );
+			//System.out.println("size user " + users.size());
+			//System.out.println("users : " + users );
 			
 			Date date =new Date();
 			for(AppUser appUser : users) {
@@ -965,7 +986,8 @@ public class ProduitServiceImpl implements ProduitService {
 		
 		
 		Produit ps = produitRepository.save(produit);
-		for (Produit product : produitRepository.findAll()) {
+		Collection<Produit> produits = produitRepository.findAll();
+		for (Produit product : produits) {
 			if (!ps.getId().equals(product.getId())) {
 				if (produit.getItemCode().equals(product.getItemCode())) {
 					product.setCommentaireArtcileProjet(produit.getCommentaireReference());

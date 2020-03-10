@@ -33,6 +33,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.collections4.map.HashedMap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -42,8 +44,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -70,7 +70,7 @@ import ma.munisys.utils.Constants;
 @Transactional
 public class EtatProjetServiceImpl implements EtatProjetService {
 
-	private static final Logger logger = LoggerFactory.getLogger(EtatProjetServiceImpl.class);
+	private static final Logger logger = LogManager.getLogger(EtatProjetServiceImpl.class);
 
 	@Autowired
 	private ProjetRepository projetRepository;
@@ -86,6 +86,21 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 	
 	@Autowired
 	private UserRepository userRepository;
+	
+	/*public Collection<Projet> Collection<Projet> projets){
+		
+		
+		for(Projet p : projets) {
+			
+			Double sumMontantOuvert = documentRepository.getMontantStock(p.getCodeProjet());
+			if(sumMontantOuvert!=null)
+			p.setMontantStock(sumMontantOuvert);
+		}
+		
+		return projets;
+		
+		
+	}*/
 
 	public Collection<Projet> getProjetsByBuAndCommercial(Boolean cloturer, String bu1, String bu2, String commercial) {
 		return projetRepository.getProjetsByBuAndCommercial(cloturer, bu1, bu2, commercial);
@@ -150,7 +165,7 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 	public Set<Projet> getProjetsFromInputFile(String fileName) {
 		// TODO Auto-generated method stub
 
-		System.out.println("filename " + fileName);
+		//System.out.println("filename " + fileName);
 		logger.debug(" Input File  " + fileName.toString());
 
 		Set<Projet> projets = new HashSet<>();
@@ -159,7 +174,7 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 		try {
 			workbook = WorkbookFactory.create(new File(rootLocation.toString() + "/" + fileName));
 
-			System.out.println("\n\nIterating over Rows and Columns using Iterator\n");
+			//System.out.println("\n\nIterating over Rows and Columns using Iterator\n");
 			// Getting the Sheet at index zero
 			Sheet sheet = workbook.getSheetAt(0);
 
@@ -176,7 +191,7 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 
 				Row row = rowIterator.next();
 
-				System.out.println("row  " + row.getRowNum());
+				//System.out.println("row  " + row.getRowNum());
 
 				if (row.getRowNum() == 0) {
 					firstRow = true;
@@ -193,9 +208,9 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 						Header header = new Header(cellValue);
 						newEtatProjet.addHeader(header);
 						headers.add(header);
-						System.out.println("row header contain " + cellValue);
+						//System.out.println("row header contain " + cellValue);
 					} else {
-						System.out.println("row Collone contain " + cellValue);
+						//System.out.println("row Collone contain " + cellValue);
 
 						Detail detail = new Detail();
 						detail.setHeader(headers.get(cell.getColumnIndex()));
@@ -209,10 +224,10 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 
 				}
 
-				System.out.println();
+				//System.out.println();
 			}
 
-			System.out.println("new2 EtatProjet " + newEtatProjet);
+			//System.out.println("new2 EtatProjet " + newEtatProjet);
 			addOrUpdateEtatProjet(newEtatProjet);
 
 		} catch (EncryptedDocumentException e) {
@@ -227,51 +242,31 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 		//
 		return projets;
 
-		/*
-		 * for(int i=1; i<=lastRow;i++) { CtrctCustomer ctrctCustomer = new
-		 * CtrctCustomer(); System.out.println("id " +
-		 * (long)workbook.getSheetAt(0).getRow(i).getCell(0).getNumericCellValue());
-		 * ctrctCustomer.setId((long)workbook.getSheetAt(0).getRow(i).getCell(0).
-		 * getNumericCellValue());
-		 * ctrctCustomer.setDteStrt(workbook.getSheetAt(0).getRow(i).getCell(3).
-		 * getDateCellValue());
-		 * ctrctCustomer.setDteEnd(workbook.getSheetAt(0).getRow(i).getCell(4).
-		 * getDateCellValue()); ctrctCustomer.setCustomer(new
-		 * Customer(workbook.getSheetAt(0).getRow(i).getCell(5).getStringCellValue()));
-		 * ctrctCustomer.setPilote(workbook.getSheetAt(0).getRow(i).getCell(2).
-		 * getStringCellValue());
-		 * ctrctCustomer.setCtrtName(workbook.getSheetAt(0).getRow(i).getCell(1).
-		 * getStringCellValue());
-		 * 
-		 * ctrctCustomers.add(ctrctCustomer); }
-		 */
-
-		// return ctrctCustomers;
 	}
 
 	private static void printCellValue(Cell cell) {
 		switch (cell.getCellTypeEnum()) {
 		case BOOLEAN:
-			System.out.print(cell.getBooleanCellValue());
+			//System.out.print(cell.getBooleanCellValue());
 			break;
 		case STRING:
-			System.out.print(cell.getRichStringCellValue().getString());
+			//System.out.print(cell.getRichStringCellValue().getString());
 			break;
 		case NUMERIC:
 			if (DateUtil.isCellDateFormatted(cell)) {
-				System.out.print(cell.getDateCellValue());
+			//	System.out.print(cell.getDateCellValue());
 			} else {
-				System.out.print(cell.getNumericCellValue());
+				//System.out.print(cell.getNumericCellValue());
 			}
 			break;
 		case FORMULA:
-			System.out.print(cell.getCellFormula());
+			//System.out.print(cell.getCellFormula());
 			break;
 		case BLANK:
-			System.out.print("");
+			//System.out.print("");
 			break;
 		default:
-			System.out.print("");
+			//System.out.print("");
 		}
 
 		System.out.print("\t");
@@ -281,7 +276,7 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 	@javax.transaction.Transactional
 	public void addOrUpdateEtatProjet(EtatProjet newEtatProjet) {
 		boolean firstCreation = false;
-		System.out.println("adorUpdate");
+		//System.out.println("adorUpdate");
 		EtatProjet lastEtatProjet = etatProjetRepository.findById(1L).orElse(null);
 
 		if (lastEtatProjet != null && lastEtatProjet.getProjets() != null && !lastEtatProjet.getProjets().isEmpty()) {
@@ -297,11 +292,11 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 		// checkRequiredHidders(newEtatProjet);
 
 		if (lastEtatProjet == null) {
-			System.out.println("new projets " +newEtatProjet.getProjets());
+			//System.out.println("new projets " +newEtatProjet.getProjets());
 			// create date projet
 			for(Projet p : newEtatProjet.getProjets() ) {
 				p.setCreation(new Date());
-				System.out.println("codeProjet " + p.getCodeProjet());
+				//System.out.println("codeProjet " + p.getCodeProjet());
 				
 				/*Employer commercial= checkAndAddEmployer(p.getCodeCommercial(),p.getNomCommercial(),"Commercial");
 				System.out.println("commercial " + commercial);
@@ -314,57 +309,8 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 			newEtatProjet.setLastUpdate(new Date());
 			etatProjetRepository.save(newEtatProjet);
 		} else {
-			System.out.println("here");
 			boolean found = false;
-			System.out.println("lastEtatProjet " + lastEtatProjet.toString());
-			System.out.println("newEtatProjet " + newEtatProjet.toString());
-			/*
-			List<Header> headerToDelete = new ArrayList<Header>();
-
-			List<Header> headerToAdd = new ArrayList<Header>();
-
-			for (Header lastHeader : lastEtatProjet.getHeaders()) {
-
-				found = false;
-				for (Header newHeader : newEtatProjet.getHeaders()) {
-
-					if (lastHeader.getLabel().equals(newHeader.getLabel())) {
-						found = true;
-					}
-				}
-				if (!found) {
-					System.out.println("delete head " + lastHeader.getLabel());
-					headerToDelete.add(new Header(lastHeader.getLabel()));
-					// lastEtatProjet.getHeaders().remove(lastHeader);
-				}
-			}
-
-			for (Header header : headerToDelete) {
-				deleteHeaderFromEtatProjet(1L, header);
-			}
-
 			
-
-			for (Header newheader : newEtatProjet.getHeaders()) {
-				found = false;
-				for (Header lastHeader : lastEtatProjet.getHeaders()) {
-					if (newheader.getLabel().equals(lastHeader.getLabel())) {
-						found = true;
-					}
-				}
-				if (!found) {
-					System.out.println("adding header " + newheader.getLabel());
-					headerToAdd.add(new Header(newheader.getLabel().replace("% ", "")));
-				}
-
-			}
-
-			for (Header header : headerToAdd) {
-				lastEtatProjet.addHeader(header);
-			}*/
-
-			// System.out.println("lastEtatProjet header " + lastEtatProjet.getHeaders());
-
 			for (Projet projet : newEtatProjet.getProjets()) {
 					projet.setCloture(false);
 				
@@ -425,8 +371,6 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 			
 			
 			lastEtatProjet.getProjets().remove(lastProjet);
-			System.out.println("lastEtatProjet.getProjets() " + lastEtatProjet.getProjets());
-			System.out.println("projet comm must be " + projet.getCommercial());
 			lastEtatProjet.addProjet(projet);
 		} else {
 			projet.setCreation(new Date());
@@ -504,7 +448,7 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 	@Transactional
 	public Projet updateProjet(String idProjet, Projet projet) {
 
-		
+		logger.info("update de Projet " + idProjet);
 		
 		projet.setCodeProjet(idProjet);
 		
@@ -541,9 +485,7 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 			
 		if(stringJoiner.length()>0) {
 			Collection<AppUser> users = userRepository.findUserByServices(Arrays.asList("Commercial","Chef Projet","SI","Direction"));
-			System.out.println("size user " + users.size());
-			System.out.println("users : " + users );
-			
+		
 			Date date =new Date();
 			for(AppUser appUser : users) {
 				
@@ -597,17 +539,17 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 	@Override
 	public List<Projet> findAllProjetsByDateSup(Boolean cloturer, Date dateCmd) {
 		
-		return projetRepository.findAllProjetsByDateSup(cloturer,dateCmd);
+		return  (List<Projet>)  projetRepository.findAllProjetsByDateSup(cloturer,dateCmd);
 	}
 	
 	@Override
 	public List<Projet> findAllProjetsByDateInf(Boolean cloturer, Date dateCmd) {
 		
-		return projetRepository.findAllProjetsByDateInf(cloturer,dateCmd);
+		return (List<Projet>) projetRepository.findAllProjetsByDateInf(cloturer,dateCmd);
 	}
 	
 	public List<Projet> findAllProjet(){
-		return projetRepository.findAllProjetsByDate();
+		return (List<Projet>) projetRepository.findAllProjetsByDate();
 	}
 
 	@Override
@@ -643,6 +585,7 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 			d = new SimpleDateFormat("dd/MM/yyyy").parse(sDate1);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
+			logger.error("error parse exception " + e.getMessage());
 			e.printStackTrace();
 		}  
 		
@@ -715,6 +658,7 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 	
 	@javax.transaction.Transactional
 	 public void updateProjetsFromSAp(EtatProjet newEtatProjet) {
+		
 	        final EtatProjet lastEtatProjet = this.etatProjetRepository.findById(1L).orElse(null);
 	        if (lastEtatProjet != null && lastEtatProjet.getProjets() != null && !lastEtatProjet.getProjets().isEmpty()) {
 	            for (final Projet projet : lastEtatProjet.getProjets()) {
@@ -734,7 +678,6 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 	            }
 	        }
 	        if (lastEtatProjet == null) {
-	            System.out.println("new projets " + newEtatProjet.getProjets());
 	            for (final Projet p : newEtatProjet.getProjets()) {
 	                p.setCreation(new Date());
 	            }
@@ -745,27 +688,26 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 	        else {
 	            System.out.println("here");
 	            final boolean found = false;
-	            System.out.println("lastEtatProjet " + lastEtatProjet.toString());
-	            System.out.println("newEtatProjet " + newEtatProjet.toString());
+	            
 	            for (final Projet projet2 : newEtatProjet.getProjets()) {
 	                projet2.setCloture(false);
 	                this.addOrUpdateProjet(lastEtatProjet, projet2);
 	            }
-	            System.out.println("lastEtatProjet to update " + lastEtatProjet);
+	          
 	            lastEtatProjet.setLastUpdate(new Date());
 	            this.etatProjetRepository.save(lastEtatProjet);
 	        }
 	    }
 
 	@Override
-	public Collection<Projet> getAllProjets() {
+	public List<Projet> getAllProjets() {
 		// TODO Auto-generated method stub
-		return projetRepository.getAllProjets();
+		return (List<Projet>)projetRepository.getAllProjets();
 	}
 	
 	public Map<String,String> importInfoFournisseurFromSAP() {
 		
-		Map<String, String> commentaireInfoFour = new HashedMap<String, String>();
+		Map<String,String> commentaireInfoFour = new HashedMap<String, String>();
  		ResultSet rs1 = null;
 		try {
             final String req1 = "SELECT * FROM DB_MUNISYS.\"V_INFO_ACH\"";
@@ -773,13 +715,12 @@ public class EtatProjetServiceImpl implements EtatProjetService {
             final java.sql.ResultSetMetaData rsmd = rs1.getMetaData();
             for (int columnCount = rsmd.getColumnCount(), i = 1; i <= columnCount; ++i) {
                 final String name = rsmd.getColumnName(i);
-                System.out.println("column Name " + name);
+                logger.info("colNam Info Achat " + name);
             }
             
             while (rs1.next()) {
             	
                  if (rs1.getString(1)!=null && !rs1.getString(1).equals("null") && rs1.getString(9) != null && !rs1.getString(9).equals("null")) {
-                	 System.out.println(rs1.getString(9));
                 	 
                 	 String newInfoFourniseur = rs1.getString(9);
                 	 
@@ -801,13 +742,14 @@ public class EtatProjetServiceImpl implements EtatProjetService {
             
            
 		} catch (Exception e) {
-                System.out.println(e.getMessage());
+			logger.error("error  " + e.getMessage());
          }finally {
 			if(rs1!=null) {
 				try {
 					rs1.close();
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
+					logger.error("error  " + e.getMessage());
 					e.printStackTrace();
 				}
 			}
@@ -820,7 +762,7 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 	@Override
 	@javax.transaction.Transactional
 	public  void loadProjetsFromSap() {
-    	System.out.println("load projet from SAP");
+		logger.info("load Projets From Sap");
          Set<Projet> projets = new HashSet<Projet>();
          EtatProjet etatProjet = new EtatProjet();
         etatProjet.setId(Long.valueOf(1L));
@@ -833,7 +775,7 @@ public class EtatProjetServiceImpl implements EtatProjetService {
              java.sql.ResultSetMetaData rsmd = rs1.getMetaData();
             for (int columnCount = rsmd.getColumnCount(), i = 1; i <= columnCount; ++i) {
                 final String name = rsmd.getColumnName(i);
-                System.out.println("column Name " + name);
+             
             }
             while (rs1.next()) {
                 final Projet p = new Projet();
@@ -844,7 +786,7 @@ public class EtatProjetServiceImpl implements EtatProjetService {
                     p.setProjet(rs1.getString(2));
                 }
                 if (rs1.getString(3) != null && !rs1.getString(3).equals("null")) {
-                	System.out.println("codeProjet "+ rs1.getString(1)+ " dateCMD "+rs1.getString(3));
+                	
                      SimpleDateFormat sp = new SimpleDateFormat("yyyy-MM-dd");
                     p.setDateCmd(sp.parse(rs1.getString(3).split("\\s+")[0]));
                 }
@@ -937,6 +879,7 @@ public class EtatProjetServiceImpl implements EtatProjetService {
         }
         catch (Exception e) {
             e.printStackTrace();
+            logger.info("error " + e.getMessage());
         }finally {
         	if(rs1!=null) {
         		try {
@@ -944,7 +887,7 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 					DBA.getConnection().close();
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.info("cannot close connection SAP " + e.getMessage());
 				}
         	}
         	
@@ -1032,11 +975,11 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 			 String commercial,String chefProjet,String client,String affectationChefProjet){
 		
 		if(!commercial.equals("undefined") && affectationChefProjet.equals("true")) {
-			this.projetRepository.getProjetsByChefDeProjetNotNullAndCommercial(cloturer, commercial);
+			projetRepository.getProjetsByChefDeProjetNotNullAndCommercial(cloturer, commercial);
 		}
 		
 		if(!commercial.equals("undefined") && affectationChefProjet.equals("false")) {
-			this.projetRepository.getProjetsByChefDeProjetIsNullAndCommercial(cloturer, commercial);
+			projetRepository.getProjetsByChefDeProjetIsNullAndCommercial(cloturer, commercial);
 		}
 		
 		if(affectationChefProjet.equals("true")){
@@ -1270,9 +1213,9 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 		
 		
 		
-		
-		
 	}
+	
+	
 
 	@Override
 	public List<String> getDistinctClient() {
@@ -1296,13 +1239,10 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 	
 	public Projet declotureProjet(Projet p) {
 		// TODO Auto-generated method stub
-		
+		logger.info("decloture de Projet " + p.getCodeProjet());
 		
 		int i = projetRepository.updateStatutProjet(false, false, true, p.getCodeProjet());
-		
-		System.out.println("i " + i);
-		
-		
+			
 		return projetRepository.findById(p.getCodeProjet()).get();
 		 
 		
@@ -1311,6 +1251,7 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 	@Override
 	@Transactional
 	public Projet clotureProjet(Projet p) {
+		logger.info("cloture de Projet " + p.getCodeProjet());
 		// TODO Auto-generated method stub
 		EtatProjet etatProjet = new EtatProjet();
 		etatProjet.setId(1L);

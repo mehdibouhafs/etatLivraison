@@ -56,8 +56,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 			throw new RuntimeException(e);
 		}  
 		
-		System.out.println("************");
-		System.out.println("username : " + appUser.getUsername());
+		//System.out.println("************");
+		//System.out.println("username : " + appUser.getUsername());
 		//System.out.println("password : " + appUser.getPassword());
 		return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(appUser.getUsername(), appUser.getPassword()));
 	}
@@ -72,8 +72,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);
         AccountService accountService = webApplicationContext.getBean(AccountService.class);
 		
-        System.out.println(accountService.getService(authResult.getName()).getServName());
-        System.out.println("sigle "+ accountService.getSigle(authResult.getName()));
+        //System.out.println(accountService.getService(authResult.getName()).getServName());
+        //System.out.println("sigle "+ accountService.getSigle(authResult.getName()));
 		String jwt = Jwts.builder()
 					.setSubject(authResult.getName())
 					.setExpiration(new Date(System.currentTimeMillis()+SecurityConstants.EXPIRATION_TIME))
@@ -84,7 +84,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 					.claim("lastName", accountService.getFullName(authResult.getName()))
 					.compact();
 		response.addHeader(SecurityConstants.HEADER_STRING, SecurityConstants.TOKEN_PREFIX+jwt);
-		System.out.println("successful");
+		//System.out.println("successful");
 	}
 
 }
