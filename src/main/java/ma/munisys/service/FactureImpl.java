@@ -79,56 +79,58 @@ public class FactureImpl implements FactureService {
 			SimpleDateFormat sp = new SimpleDateFormat("yyyy-MM-dd");
 			Contrat contrat = null;
 			while (rs1.next()) {
-				final Facture facture = new Facture();
-
-				if (rs1.getString(1) != null && !rs1.getString(1).equals("null")) {
-
-					facture.setNumFacture(rs1.getLong(1));
-				} else {
-					continue;
-				}
-				if (rs1.getString(2) != null && !rs1.getString(2).equals("null")) {
-
-					try {
-						contrat = contratRepository.findById(rs1.getLong(2)).get();
-						facture.setContrat(contrat);
-					} catch (Exception e) {
+				
+					final Facture facture = new Facture();
+	
+					if (rs1.getString(1) != null && !rs1.getString(1).equals("null")) {
+	
+						facture.setNumFacture(rs1.getLong(1));
+					} else {
 						continue;
 					}
-
+					if (rs1.getString(2) != null && !rs1.getString(2).equals("null")) {
+	
+						try {
+							contrat = contratRepository.findById(rs1.getLong(2)).get();
+							facture.setContrat(contrat);
+						} catch (Exception e) {
+							continue;
+						}
+	
+					}
+					if (rs1.getString(3) != null && !rs1.getString(3).equals("null")) {
+	
+						facture.setDateEnregistrement(sp.parse(rs1.getString(3).split("\\s+")[0]));
+					}
+					if (rs1.getString(4) != null && !rs1.getString(4).equals("null")) {
+	
+						facture.setMontantTTC(rs1.getDouble(4));
+					} else {
+						// System.out.println("nulllll");
+					}
+	
+					if (rs1.getString(5) != null && !rs1.getString(5).equals("null")) {
+	
+						facture.setMontantHT(rs1.getDouble(5));
+					}
+	
+					if (rs1.getString(6) != null && !rs1.getString(6).equals("null")) {
+	
+						facture.setMontantRestant(rs1.getDouble(6));
+					}
+	
+					if (rs1.getString(7) != null && !rs1.getString(7).equals("null")) {
+	
+						facture.setDebutPeriode(sp.parse(rs1.getString(7).split("\\s+")[0]));
+					}
+					if (rs1.getString(8) != null && !rs1.getString(8).equals("null")) {
+						facture.setFinPeriode(sp.parse(rs1.getString(8).split("\\s+")[0]));
+					}
+					
+					factures.add(facture);
+	
 				}
-				if (rs1.getString(3) != null && !rs1.getString(3).equals("null")) {
-
-					facture.setDateEnregistrement(sp.parse(rs1.getString(3).split("\\s+")[0]));
-				}
-				if (rs1.getString(4) != null && !rs1.getString(4).equals("null")) {
-
-					facture.setMontantTTC(rs1.getDouble(4));
-				} else {
-					// System.out.println("nulllll");
-				}
-
-				if (rs1.getString(5) != null && !rs1.getString(5).equals("null")) {
-
-					facture.setMontantHT(rs1.getDouble(5));
-				}
-
-				if (rs1.getString(6) != null && !rs1.getString(6).equals("null")) {
-
-					facture.setMontantRestant(rs1.getDouble(6));
-				}
-
-				if (rs1.getString(7) != null && !rs1.getString(7).equals("null")) {
-
-					facture.setDebutPeriode(sp.parse(rs1.getString(7).split("\\s+")[0]));
-				}
-				if (rs1.getString(8) != null && !rs1.getString(8).equals("null")) {
-					facture.setFinPeriode(sp.parse(rs1.getString(8).split("\\s+")[0]));
-				}
-
-				factures.add(facture);
-
-			}
+			
 
 			for (Facture f : factures) {
 				List<Echeance> ecs = affecterEcheance(f);
@@ -196,7 +198,7 @@ public class FactureImpl implements FactureService {
 						c.setMontantProvisionAFactureInfAnneeEnCours(0.0);
 					}
 				}
-
+				
 				contratRepository.save(c);
 
 			}

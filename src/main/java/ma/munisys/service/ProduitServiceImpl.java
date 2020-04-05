@@ -209,7 +209,7 @@ public class ProduitServiceImpl implements ProduitService {
 				
 				Double sumStock = produitRepository.getMontantStock(p.getCodeProjet());
 				if(sumStock!=null) {
-				p.setMontantStock(sumStock);
+					p.setMontantStock(sumStock);
 				}else {
 					p.setMontantStock(0.0);
 				}

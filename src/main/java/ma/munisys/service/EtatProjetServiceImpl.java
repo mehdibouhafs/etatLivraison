@@ -367,11 +367,6 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 			projet.setStatutProjet(lastProjet.getStatutProjet());
 			projet.setTauxAvancement(lastProjet.getTauxAvancement());
 			
-			
-			
-			
-			
-			
 			lastEtatProjet.getProjets().remove(lastProjet);
 			lastEtatProjet.addProjet(projet);
 		} else {
