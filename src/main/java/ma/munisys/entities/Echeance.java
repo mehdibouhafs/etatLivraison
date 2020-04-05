@@ -63,8 +63,11 @@ public class Echeance implements Serializable, Comparable<Echeance>,Comparator<E
 	@ManyToOne
 	private ContratModel contratModel;
 	
-	@Column(columnDefinition = "TEXT")
-	private String commentaire;
+	
+	@ManyToOne
+	private CommentaireEcheance commentaire;
+	
+	private boolean cloture;
 	
 	public Echeance() {
 		
@@ -189,11 +192,11 @@ public class Echeance implements Serializable, Comparable<Echeance>,Comparator<E
 		this.factures = factures;
 	}
 
-	public String getCommentaire() {
+	public CommentaireEcheance getCommentaire() {
 		return commentaire;
 	}
 
-	public void setCommentaire(String commentaire) {
+	public void setCommentaire(CommentaireEcheance commentaire) {
 		this.commentaire = commentaire;
 	}
 
@@ -233,6 +236,54 @@ public class Echeance implements Serializable, Comparable<Echeance>,Comparator<E
 	public void setContratModel(ContratModel contratModel) {
 		this.contratModel = contratModel;
 	}
+
+	public boolean getCloture() {
+		return cloture;
+	}
+
+	public void setCloture(boolean cloture) {
+		this.cloture = cloture;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((au == null) ? 0 : au.hashCode());
+		result = prime * result + ((contratModel == null) ? 0 : contratModel.hashCode());
+		result = prime * result + ((du == null) ? 0 : du.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Echeance other = (Echeance) obj;
+		if (au == null) {
+			if (other.au != null)
+				return false;
+		} else if (!au.equals(other.au))
+			return false;
+		if (contratModel == null) {
+			if (other.contratModel != null)
+				return false;
+		} else if (!contratModel.getId().equals(other.contratModel.getId()))
+			return false;
+		if (du == null) {
+			if (other.du != null)
+				return false;
+		} else if (!du.equals(other.du))
+			return false;
+		return true;
+	}
+	
+	
+	
 	
 	
 

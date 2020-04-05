@@ -10,7 +10,7 @@ public interface EventService {
 	
 	
 	
-	public Collection<Event> getEvents(String username,Date lastConnectionDate);
+	public Collection<Event> getEvents(String username,Date lastConnectionDate,String service);
 	
 
 	

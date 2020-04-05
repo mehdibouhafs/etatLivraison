@@ -63,7 +63,7 @@ public class CommandeFournisseur implements Serializable,Comparable<CommandeFour
 	
 	private int qteRnf;
 	private Double montantRnf;
-	
+	private String technologie;
 	 
 	
 	
@@ -284,16 +284,9 @@ public class CommandeFournisseur implements Serializable,Comparable<CommandeFour
 
 	@Override
 	public int compareTo(CommandeFournisseur o) {
-		if (getDateEnregistrement() == null || o.getDateEnregistrement() == null)
-		      return 0;
-		    int i= getDateEnregistrement().compareTo(o.getDateEnregistrement());
-		    
-		    if(i!=0) {
-				return i;
-			}
-			else {
-				return getId().compareTo(o.getId());
-			}
+		
+				return -getId().compareTo(o.getId());
+			
 	}
 
 
@@ -301,17 +294,26 @@ public class CommandeFournisseur implements Serializable,Comparable<CommandeFour
 
 	@Override
 	public int compare(CommandeFournisseur o1, CommandeFournisseur o2) {
-		if (o1.getDateEnregistrement() == null || o2.getDateEnregistrement() == null)
-		      return 0;
-		    int i= o1.getDateEnregistrement().compareTo(o2.getDateEnregistrement());
-		    
-		    if(i!=0) {
-				return i;
-			}
-			else {
-				return o1.getId().compareTo(o2.getId());
-			}
+		
+				return -o1.getId().compareTo(o2.getId());
+			
 	}
+
+
+
+
+	public String getTechnologie() {
+		return technologie;
+	}
+
+
+
+
+	public void setTechnologie(String technologie) {
+		this.technologie = technologie;
+	}
+	
+	
 
 	
 

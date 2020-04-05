@@ -54,6 +54,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ma.munisys.dao.EtatRecouvrementRepository;
 import ma.munisys.dao.EventRepository;
+import ma.munisys.dao.ProjetRepository;
 import ma.munisys.dao.UserRepository;
 import ma.munisys.dto.DocumentAnalyse;
 import ma.munisys.dto.EtatEncaissement;
@@ -85,6 +86,9 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 
 	@Autowired
 	private DocumentRepository documentRepository;
+	
+	@Autowired
+	private ProjetRepository ProjetRepository;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -374,6 +378,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 			document.setInfoProjet(lastDocument.getInfoProjet());
 			document.setPriorite(lastDocument.getPriorite());
 			document.setTypeBloquage(lastDocument.getTypeBloquage());
+			
 
 			lastEtatRecouvrement.getDocuments().remove(lastDocument);
 			//System.out.println("document must be " + document);
@@ -1368,5 +1373,11 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		// TODO Auto-generated method stub
 		
 		return documentRepository.findAll(DocumentSpecification.byNumDocument(numDocument));
+	}
+
+	@Override
+	public Collection<Document> getDocumentsByCodeProjet(String codeProjet) {
+		// TODO Auto-generated method stub
+		return documentRepository.getDocumentsByCodeProjet(codeProjet);
 	}
 }

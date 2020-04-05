@@ -364,11 +364,8 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 			projet.setPriorite(lastProjet.getPriorite());
 			projet.setDatePvReceptionDefinitive(lastProjet.getDatePvReceptionDefinitive());
 			projet.setDatePvReceptionProvisoire(lastProjet.getDatePvReceptionProvisoire());
-			
-			
-			
-			
-			
+			projet.setStatutProjet(lastProjet.getStatutProjet());
+			projet.setTauxAvancement(lastProjet.getTauxAvancement());
 			
 			lastEtatProjet.getProjets().remove(lastProjet);
 			lastEtatProjet.addProjet(projet);

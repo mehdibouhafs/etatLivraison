@@ -39,6 +39,8 @@ import ma.munisys.dao.AuthRepository;
 import ma.munisys.dao.ContratRepository;
 import ma.munisys.dao.ContratSpecification;
 import ma.munisys.dao.EcheanceRepository;
+import ma.munisys.dao.FactureEcheanceRepository;
+import ma.munisys.dao.FactureRepository;
 import ma.munisys.dao.PieceRepository;
 import ma.munisys.dao.ProfileRepository;
 import ma.munisys.dao.UserRepository;
@@ -74,6 +76,9 @@ public class ContratServiceImp implements ContratService {
 	private UserRepository userRepository;
 	@Autowired
 	private PieceRepository pieceRepository;
+	
+	@Autowired
+	private FactureEcheanceRepository factureEcheanceRepository;
 
 	@Override
 	public Contrat saveContrat(Contrat contrat) {
@@ -87,6 +92,27 @@ public class ContratServiceImp implements ContratService {
 	@javax.transaction.Transactional
 	public CompletableFuture<String> loadContratFromSap() {
 		LOGGER.info("Loading  contrat from SAP");
+		Collection<Contrat> contrats2 =contratRepository.findAll();
+		for(Contrat c : contrats2) {
+			
+			c.setCloture(true);
+			
+			for(ContratModel cm : c.getContratsModel()) {
+				cm.setCloture(true);
+			}
+			
+			for(Echeance e : c.getEcheances()) {
+				e.setCloture(true);
+			}
+			
+			for(FactureEcheance fe : c.getFactureEcheances()) {
+				fe.setCloture(true);
+			}
+			
+		}
+		
+		contratRepository.saveAll(contrats2);
+		
 		ResultSet rs1 = null;
 		try {
 			String req1 = "SELECT * FROM DB_MUNISYS.\"V_ECH_CM\"";
@@ -96,7 +122,7 @@ public class ContratServiceImp implements ContratService {
 			Map<Long, Contrat> contrats = new HashMap<Long, Contrat>();
 			while (rs1.next()) {
 				final Contrat contrat = new Contrat();
-
+				
 				if (rs1.getString(1) == null) {
 					continue;
 				}
@@ -240,8 +266,6 @@ public class ContratServiceImp implements ContratService {
 		
 							
 						}
-						
-					
 				
 					if(rs2.getString(1) != null && rs2.getString(2)!=null) {
 						
@@ -279,9 +303,17 @@ public class ContratServiceImp implements ContratService {
 					contratModel.setContrat(currentContrat);
 					
 					boolean found = false;
+					ContratModel lastContratModelFound=null;
 					for(ContratModel lastContratModel : currentContrat.getContratsModel()) {
 						if(contratModel.getId().equals(lastContratModel.getId())) {
+							lastContratModel.setCloture(false);
+							
+							for(Echeance e : lastContratModel.getEcheances()) {
+								e.setCloture(false);
+							}
+							contratRepository.save(currentContrat);
 							found =true;
+							lastContratModelFound = lastContratModel;
 							break;
 						}
 					}
@@ -290,6 +322,27 @@ public class ContratServiceImp implements ContratService {
 						currentContrat.getContratsModel().add(contratModel);
 						currentContrat.getEcheances().addAll(generateEcheanceModele(contratModel));
 						contratRepository.save(currentContrat);
+					}else {
+						
+						if(lastContratModelFound.getAu()!=null && contratModel.getAu()!=null && lastContratModelFound.getAu().before(contratModel.getAu())) {
+							
+						Set<Echeance> echeances = generateEcheanceModele( contratModel);
+						
+						for(Echeance e : echeances) {
+							boolean exist = false;
+							for(Echeance e1: lastContratModelFound.getEcheances()) {
+								if(e.equals(e1)) {
+									exist = true;
+									break;
+								}
+							}
+							if(!exist) {
+								currentContrat.getEcheances().add(e);
+							}
+						}
+						
+						contratRepository.save(currentContrat);
+						}
 					}
 								
 				}
@@ -330,6 +383,7 @@ public class ContratServiceImp implements ContratService {
 				lastContrat.setPilote(contrat.getPilote());
 				lastContrat.setOccurenceFacturation(contrat.getOccurenceFacturation());
 				lastContrat.setLastUpdate(contrat.getLastUpdate());
+				lastContrat.setCloture(false);
 				return lastContrat;
 			}else {
 				
@@ -349,14 +403,13 @@ public class ContratServiceImp implements ContratService {
 			DateTime start = new DateTime(contratModel.getDu());
 			DateTime end = new DateTime(contratModel.getAu());
 
-			if (nbMonthPeriod != null) {
-
+	
 				while (start.compareTo(end) <= 0) {
 					Echeance c = new Echeance();
 					c.setContrat(contratModel.getContrat());
 					c.setDu(start.toDate());
 					c.setContratModel(contratModel);
-
+					c.setCloture(false);
 					DateTime dateBetween = start.plusMonths(nbMonthPeriod);
 					start = dateBetween;
 
@@ -384,7 +437,7 @@ public class ContratServiceImp implements ContratService {
 
 				}
 			}
-		}
+		
 
 		return echeances;
 
@@ -495,40 +548,51 @@ public class ContratServiceImp implements ContratService {
 		
 		System.out.println("end Date " +endDate);
 		int addingId=0;
+		
+		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 		try {
 		for(Contrat c : contrats) {
-			Contrat c1 = (Contrat)c.clone();
-			SortedSet<Echeance> echeances =new TreeSet<Echeance>(new Echeance());
-			SortedSet<FactureEcheance> factureEcheances =new TreeSet<FactureEcheance>(new FactureEcheance());
-			Collection<FactureEcheance> facturesEcheancess = new ArrayList<FactureEcheance>();
-			SortedSet<CommandeFournisseur> commandeFournisseurs =new TreeSet<CommandeFournisseur>(new CommandeFournisseur());
-			commandeFournisseurs.addAll(c.getCommandesFournisseurs());
-			
-			for(Echeance  e:c1.getEcheances()) {
-				System.out.println("echeance sort "+ e.getId()+" du " + e.getDu() +" au "+e.getAu());
-				Calendar calendarDu = new java.util.GregorianCalendar();
-				calendarDu.setTime(e.getDu());
+			if(!c.getCloture()) {
+				Contrat c1 = (Contrat)c.clone();
+				SortedSet<Echeance> echeances =new TreeSet<Echeance>(new Echeance());
+				SortedSet<FactureEcheance> factureEcheances =new TreeSet<FactureEcheance>(new FactureEcheance());
+				Collection<FactureEcheance> facturesEcheancess = new ArrayList<FactureEcheance>();
+				SortedSet<CommandeFournisseur> commandeFournisseurs =new TreeSet<CommandeFournisseur>(new CommandeFournisseur());
+				commandeFournisseurs.addAll( c.getCommandesFournisseurs());
 				
-				Calendar calendarEnd = new java.util.GregorianCalendar();
-				calendarEnd.setTime(e.getAu());
-				if(calendarDu.get(Calendar.YEAR)==startDate || calendarEnd.get(Calendar.YEAR)==startDate || calendarDu.get(Calendar.YEAR)==endDate || calendarEnd.get(Calendar.YEAR)==endDate  ) {
-					System.out.println("valid ech "+e.getId());
-						echeances.add(e);
-					for(FactureEcheance fe :e.getFactureEcheances()) {
-						System.out.println("fe "  + fe.getId());
-						//System.out.println("numFacture " +fe.getFacture().getNumFacture());
-						FactureEcheance fe2 = (FactureEcheance) fe.clone();
-						addingId = addingId+1;
-						fe2.setId(fe2.getId()+""+addingId);
-						facturesEcheancess.add(fe2);
-						factureEcheances.add(fe2);
+				for(Echeance  e:c1.getEcheances()) {
+					
+					Calendar cAu = Calendar.getInstance();
+					Calendar cDu = Calendar.getInstance();
+					cAu.setTime(e.getAu());
+					cDu.setTime(e.getDu());
+					
+					if(!e.getCloture() && (cAu.get(Calendar.YEAR) == currentYear || cDu.get(Calendar.YEAR)== currentYear )) {
+						System.out.println("echeance sort "+ e.getId()+" du " + e.getDu() +" au "+e.getAu());
+						Calendar calendarDu = new java.util.GregorianCalendar();
+						calendarDu.setTime(e.getDu());
+						Calendar calendarEnd = new java.util.GregorianCalendar();
+						calendarEnd.setTime(e.getAu());
+						if(calendarDu.get(Calendar.YEAR)==startDate || calendarEnd.get(Calendar.YEAR)==startDate || calendarDu.get(Calendar.YEAR)==endDate || calendarEnd.get(Calendar.YEAR)==endDate  ) {
+							System.out.println("valid ech "+e.getId());
+								echeances.add(e);
+							for(FactureEcheance fe :e.getFactureEcheances()) {
+								System.out.println("fe "  + fe.getId());
+								//System.out.println("numFacture " +fe.getFacture().getNumFacture());
+								FactureEcheance fe2 = (FactureEcheance) fe.clone();
+								addingId = addingId+1;
+								fe2.setId(fe2.getId()+""+addingId);
+								facturesEcheancess.add(fe2);
+								factureEcheances.add(fe2);
+							}
+						}
 					}
 				}
+				c1.setEcheances(echeances);
+				c1.setFactureEcheances(factureEcheances);
+				c1.setCommandesFournisseurs(commandeFournisseurs);
+				contratsRes.add(c1);
 			}
-			c1.setEcheances(echeances);
-			c1.setFactureEcheances(factureEcheances);
-			c1.setCommandesFournisseurs(commandeFournisseurs);
-			contratsRes.add(c1);
 		}
 		
 		/*for(Contrat c : contrats) {

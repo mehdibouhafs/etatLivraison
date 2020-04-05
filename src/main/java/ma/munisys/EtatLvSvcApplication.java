@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import ma.munisys.sap.dao.DBA;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 
 import ma.munisys.entities.AppUser;
@@ -52,6 +53,7 @@ import ma.munisys.service.ProduitService;
 import ma.munisys.dao.EtatProjetRepository;
 import ma.munisys.dao.FactureEcheanceRepository;
 import ma.munisys.dao.FactureRepository;
+import ma.munisys.dao.ProjetRepository;
 
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -68,7 +70,7 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 	
 	private static final Logger LOGGER = LogManager.getLogger(EtatLvSvcApplication.class);
 	
-	private static EtatProjetRepository etatProjetRepositoryStatic;
+	private static ProjetRepository projetRepositoryStatic;
 
 	private static EtatProjetService etatProjetServiceStatic;
 
@@ -89,6 +91,9 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 	UserRepository userRepository;
 	@Autowired
 	StorageService storageService;
+	@Autowired
+	ProjetRepository projetRepository;;
+
 	@Autowired
 	EtatProjetService etatProjetService;
 	@Autowired
@@ -127,14 +132,14 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 		 //etatProjetServiceStatic.loadProjetsFromSap();
 		 //EtatLvSvcApplication.produitServiceStatic.loadProduitFromSap();
 		// loadFromSap();
-		// loadDocumentsFromSap();
+		//loadDocumentsFromSap();
 		// etatProjetServiceStatic.importInfoFournisseurFromSAP();
 		// 3 produitServiceStatic.loadProduitFromSap();
 	}
 
 	@PostConstruct
 	public void init() {
-		EtatLvSvcApplication.etatProjetRepositoryStatic = this.etatProjetRepository;
+		EtatLvSvcApplication.projetRepositoryStatic = this.projetRepository;
 		EtatLvSvcApplication.etatProjetServiceStatic = this.etatProjetService;
 		EtatLvSvcApplication.etatRecouvrementServiceStatic = this.etatRecouvrementService;
 		EtatLvSvcApplication.produitServiceStatic = this.produitService;
@@ -152,9 +157,9 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 		this.storageService.init();
 		LOGGER.info("Start Full Synchros");
 		System.out.println("run");
-		commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();
-		//EtatLvSvcApplication.contratServiceStatic.loadContratFromSap();
+		EtatLvSvcApplication.contratServiceStatic.loadContratFromSap();
 		factureServiceStatic.loadFactureFromSap();
+		commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();
 		//EtatLvSvcApplication.contratServiceStatic.loadContratPieceSap();
 		/*CompletableFuture<String> pieces =EtatLvSvcApplication.contratServiceStatic.loadContratPieceSap();
 		CompletableFuture<String> factures =factureServiceStatic.loadFactureFromSap();
@@ -381,7 +386,25 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 			}
 			etatRecouvrement.setDocuments(documents);
 			EtatLvSvcApplication.etatRecouvrementServiceStatic.updateDocumentsFromSap(etatRecouvrement);
-
+			
+			Collection<Projet> projets = etatProjetServiceStatic.getAllProjets();
+			
+			for(Projet p : projets) {
+				
+				//p.setMontantPayer(montantPayer);
+				Collection<Document> documentsRes =etatRecouvrementServiceStatic.getDocumentsByCodeProjet(p.getCodeProjet());
+				Double montantPaye=0.0;
+				if(documents!=null && documentsRes.isEmpty()) {
+					for(Document d : documentsRes) {
+						montantPaye = montantPaye+(d.getMontantPiece()- d.getMontantOuvert());
+					}
+				}
+				p.setMontantPayer(montantPaye);
+				
+			}
+			
+			EtatLvSvcApplication.projetRepositoryStatic.saveAll(projets);
+			
 	
 		} catch (Exception e) {
 			//logger.debug("exception " + e.getMessage());

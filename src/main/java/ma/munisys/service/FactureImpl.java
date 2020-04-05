@@ -17,6 +17,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jfree.util.Log;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -78,82 +79,80 @@ public class FactureImpl implements FactureService {
 			SimpleDateFormat sp = new SimpleDateFormat("yyyy-MM-dd");
 			Contrat contrat = null;
 			while (rs1.next()) {
-				final Facture facture = new Facture();
-
-				if (rs1.getString(1) != null && !rs1.getString(1).equals("null")) {
-
-					facture.setNumFacture(rs1.getLong(1));
-				} else {
-					continue;
-				}
-				if (rs1.getString(2) != null && !rs1.getString(2).equals("null")) {
-
-					try {
-						contrat = contratRepository.findById(rs1.getLong(2)).get();
-						facture.setContrat(contrat);
-					} catch (Exception e) {
+				
+					final Facture facture = new Facture();
+	
+					if (rs1.getString(1) != null && !rs1.getString(1).equals("null")) {
+	
+						facture.setNumFacture(rs1.getLong(1));
+					} else {
 						continue;
 					}
-
+					if (rs1.getString(2) != null && !rs1.getString(2).equals("null")) {
+	
+						try {
+							contrat = contratRepository.findById(rs1.getLong(2)).get();
+							facture.setContrat(contrat);
+						} catch (Exception e) {
+							continue;
+						}
+	
+					}
+					if (rs1.getString(3) != null && !rs1.getString(3).equals("null")) {
+	
+						facture.setDateEnregistrement(sp.parse(rs1.getString(3).split("\\s+")[0]));
+					}
+					if (rs1.getString(4) != null && !rs1.getString(4).equals("null")) {
+	
+						facture.setMontantTTC(rs1.getDouble(4));
+					} else {
+						// System.out.println("nulllll");
+					}
+	
+					if (rs1.getString(5) != null && !rs1.getString(5).equals("null")) {
+	
+						facture.setMontantHT(rs1.getDouble(5));
+					}
+	
+					if (rs1.getString(6) != null && !rs1.getString(6).equals("null")) {
+	
+						facture.setMontantRestant(rs1.getDouble(6));
+					}
+	
+					if (rs1.getString(7) != null && !rs1.getString(7).equals("null")) {
+	
+						facture.setDebutPeriode(sp.parse(rs1.getString(7).split("\\s+")[0]));
+					}
+					if (rs1.getString(8) != null && !rs1.getString(8).equals("null")) {
+						facture.setFinPeriode(sp.parse(rs1.getString(8).split("\\s+")[0]));
+					}
+					
+					factures.add(facture);
+	
 				}
-				if (rs1.getString(3) != null && !rs1.getString(3).equals("null")) {
-
-					facture.setDateEnregistrement(sp.parse(rs1.getString(3).split("\\s+")[0]));
-				}
-				if (rs1.getString(4) != null && !rs1.getString(4).equals("null")) {
-
-					facture.setMontantTTC(rs1.getDouble(4));
-				} else {
-					// System.out.println("nulllll");
-				}
-
-				if (rs1.getString(5) != null && !rs1.getString(5).equals("null")) {
-
-					facture.setMontantHT(rs1.getDouble(5));
-				}
-
-				if (rs1.getString(6) != null && !rs1.getString(6).equals("null")) {
-
-					facture.setMontantRestant(rs1.getDouble(6));
-				}
-
-				if (rs1.getString(7) != null && !rs1.getString(7).equals("null")) {
-
-					facture.setDebutPeriode(sp.parse(rs1.getString(7).split("\\s+")[0]));
-				}
-				if (rs1.getString(8) != null && !rs1.getString(8).equals("null")) {
-					facture.setFinPeriode(sp.parse(rs1.getString(8).split("\\s+")[0]));
-				}
-
-				factures.add(facture);
-
-			}
+			
 
 			for (Facture f : factures) {
-
 				List<Echeance> ecs = affecterEcheance(f);
 				if (ecs != null && !ecs.isEmpty()) {
-
 					for (Echeance e : ecs) {
-
 						FactureEcheance fe = new FactureEcheance();
 						fe.setId(f.getNumFacture() + "/" + e.getId() + "/" + f.getContrat().getNumContrat());
 						fe.setContrat(f.getContrat());
 						fe.setFacture(f);
 						fe.setMontant(f.getMontantHT() / ecs.size());
 						fe.setEcheance(e);
+						fe.setCloture(false);
 						f.getFactureEcheances().add(fe);
-
 					}
 				} else {
 					FactureEcheance fe = new FactureEcheance();
 					fe.setId(f.getNumFacture() + "/" + f.getContrat().getNumContrat());
 					fe.setContrat(f.getContrat());
 					fe.setFacture(f);
+					fe.setCloture(false);
 					fe.setMontant(f.getMontantHT());
-
 					f.getFactureEcheances().add(fe);
-
 				}
 			}
 
@@ -162,16 +161,16 @@ public class FactureImpl implements FactureService {
 			int currentYear = Calendar.getInstance(TimeZone.getTimeZone("africa/Casablanca")).get(Calendar.YEAR);
 
 			for (Contrat c : contratRepository.findAll()) {
-				if (c.getNumContrat() == 4L) {
+				
 					for (FactureEcheance fe : c.getFactureEcheances()) {
 
 						Echeance e = fe.getEcheance();
-						if (e != null) {
+						if (e != null && !e.getCloture()) {
 							e.calculMontantFacture();
 							echeanceRepository.save(e);
 						}
 					}
-				}
+				
 
 				Double montantFactureAn = factureRepository.sumAmountContrat(c.getNumContrat(), currentYear);
 
@@ -199,14 +198,7 @@ public class FactureImpl implements FactureService {
 						c.setMontantProvisionAFactureInfAnneeEnCours(0.0);
 					}
 				}
-
-				/*
-				 * for(Contrat c : contratRepository.findAll()) { Double montantFactureAn =
-				 * factureRepository.sumAmountContrat(c.getNumContrat(),Calendar.getInstance(
-				 * TimeZone.getTimeZone("africa/Casablanca")).get(Calendar.YEAR));
-				 * if(montantFactureAn!=null) { c.setMontantFactureAn(montantFactureAn);
-				 * c.setMontantRestFactureAn(c.getMontantContrat()-montantFactureAn); }
-				 */
+				
 				contratRepository.save(c);
 
 			}
@@ -258,13 +250,14 @@ public class FactureImpl implements FactureService {
 		List<Echeance> echeances = new ArrayList<>();
 
 		for (Echeance e : f.getContrat().getEcheances()) {
-
-			if (f.getDebutPeriode() != null && f.getFinPeriode() != null
-					&& new DateTime(f.getDebutPeriode()).toLocalDate()
-							.compareTo(new DateTime(e.getDu()).toLocalDate()) == 0
-					&& f.getFinPeriode() != null && new DateTime(f.getFinPeriode()).toLocalDate()
-							.compareTo(new DateTime(e.getAu()).toLocalDate()) == 0) {
-				echeances.add(e);
+			if(!e.getCloture()) {
+				if (f.getDebutPeriode() != null && f.getFinPeriode() != null
+						&& new DateTime(f.getDebutPeriode()).toLocalDate()
+								.compareTo(new DateTime(e.getDu()).toLocalDate()) == 0
+						&& f.getFinPeriode() != null && new DateTime(f.getFinPeriode()).toLocalDate()
+								.compareTo(new DateTime(e.getAu()).toLocalDate()) == 0) {
+					echeances.add(e);
+				}
 			}
 		}
 		return echeances;

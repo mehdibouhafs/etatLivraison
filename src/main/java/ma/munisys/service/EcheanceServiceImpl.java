@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ma.munisys.dao.EcheanceRepository;
+import ma.munisys.entities.CommentaireEcheance;
 import ma.munisys.entities.Echeance;
 
 
@@ -22,10 +23,15 @@ public class EcheanceServiceImpl implements EcheanceService {
 	}
 
 	@Override
-	public Echeance updateEcheance(Long id, String commentaire) {
+	public Echeance updateEcheance(Long id, Long idCommentaire) {
 		LOGGER.info("add commentaire to echeance id " + id);
 		Echeance c = echeanceRepository.getOne(id);
-		c.setCommentaire(commentaire);
+		
+		if(idCommentaire==0) {
+			c.setCommentaire(null);;
+		}else{
+			c.setCommentaire(new CommentaireEcheance(idCommentaire));
+		}
 		return echeanceRepository.save(c);
 	}
 	

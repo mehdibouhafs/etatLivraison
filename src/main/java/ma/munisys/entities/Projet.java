@@ -93,6 +93,10 @@ public class Projet implements Serializable
     
     private Date datePvReceptionDefinitive;
     
+    private Integer tauxAvancement;
+    
+    private String statutProjet;
+    
     
     
     public Projet() {
@@ -733,6 +737,24 @@ public class Projet implements Serializable
 	public void setCloturedByUser(boolean cloturedByUser) {
 		this.cloturedByUser = cloturedByUser;
 	}
+
+	public Integer getTauxAvancement() {
+		return tauxAvancement;
+	}
+
+	public void setTauxAvancement(Integer tauxAvancement) {
+		this.tauxAvancement = tauxAvancement;
+	}
+
+	public String getStatutProjet() {
+		return statutProjet;
+	}
+
+	public void setStatutProjet(String statutProjet) {
+		this.statutProjet = statutProjet;
+	}
+	
+	
 
 	
 	

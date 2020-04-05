@@ -49,6 +49,7 @@ public class Event implements Serializable {
 	
 	private Boolean statut;
 	
+	
 	/*@OneToOne
 
 	private Contrat contrat;*/

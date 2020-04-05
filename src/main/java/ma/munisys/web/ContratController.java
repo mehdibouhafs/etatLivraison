@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import ma.munisys.dao.CommentaireContratRepository;
 import ma.munisys.dao.ContratRepository;
 import ma.munisys.dao.EcheanceRepository;
 import ma.munisys.dao.FactureEcheanceRepository;
@@ -78,6 +80,8 @@ public class ContratController {
 	@Autowired
 	private EcheanceService echeanceService;
 	
+	@Autowired
+	private CommentaireContratRepository commentaireContratRepository;
 	
 	public ContratController() {
 		
@@ -90,11 +94,7 @@ public class ContratController {
 		return contratService.getAllContrats();
 	}
 	
-	@RequestMapping(value="/getAllEcheances",method=RequestMethod.GET)
-	public Collection<Echeance> getAllEcheances() {
-
-		return echeanceRepository.getEcheance(1L);
-	}
+	
 	
 	@RequestMapping(value="/getAllFactureEcheances",method=RequestMethod.GET)
 	public Collection<FactureEcheance> getAllFactureEcheances() {
@@ -121,11 +121,15 @@ public class ContratController {
 	
 	@RequestMapping(value = "/addCommentaires/{numContrat}", method = RequestMethod.PUT)
 	public Contrat updateContrat(@PathVariable("numContrat") final Long numContrat,@RequestBody List<CommentaireContrat> commentaires) {
-
-		
-
 		return contratService.addCommentaires(numContrat,commentaires);
 	}
+	
+	/*@RequestMapping(value = "/deleteCommentaire/{idCommentaire}", method = RequestMethod.DELETE)
+	public void deleteCommentaire(@PathVariable("idCommentaire") final Long idCommentaire) {
+		commentaireContratRepository.deleteById(idCommentaire);
+	}*/
+	
+	
 	
 	@RequestMapping(value = "/contratsFilter", method = RequestMethod.GET)
 	public Collection<Contrat> getContratByPredicate(
@@ -149,7 +153,7 @@ public class ContratController {
 	public Echeance updateEcheance(
 			@RequestBody Echeance echeance){
 	
-		return echeanceService.updateEcheance(echeance.getId(), echeance.getCommentaire());
+		return echeanceService.updateEcheance(echeance.getId(), echeance.getCommentaire().getId());
 		
 	}
 	

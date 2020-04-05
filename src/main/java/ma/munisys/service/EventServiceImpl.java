@@ -20,9 +20,16 @@ public class EventServiceImpl implements EventService {
 	private EventRepository eventRepository;
 
 	@Override
-	public Collection<Event> getEvents(String username, Date lastConnectionDate) {
+	public Collection<Event> getEvents(String username, Date lastConnectionDate,String service) {
 		// TODO Auto-generated method stub
-		return eventRepository.findAllEvents(username);
+		
+		if(service!=null && !service.isEmpty()) {
+			return eventRepository.findAllEventsbyService(username, service);
+		}else {
+			return eventRepository.findAllEvents(username);
+		}
+		
+		
 	}
 
 	@Override

@@ -207,13 +207,14 @@ public class ProduitServiceImpl implements ProduitService {
 			for(Projet p : projets) {
 				
 				Double sumStock = produitRepository.getMontantStock(p.getCodeProjet());
-				if(sumStock!=null)
-				p.setMontantStock(sumStock);
+				if(sumStock!=null) {
+					p.setMontantStock(sumStock);
+				}else {
+					p.setMontantStock(0.0);
+				}
 				
 			}
 			projetRepository.saveAll(projets);
-
-			//System.out.println("dupp " + dupplicatedId);
 
 		} catch (Exception e) {
 			LOGGER.error("error " + e.getMessage());

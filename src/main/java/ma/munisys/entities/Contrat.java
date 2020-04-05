@@ -77,7 +77,7 @@ public class Contrat implements Serializable,Cloneable {
 	
 	private Double montantAssitanceAn;
 	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "contrat", cascade = { CascadeType.ALL }, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "contrat")
     @OrderBy("date DESC")
     private Set<CommentaireContrat> commentaires = new HashSet<CommentaireContrat>();
 	

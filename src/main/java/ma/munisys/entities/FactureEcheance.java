@@ -28,6 +28,8 @@ public class FactureEcheance implements Serializable, Comparable<FactureEcheance
 	
 	private Double montant;
 	
+	private boolean cloture;
+	
 
 	
 	public FactureEcheance() {
@@ -127,6 +129,18 @@ public class FactureEcheance implements Serializable, Comparable<FactureEcheance
 	public Object clone() throws CloneNotSupportedException {
 		// TODO Auto-generated method stub
 		return (FactureEcheance)super.clone();
+	}
+
+
+
+	public boolean isCloture() {
+		return cloture;
+	}
+
+
+
+	public void setCloture(boolean cloture) {
+		this.cloture = cloture;
 	}
 
 	

@@ -21,9 +21,7 @@ public interface DocumentRepository extends JpaRepository<Document, String>,JpaS
 	
 	@Query("select p from Document p where p.etatRecouvrement.id = :x and p.cloture = :y order by p.client")
 	public Page<Document> getDocuments(@Param("x") Long idEtatFacture,@Param("y") Boolean cloturer,Pageable pageable);
-	
-	
-	
+		
 	@Query("select p from Document p where p.etatRecouvrement.id = :x and p.cloture = :y order by p.client")
 	public Collection<Document> getDocuments(@Param("x") Long idEtatFacture,@Param("y") Boolean cloturer);
 	
@@ -93,5 +91,7 @@ public interface DocumentRepository extends JpaRepository<Document, String>,JpaS
 			" 'Fevrier 'as 'mois1','Mars 'as 'mois2','Avril' as 'mois3','Mai 'as 'mois4','Avant Période' as 'mois0'"+
 			"  FROM [MGOUVDEV].[dbo].[documents] d where d.type_document ='Encaissement' and d.cloture=0 group by d.client",nativeQuery = true)
 	public Collection<EtatEncaissement> getEncaissemenForNextMonths();
+	
+	
 	
 }
