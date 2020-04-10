@@ -42,7 +42,6 @@ import ma.munisys.entities.AppUser;
 import ma.munisys.entities.Commentaire;
 import ma.munisys.entities.CommentaireContrat;
 import ma.munisys.entities.CommentaireProduit;
-import ma.munisys.entities.CommentaireStock;
 import ma.munisys.entities.Contrat;
 import ma.munisys.entities.Document;
 import ma.munisys.entities.Echeance;
@@ -1110,7 +1109,7 @@ public class StorageServiceImpl {
 		return workbook;
 		
 	}
-
+  
   public Workbook generateWorkBookContrat(List<Contrat> contrats) {
 		 String pattern = "dd/MM/yyyy HH:mm";
 		 String pattern2 = "dd/MM/yyyy";
@@ -1119,29 +1118,29 @@ public class StorageServiceImpl {
 		Workbook workbook = new XSSFWorkbook();
 		
 
-//Create a Sheet
+// Create a Sheet
 Sheet sheet = workbook.createSheet("Contrats");
 
 //Create a Sheet
 Sheet sheet2 = workbook.createSheet("Echeances");
 
-//Create a Font for styling header cells
+// Create a Font for styling header cells
 Font headerFont = workbook.createFont();
 headerFont.setBold(true);
 headerFont.setFontHeightInPoints((short) 14);
 headerFont.setColor(IndexedColors.BLUE.getIndex());
 
-//Create a CellStyle with the font
+// Create a CellStyle with the font
 CellStyle headerCellStyle = workbook.createCellStyle();
 headerCellStyle.setFont(headerFont);
 
-//Create a Row
+// Create a Row
 Row headerRow = sheet.createRow(0);
 
 //Create a Row
 Row headerRow1 = sheet2.createRow(0);
 
-//Create a Row Comment
+// Create a Row Comment
 
 /*Row HeaderRowComment = sheetComments.createRow(0);
 String[] columnsComment = {"codeProjet","commentaire","date","utilisateur"};*/
@@ -1153,11 +1152,11 @@ String[] columns2 = {"NumContrat","Période Du","Période Au","Montant Prévisio
 
 
 
-//Create cells
+// Create cells
 for(int i = 0; i < columns.length; i++) {
-Cell cell = headerRow.createCell(i);
-cell.setCellValue(columns[i]);
-cell.setCellStyle(headerCellStyle);
+   Cell cell = headerRow.createCell(i);
+   cell.setCellValue(columns[i]);
+   cell.setCellStyle(headerCellStyle);
 }
 
 //Create cells
@@ -1167,95 +1166,95 @@ cell.setCellValue(columns2[i]);
 cell.setCellStyle(headerCellStyle);
 }
 
-//Create Other rows and cells with employees data
+// Create Other rows and cells with employees data
 int rowNum = 1;
 int rowNum1 = 1;
 for(Contrat contrat: contrats) {
-Row row = sheet.createRow(rowNum++);
+   Row row = sheet.createRow(rowNum++);
+   
+   Cell cell0 = row.createCell(0);
+   if(contrat.getNumMarche()!=null)
+  cell0.setCellValue(contrat.getNumMarche());
 
-Cell cell0 = row.createCell(0);
-if(contrat.getNumMarche()!=null)
-cell0.setCellValue(contrat.getNumMarche());
+   Cell cell1 = row.createCell(1);
+   if(contrat.getNumMarche()!=null)
+  cell1.setCellValue(contrat.getNumMarche()); //Code Projet
 
-Cell cell1 = row.createCell(1);
-if(contrat.getNumMarche()!=null)
-cell1.setCellValue(contrat.getNumMarche()); //Code Projet
-
-Cell cell2 = row.createCell(2);
-if(contrat.getNomPartenaire()!=null)
-cell2.setCellValue(contrat.getNomPartenaire()); //Projet
-
-Cell cell3 =  row.createCell(3);
-if(contrat.getDescription()!=null)
-cell3.setCellValue(contrat.getDescription());//Date CMD
-
-Cell cell4= row.createCell(4);
-if(contrat.getPilote()!=null)
-cell4.setCellValue(contrat.getPilote());//Ref.COM
-
-Cell cell5=  row.createCell(5);
-cell5.setCellValue(contrat.isSousTraiter()?"Oui":"Non");//Age (mois)
-
-Cell cell6 = row.createCell(6);
-if(contrat.getPeriodeFacturation()!=null)
-cell6.setCellValue(contrat.getPeriodeFacturationLabel());//Code Client
-
-Cell cell7= row.createCell(7);
-cell7.setCellType(CellType.NUMERIC);
-if(contrat.getMontantAnnuel()!=null)
-cell7.setCellValue(contrat.getMontantAnnuel()); // mnt cmd
-
-Cell cell8= row.createCell(8);
-cell8.setCellType(CellType.NUMERIC);
-if(contrat.getMontantFactureAn()!=null)
-cell8.setCellValue(contrat.getMontantFactureAn()); // mnt cmd
-
-Cell cell9= row.createCell(9);
-cell9.setCellType(CellType.NUMERIC);
-if(contrat.getMontantRestFactureAn()!=null)
-cell9.setCellValue(contrat.getMontantRestFactureAn()); // mnt cmd
-
-
-
-
-Cell cell10 = row.createCell(10);
-
-
-//Create an instance of SimpleDateFormat used for formatting 
-//the string representation of date according to the chosen pattern
-
-
-if(contrat.getCommentaires()!=null) {
-	 List<CommentaireContrat> comments = new ArrayList<CommentaireContrat>(contrat.getCommentaires());
-	 StringBuilder s = new StringBuilder();
-	 if(comments.size()>=1) {
-		 s.append(df2.format(comments.get(comments.size()-1).getDate()) + " " +comments.get(comments.size()-1).getUser().getSigle() + " : " + comments.get(comments.size()-1).getContent() + "\n");
-	 }
-	 
-	 if(comments.size()>=2) {
-		 s.append(df2.format(comments.get(comments.size()-2).getDate()) + " " +comments.get(comments.size()-2).getUser().getSigle() + " : " + comments.get(comments.size()-2).getContent() + "\n");
-	 }
-	 
-	 if(comments.size()>=3) {
-		 s.append(df2.format(comments.get(comments.size()-3).getDate()) + " " +comments.get(comments.size()-3).getUser().getSigle() + " : " + comments.get(comments.size()-3).getContent() + "\n");
-	 }
+   Cell cell2 = row.createCell(2);
+   if(contrat.getNomPartenaire()!=null)
+   cell2.setCellValue(contrat.getNomPartenaire()); //Projet
+   
+   Cell cell3 =  row.createCell(3);
+   if(contrat.getDescription()!=null)
+  cell3.setCellValue(contrat.getDescription());//Date CMD
+   
+   Cell cell4= row.createCell(4);
+   if(contrat.getPilote()!=null)
+  cell4.setCellValue(contrat.getPilote());//Ref.COM
+   
+   Cell cell5=  row.createCell(5);
+   cell5.setCellValue(contrat.isSousTraiter()?"Oui":"Non");//Age (mois)
+   
+   Cell cell6 = row.createCell(6);
+   if(contrat.getPeriodeFacturation()!=null)
+   cell6.setCellValue(contrat.getPeriodeFacturationLabel());//Code Client
+ 
+   Cell cell7= row.createCell(7);
+   cell7.setCellType(CellType.NUMERIC);
+   if(contrat.getMontantAnnuel()!=null)
+   cell7.setCellValue(contrat.getMontantAnnuel()); // mnt cmd
+   
+   Cell cell8= row.createCell(8);
+   cell8.setCellType(CellType.NUMERIC);
+   if(contrat.getMontantFactureAn()!=null)
+   cell8.setCellValue(contrat.getMontantFactureAn()); // mnt cmd
+   
+   Cell cell9= row.createCell(9);
+   cell9.setCellType(CellType.NUMERIC);
+   if(contrat.getMontantRestFactureAn()!=null)
+   cell9.setCellValue(contrat.getMontantRestFactureAn()); // mnt cmd
+  
+   
+   
+   
+   Cell cell10 = row.createCell(10);
+   
+   
+// Create an instance of SimpleDateFormat used for formatting 
+// the string representation of date according to the chosen pattern
+   
+   
+   if(contrat.getCommentaires()!=null) {
+  	 List<CommentaireContrat> comments = new ArrayList<CommentaireContrat>(contrat.getCommentaires());
+  	 StringBuilder s = new StringBuilder();
+  	 if(comments.size()>=1) {
+  		 s.append(df2.format(comments.get(comments.size()-1).getDate()) + " " +comments.get(comments.size()-1).getUser().getSigle() + " : " + comments.get(comments.size()-1).getContent() + "\n");
+  	 }
+  	 
+  	 if(comments.size()>=2) {
+  		 s.append(df2.format(comments.get(comments.size()-2).getDate()) + " " +comments.get(comments.size()-2).getUser().getSigle() + " : " + comments.get(comments.size()-2).getContent() + "\n");
+  	 }
+  	 
+  	 if(comments.size()>=3) {
+  		 s.append(df2.format(comments.get(comments.size()-3).getDate()) + " " +comments.get(comments.size()-3).getUser().getSigle() + " : " + comments.get(comments.size()-3).getContent() + "\n");
+  	 }
 	         
 	        
-  XSSFRichTextString richString = new XSSFRichTextString(s.toString());
-  
-  cell10.setCellType(CellType.STRING);
-  cell10.setCellValue(richString); // commentaires
+     XSSFRichTextString richString = new XSSFRichTextString(s.toString());
+     
+     cell10.setCellType(CellType.STRING);
+     cell10.setCellValue(richString); // commentaires
 	      
-
-}
-
-//to enable newlines you need set a cell styles with wrap=true
-CellStyle cs = workbook.createCellStyle();
-cs.setWrapText(true);
-cell10.setCellStyle(cs);
-
-if(contrat.getEcheances()!=null && !contrat.getEcheances().isEmpty())
-for(Echeance echeance: contrat.getEcheances()) {
+   
+   }
+   
+   //to enable newlines you need set a cell styles with wrap=true
+   CellStyle cs = workbook.createCellStyle();
+   cs.setWrapText(true);
+   cell10.setCellStyle(cs);
+   
+   if(contrat.getEcheances()!=null && !contrat.getEcheances().isEmpty())
+   for(Echeance echeance: contrat.getEcheances()) {
 	   Row row1 = sheet2.createRow(rowNum1++);
 	   
 	   Cell cell11 = row1.createCell(0);
@@ -1300,15 +1299,15 @@ for(Echeance echeance: contrat.getEcheances()) {
 	   
 	   
 	   
+   }
+   
+  
+  
 }
 
-
-
-}
-
-//Resize all columns to fit the content size
+// Resize all columns to fit the content size
 for(int i = 0; i < columns.length; i++) {
-sheet.autoSizeColumn(i);
+   sheet.autoSizeColumn(i);
 }
 
 //Resize all columns to fit the content size
@@ -1320,4 +1319,6 @@ return workbook;
 }
 
 
+
 }
+

@@ -353,7 +353,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 			if (lastDocument.getStatut() != null) {
 				document.setStatut(lastDocument.getStatut());
 			}
-
+			
 			document.setMotif(lastDocument.getMotif());
 			document.setMontantGarantie(lastDocument.getMontantGarantie());
 			document.setMontantProvision(lastDocument.getMontantProvision());
