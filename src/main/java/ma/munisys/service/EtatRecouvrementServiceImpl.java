@@ -354,6 +354,11 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 				document.setStatut(lastDocument.getStatut());
 			}
 			
+			if(lastDocument.isDisableUpdateChefProjet()) {
+				document.setCodeChefProjet(lastDocument.getCodeChefProjet());
+				document.setChefProjet(lastDocument.getChefProjet());
+			}
+
 			document.setMotif(lastDocument.getMotif());
 			document.setMontantGarantie(lastDocument.getMontantGarantie());
 			document.setMontantProvision(lastDocument.getMontantProvision());

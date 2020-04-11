@@ -167,10 +167,8 @@ public class Document implements Serializable {
 	private String categorie;
 	
 	private String typeBloquage;
-	
+
 	private boolean disableUpdateChefProjet;
-	
-	
 	
 	public void addDetail(Detail detail) {
 		detail.setDocument(this);
@@ -887,7 +885,7 @@ public class Document implements Serializable {
 	public void setTypeBloquage(String typeBloquage) {
 		this.typeBloquage = typeBloquage;
 	}
-
+	
 	public boolean isDisableUpdateChefProjet() {
 		return disableUpdateChefProjet;
 	}
