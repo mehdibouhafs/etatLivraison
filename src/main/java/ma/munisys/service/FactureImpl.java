@@ -17,6 +17,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jfree.util.Log;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -130,30 +131,26 @@ public class FactureImpl implements FactureService {
 			}
 
 			for (Facture f : factures) {
-
 				List<Echeance> ecs = affecterEcheance(f);
 				if (ecs != null && !ecs.isEmpty()) {
-
 					for (Echeance e : ecs) {
-
 						FactureEcheance fe = new FactureEcheance();
 						fe.setId(f.getNumFacture() + "/" + e.getId() + "/" + f.getContrat().getNumContrat());
 						fe.setContrat(f.getContrat());
 						fe.setFacture(f);
 						fe.setMontant(f.getMontantHT() / ecs.size());
 						fe.setEcheance(e);
+						fe.setCloture(false);
 						f.getFactureEcheances().add(fe);
-
 					}
 				} else {
 					FactureEcheance fe = new FactureEcheance();
 					fe.setId(f.getNumFacture() + "/" + f.getContrat().getNumContrat());
 					fe.setContrat(f.getContrat());
 					fe.setFacture(f);
+					fe.setCloture(false);
 					fe.setMontant(f.getMontantHT());
-
 					f.getFactureEcheances().add(fe);
-
 				}
 			}
 
@@ -162,16 +159,16 @@ public class FactureImpl implements FactureService {
 			int currentYear = Calendar.getInstance(TimeZone.getTimeZone("africa/Casablanca")).get(Calendar.YEAR);
 
 			for (Contrat c : contratRepository.findAll()) {
-				if (c.getNumContrat() == 4L) {
+				
 					for (FactureEcheance fe : c.getFactureEcheances()) {
 
 						Echeance e = fe.getEcheance();
-						if (e != null) {
+						if (e != null && !e.getCloture()) {
 							e.calculMontantFacture();
 							echeanceRepository.save(e);
 						}
 					}
-				}
+				
 
 				Double montantFactureAn = factureRepository.sumAmountContrat(c.getNumContrat(), currentYear);
 
@@ -200,13 +197,6 @@ public class FactureImpl implements FactureService {
 					}
 				}
 
-				/*
-				 * for(Contrat c : contratRepository.findAll()) { Double montantFactureAn =
-				 * factureRepository.sumAmountContrat(c.getNumContrat(),Calendar.getInstance(
-				 * TimeZone.getTimeZone("africa/Casablanca")).get(Calendar.YEAR));
-				 * if(montantFactureAn!=null) { c.setMontantFactureAn(montantFactureAn);
-				 * c.setMontantRestFactureAn(c.getMontantContrat()-montantFactureAn); }
-				 */
 				contratRepository.save(c);
 
 			}
@@ -258,13 +248,14 @@ public class FactureImpl implements FactureService {
 		List<Echeance> echeances = new ArrayList<>();
 
 		for (Echeance e : f.getContrat().getEcheances()) {
-
-			if (f.getDebutPeriode() != null && f.getFinPeriode() != null
-					&& new DateTime(f.getDebutPeriode()).toLocalDate()
-							.compareTo(new DateTime(e.getDu()).toLocalDate()) == 0
-					&& f.getFinPeriode() != null && new DateTime(f.getFinPeriode()).toLocalDate()
-							.compareTo(new DateTime(e.getAu()).toLocalDate()) == 0) {
-				echeances.add(e);
+			if(!e.getCloture()) {
+				if (f.getDebutPeriode() != null && f.getFinPeriode() != null
+						&& new DateTime(f.getDebutPeriode()).toLocalDate()
+								.compareTo(new DateTime(e.getDu()).toLocalDate()) == 0
+						&& f.getFinPeriode() != null && new DateTime(f.getFinPeriode()).toLocalDate()
+								.compareTo(new DateTime(e.getAu()).toLocalDate()) == 0) {
+					echeances.add(e);
+				}
 			}
 		}
 		return echeances;

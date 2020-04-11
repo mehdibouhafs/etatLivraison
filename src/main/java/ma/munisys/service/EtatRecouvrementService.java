@@ -76,6 +76,9 @@ public interface EtatRecouvrementService {
 	public Collection<Document> getDocumentsByCodeProjet( Long idEtatFacture, Boolean cloturer,String codeProjet);
 	
 	
+	public Collection<Document> getDocumentsByCodeProjet( String codeProjet);
+	
+	
 	public List<String> getDistinctClient();
 	
 	

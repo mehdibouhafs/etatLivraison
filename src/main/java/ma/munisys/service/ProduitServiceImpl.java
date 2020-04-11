@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import ma.munisys.dao.CommentaireRepository;
 import ma.munisys.dao.EventRepository;
 import ma.munisys.dao.ProduitRepository;
 import ma.munisys.dao.ProjetRepository;
@@ -44,7 +45,7 @@ public class ProduitServiceImpl implements ProduitService {
 	
 	@Autowired
 	private EventRepository eventRepository;
-
+	
 	public ProduitServiceImpl() {
 
 	}
@@ -207,13 +208,14 @@ public class ProduitServiceImpl implements ProduitService {
 			for(Projet p : projets) {
 				
 				Double sumStock = produitRepository.getMontantStock(p.getCodeProjet());
-				if(sumStock!=null)
+				if(sumStock!=null) {
 				p.setMontantStock(sumStock);
+				}else {
+					p.setMontantStock(0.0);
+				}
 				
 			}
 			projetRepository.saveAll(projets);
-
-			//System.out.println("dupp " + dupplicatedId);
 
 		} catch (Exception e) {
 			LOGGER.error("error " + e.getMessage());
@@ -1002,5 +1004,11 @@ public class ProduitServiceImpl implements ProduitService {
 
 		return ps;
 	}
+	
+
+
+
+
+
 
 }

@@ -28,7 +28,7 @@ public class EventController {
 	private EventService eventService;
 
 	@RequestMapping(value="/events",method=RequestMethod.GET)
-	public Collection<Event> getEvents(@RequestParam(name="username") String username,@RequestParam(name="lastConnectionDate") String lastConnectionDate) {
+	public Collection<Event> getEvents(@RequestParam(name="username") String username,@RequestParam(name="service" ,required = false) String service,@RequestParam(name="lastConnectionDate" ,required = false) String lastConnectionDate) {
 		
 		SimpleDateFormat sp =new SimpleDateFormat("DD/MM/YYYY");
 		Date lastConnectionDate2 = null;
@@ -43,7 +43,7 @@ public class EventController {
 				e1.printStackTrace();
 			}
 		}
-		return eventService.getEvents(username, lastConnectionDate2);
+		return eventService.getEvents(username, lastConnectionDate2,service);
 	}
 	
 	@RequestMapping(value="/events",method=RequestMethod.POST)

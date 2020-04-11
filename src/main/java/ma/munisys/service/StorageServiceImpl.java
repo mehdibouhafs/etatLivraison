@@ -40,12 +40,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import ma.munisys.entities.AppUser;
 import ma.munisys.entities.Commentaire;
+import ma.munisys.entities.CommentaireContrat;
 import ma.munisys.entities.CommentaireProduit;
+import ma.munisys.entities.CommentaireStock;
+import ma.munisys.entities.Contrat;
 import ma.munisys.entities.Document;
+import ma.munisys.entities.Echeance;
 import ma.munisys.entities.Employer;
 import ma.munisys.entities.EtatProjet;
 import ma.munisys.entities.Produit;
 import ma.munisys.entities.Projet;
+import ma.munisys.entities.StockProjet;
 
 @Service
 public class StorageServiceImpl {
@@ -405,6 +410,168 @@ public class StorageServiceImpl {
     
     return workbook;
   }
+  
+  public Workbook generateWorkBookStockProjet(List<StockProjet> produits) {
+	     String pattern = "dd/MM/yyyy HH:mm";
+	     String pattern2 = "dd/MM/yyyy";
+	      DateFormat df = new SimpleDateFormat(pattern2);
+	      DateFormat df2 = new SimpleDateFormat(pattern);
+	    Workbook workbook = new XSSFWorkbook();
+	    
+	    
+	    /* CreationHelper helps us create instances of various things like DataFormat, 
+	       Hyperlink, RichTextString etc, in a format (HSSF, XSSF) independent way */
+	    CreationHelper createHelper = workbook.getCreationHelper();
+
+	    // Create a Sheet
+	    Sheet sheet = workbook.createSheet("Stock");
+	    
+	   
+	    // Create a Font for styling header cells
+	    Font headerFont = workbook.createFont();
+	    headerFont.setBold(true);
+	    headerFont.setFontHeightInPoints((short) 14);
+	    headerFont.setColor(IndexedColors.BLUE.getIndex());
+
+	    // Create a CellStyle with the font
+	    CellStyle headerCellStyle = workbook.createCellStyle();
+	    headerCellStyle.setFont(headerFont);
+
+	    // Create a Row
+	    Row headerRow = sheet.createRow(0);
+	    
+	    // Create a Row Comment
+	    
+	    /*Row HeaderRowComment = sheetComments.createRow(0);
+	    String[] columnsComment = {"codeProjet","commentaire","date","utilisateur"};*/
+	    
+	    
+	    String[] columns = {"Magasin","Num Lot","Nom Lot","Client","Commercial",
+	       "Chef Projet","Année CMD","Date Réception","Montant",
+	       "Commentaire Réfèrence","Commentaires"};
+
+	 
+	    // Create cells
+	    for(int i = 0; i < columns.length; i++) {
+	        Cell cell = headerRow.createCell(i);
+	        cell.setCellValue(columns[i]);
+	        cell.setCellStyle(headerCellStyle);
+	    }
+	   
+	    // Create Cell Style for formatting Date
+	    CellStyle dateCellStyle = workbook.createCellStyle();
+	    dateCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+
+	    
+	    int rowNum = 1;
+	    for(StockProjet produit: produits) {
+	        Row row = sheet.createRow(rowNum++);
+
+	        Cell cell0 = row.createCell(0);
+	        if(produit.getMagasin()!=null)
+	       cell0.setCellValue(produit.getMagasin());
+
+	        Cell cell1 = row.createCell(1);
+	        if(produit.getNumLot()!=null)
+	        cell1.setCellValue(produit.getNumLot());
+	        
+	        Cell cell2 =  row.createCell(2);
+	       cell2.setCellValue(produit.getNomLot());
+	        
+	        Cell cell3= row.createCell(3);
+	        if(produit.getClient()!=null)
+	       cell3.setCellValue(produit.getClient());
+	        
+	        Cell cell4=  row.createCell(4);
+	        if(produit.getCommercial()!=null)       
+	       cell4 .setCellValue(produit.getCommercial());
+	        
+	        Cell cell5 = row.createCell(5);
+	        if(produit.getChefProjet()!=null)
+	        cell5.setCellValue(produit.getChefProjet());
+	        
+	      
+	        
+	        Cell cell6  =row.createCell(6);	        
+	        cell6.setCellValue(produit.getAnnee());
+	        
+	        Cell cell7 =row.createCell(7);        
+	         cell7.setCellValue(produit.getDateRec());
+	        
+	        Cell cell8 = row.createCell(8);    
+	        cell8.setCellType(CellType.NUMERIC);
+	        cell8.setCellValue(produit.getMontant());
+	 
+
+	      
+	         
+	         
+	      // Create an instance of SimpleDateFormat used for formatting 
+	      // the string representation of date according to the chosen pattern
+	         
+	         
+	         if(produit.getCommentaires()!=null) {
+	           List<CommentaireStock> comments = new ArrayList<CommentaireStock>(produit.getCommentaires());
+	           StringBuilder s = new StringBuilder();
+	           if(comments.size()>=1) {
+	             s.append(df2.format(comments.get(comments.size()-1).getDate()) + " " +comments.get(comments.size()-1).getUser_username().getSigle() + " : " + comments.get(comments.size()-1).getContent() + "\n");
+	           }
+	           
+	           if(comments.size()>=2) {
+	             s.append(df2.format(comments.get(comments.size()-2).getDate()) + " " +comments.get(comments.size()-2).getUser_username().getSigle() + " : " + comments.get(comments.size()-2).getContent() + "\n");
+	           }
+	           
+	           if(comments.size()>=3) {
+	             s.append(df2.format(comments.get(comments.size()-3).getDate()) + " " +comments.get(comments.size()-3).getUser_username().getSigle() + " : " + comments.get(comments.size()-3).getContent() + "\n");
+	           }
+	           
+	           
+	           
+	           XSSFRichTextString richString = new XSSFRichTextString(s.toString());
+
+	        
+	         
+	         }
+	         
+	         //to enable newlines you need set a cell styles with wrap=true
+	         CellStyle cs = workbook.createCellStyle();
+	         cs.setWrapText(true);
+	         
+	    
+	        
+	     }
+	     /*
+	     int rowNumComment = 1;
+	     for(Projet projet: projets) {
+	       
+	       for(Commentaire com : projet.getCommentaires()) {
+	         Row row = sheetComments.createRow(rowNumComment++);
+	         
+	         row.createCell(0)
+	             .setCellValue(projet.getCodeProjet());
+	         
+	         row.createCell(1)
+	             .setCellValue(com.getContent());
+	         
+	         row.createCell(2)
+	             .setCellValue(com.getDate());
+	         
+	         row.createCell(3)
+	             .setCellValue(com.getUser().getFirstName() + "" + com.getUser().getLastName());   
+	         
+	       }
+	       
+	         
+	     }*/
+
+	    // Resize all columns to fit the content size
+	     for(int i = 0; i < columns.length; i++) {
+	         sheet.autoSizeColumn(i);
+	     }
+	    
+	    return workbook;
+	    
+	  }
   
   
   public Workbook generateWorkBookStock(List<Produit> produits) {
@@ -943,5 +1110,214 @@ public class StorageServiceImpl {
 		return workbook;
 		
 	}
+
+  public Workbook generateWorkBookContrat(List<Contrat> contrats) {
+		 String pattern = "dd/MM/yyyy HH:mm";
+		 String pattern2 = "dd/MM/yyyy";
+		  DateFormat df = new SimpleDateFormat(pattern2);
+		  DateFormat df2 = new SimpleDateFormat(pattern);
+		Workbook workbook = new XSSFWorkbook();
+		
+
+//Create a Sheet
+Sheet sheet = workbook.createSheet("Contrats");
+
+//Create a Sheet
+Sheet sheet2 = workbook.createSheet("Echeances");
+
+//Create a Font for styling header cells
+Font headerFont = workbook.createFont();
+headerFont.setBold(true);
+headerFont.setFontHeightInPoints((short) 14);
+headerFont.setColor(IndexedColors.BLUE.getIndex());
+
+//Create a CellStyle with the font
+CellStyle headerCellStyle = workbook.createCellStyle();
+headerCellStyle.setFont(headerFont);
+
+//Create a Row
+Row headerRow = sheet.createRow(0);
+
+//Create a Row
+Row headerRow1 = sheet2.createRow(0);
+
+//Create a Row Comment
+
+/*Row HeaderRowComment = sheetComments.createRow(0);
+String[] columnsComment = {"codeProjet","commentaire","date","utilisateur"};*/
+
+
+String[] columns = {"NumContrat","N°marche","Client","Contrat","Pilote","Sous-traité","Période De Facturation","Montant Annuel","Montant Facturé/An","Montant RAF/AN"};
+
+String[] columns2 = {"NumContrat","Période Du","Période Au","Montant Prévisionnelle","Fréquence de facturation","Périodicité","N°factures","Montant facturé","Montant RAF","Commentaire"};
+
+
+
+//Create cells
+for(int i = 0; i < columns.length; i++) {
+Cell cell = headerRow.createCell(i);
+cell.setCellValue(columns[i]);
+cell.setCellStyle(headerCellStyle);
+}
+
+//Create cells
+for(int i = 0; i < columns2.length; i++) {
+Cell cell = headerRow1.createCell(i);
+cell.setCellValue(columns2[i]);
+cell.setCellStyle(headerCellStyle);
+}
+
+//Create Other rows and cells with employees data
+int rowNum = 1;
+int rowNum1 = 1;
+for(Contrat contrat: contrats) {
+Row row = sheet.createRow(rowNum++);
+
+Cell cell0 = row.createCell(0);
+if(contrat.getNumMarche()!=null)
+cell0.setCellValue(contrat.getNumMarche());
+
+Cell cell1 = row.createCell(1);
+if(contrat.getNumMarche()!=null)
+cell1.setCellValue(contrat.getNumMarche()); //Code Projet
+
+Cell cell2 = row.createCell(2);
+if(contrat.getNomPartenaire()!=null)
+cell2.setCellValue(contrat.getNomPartenaire()); //Projet
+
+Cell cell3 =  row.createCell(3);
+if(contrat.getDescription()!=null)
+cell3.setCellValue(contrat.getDescription());//Date CMD
+
+Cell cell4= row.createCell(4);
+if(contrat.getPilote()!=null)
+cell4.setCellValue(contrat.getPilote());//Ref.COM
+
+Cell cell5=  row.createCell(5);
+cell5.setCellValue(contrat.isSousTraiter()?"Oui":"Non");//Age (mois)
+
+Cell cell6 = row.createCell(6);
+if(contrat.getPeriodeFacturation()!=null)
+cell6.setCellValue(contrat.getPeriodeFacturationLabel());//Code Client
+
+Cell cell7= row.createCell(7);
+cell7.setCellType(CellType.NUMERIC);
+if(contrat.getMontantAnnuel()!=null)
+cell7.setCellValue(contrat.getMontantAnnuel()); // mnt cmd
+
+Cell cell8= row.createCell(8);
+cell8.setCellType(CellType.NUMERIC);
+if(contrat.getMontantFactureAn()!=null)
+cell8.setCellValue(contrat.getMontantFactureAn()); // mnt cmd
+
+Cell cell9= row.createCell(9);
+cell9.setCellType(CellType.NUMERIC);
+if(contrat.getMontantRestFactureAn()!=null)
+cell9.setCellValue(contrat.getMontantRestFactureAn()); // mnt cmd
+
+
+
+
+Cell cell10 = row.createCell(10);
+
+
+//Create an instance of SimpleDateFormat used for formatting 
+//the string representation of date according to the chosen pattern
+
+
+if(contrat.getCommentaires()!=null) {
+	 List<CommentaireContrat> comments = new ArrayList<CommentaireContrat>(contrat.getCommentaires());
+	 StringBuilder s = new StringBuilder();
+	 if(comments.size()>=1) {
+		 s.append(df2.format(comments.get(comments.size()-1).getDate()) + " " +comments.get(comments.size()-1).getUser().getSigle() + " : " + comments.get(comments.size()-1).getContent() + "\n");
+	 }
+	 
+	 if(comments.size()>=2) {
+		 s.append(df2.format(comments.get(comments.size()-2).getDate()) + " " +comments.get(comments.size()-2).getUser().getSigle() + " : " + comments.get(comments.size()-2).getContent() + "\n");
+	 }
+	 
+	 if(comments.size()>=3) {
+		 s.append(df2.format(comments.get(comments.size()-3).getDate()) + " " +comments.get(comments.size()-3).getUser().getSigle() + " : " + comments.get(comments.size()-3).getContent() + "\n");
+	 }
+	         
+	        
+  XSSFRichTextString richString = new XSSFRichTextString(s.toString());
+  
+  cell10.setCellType(CellType.STRING);
+  cell10.setCellValue(richString); // commentaires
+	      
+
+}
+
+//to enable newlines you need set a cell styles with wrap=true
+CellStyle cs = workbook.createCellStyle();
+cs.setWrapText(true);
+cell10.setCellStyle(cs);
+
+if(contrat.getEcheances()!=null && !contrat.getEcheances().isEmpty())
+for(Echeance echeance: contrat.getEcheances()) {
+	   Row row1 = sheet2.createRow(rowNum1++);
+	   
+	   Cell cell11 = row1.createCell(0);
+	   cell11.setCellValue(contrat.getNumContrat()); //Code Projet
+	   
+	   
+	   Cell cell12 =  row1.createCell(1);
+	   if(echeance.getDu()!=null)
+		   cell12.setCellValue(df.format(echeance.getDu()));//Date CMD
+	   
+	   Cell cell13 =  row1.createCell(2);
+	   if(echeance.getAu()!=null)
+		 cell13.setCellValue(df.format(echeance.getAu()));//Date CMD
+	   
+	   Cell cell14 =  row1.createCell(3);
+	   cell14.setCellType(CellType.NUMERIC);
+	   if(echeance.getMontantPrevision()!=null)
+		cell14.setCellValue(echeance.getMontantPrevision());//Date CMD
+	   
+	   Cell cell15 =  row1.createCell(4);
+	   if(echeance.getPeriodeFacturation()!=null)
+		cell15.setCellValue(echeance.getPeriodeFacturation().toString());//Date CMD
+	   
+	   Cell cell16 =  row1.createCell(5);
+	   if(echeance.getFactures()!=null)
+		cell16.setCellValue(echeance.getFactures());//Date CMD
+	   
+	   Cell cell17 =  row1.createCell(6);
+	   cell17.setCellType(CellType.NUMERIC);
+	   if(echeance.getMontantFacture()!=null)
+		  cell17.setCellValue(echeance.getMontantFacture());//Date CMD
+	   
+	   Cell cell18 =  row1.createCell(7);
+	   cell18.setCellType(CellType.NUMERIC);
+	   if(echeance.getMontantRestFacture()!=null)
+		cell18.setCellValue(echeance.getMontantRestFacture());//Date CMD
+	   
+	   Cell cell19 =  row1.createCell(8);
+	   if(echeance.getCommentaire()!=null)
+		   cell19.setCellValue(echeance.getCommentaire().getComment());//Date CMD
+	   
+	   
+	   
+	   
+}
+
+
+
+}
+
+//Resize all columns to fit the content size
+for(int i = 0; i < columns.length; i++) {
+sheet.autoSizeColumn(i);
+}
+
+//Resize all columns to fit the content size
+for(int i = 0; i < columns2.length; i++) {
+sheet2.autoSizeColumn(i);
+}
+		
+return workbook;	
+}
+
 
 }

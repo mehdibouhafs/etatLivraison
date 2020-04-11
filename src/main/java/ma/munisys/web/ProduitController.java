@@ -86,4 +86,12 @@ public class ProduitController {
 		return "{'statut':'ok'}";
 	}
 
+
+	
+
+
+	
+	
+	
+
 }

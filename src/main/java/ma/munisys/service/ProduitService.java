@@ -13,5 +13,8 @@ public interface ProduitService {
 	public Collection<Produit> getAllProduitsInStock();
 	
 	public Collection<Produit>  getProduitByPredicate(String nature, String sousNature,String domaine,String sousDomaine,String numLot,String client,String nomMagasin);
+	
+	
+
 
 }

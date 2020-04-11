@@ -10,7 +10,7 @@ public interface EcheanceService {
 	
 	
 	
-	public Echeance updateEcheance (Long id,String commentaire);
+	public Echeance updateEcheance(Long id, Long idCommentaire);
 	
 	
 	

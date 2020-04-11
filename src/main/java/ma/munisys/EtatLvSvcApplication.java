@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import ma.munisys.sap.dao.DBA;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 
 import ma.munisys.entities.AppUser;
@@ -29,8 +30,11 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.annotation.PostConstruct;
+import javax.management.loading.ClassLoaderRepository;
+
 import org.springframework.boot.SpringApplication;
 import ma.munisys.dao.ServiceRepository;
+import ma.munisys.dao.StockProjetRepository;
 import ma.munisys.dao.CommentaireRepository;
 import ma.munisys.dao.ContratRepository;
 import ma.munisys.dao.EcheanceRepository;
@@ -49,29 +53,38 @@ import ma.munisys.service.EtatProjetService;
 import ma.munisys.service.EtatRecouvrementService;
 import ma.munisys.service.FactureService;
 import ma.munisys.service.ProduitService;
+import ma.munisys.service.StockProjetService;
 import ma.munisys.dao.EtatProjetRepository;
 import ma.munisys.dao.FactureEcheanceRepository;
 import ma.munisys.dao.FactureRepository;
+import ma.munisys.dao.ProjetRepository;
 
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
 @EnableScheduling
 @EnableAsync
+@EnableAutoConfiguration
 public class EtatLvSvcApplication extends SpringBootServletInitializer implements CommandLineRunner {
 	
 	private static final Logger LOGGER = LogManager.getLogger(EtatLvSvcApplication.class);
 	
-	private static EtatProjetRepository etatProjetRepositoryStatic;
+	private static ProjetRepository projetRepositoryStatic;
 
 	private static EtatProjetService etatProjetServiceStatic;
 
+	private static StockProjetService stockProjetServiceStatic;
+	
 	private static ProduitService produitServiceStatic;
 
 	private static EtatRecouvrementService etatRecouvrementServiceStatic;
@@ -90,6 +103,9 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 	@Autowired
 	StorageService storageService;
 	@Autowired
+	ProjetRepository projetRepository;;
+	
+	@Autowired
 	EtatProjetService etatProjetService;
 	@Autowired
 	ReunionService reunionService;
@@ -101,6 +117,9 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 	ServiceRepository serviceRepository;
 	@Autowired
 	ProduitService produitService;
+	@Autowired
+	StockProjetService stockProjetService;
+	
 	@Autowired
 	ContratService contratService;
 	@Autowired
@@ -118,6 +137,7 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 
 	@Autowired
 	CommandeFournisseurService commandeFournisseurService;
+	
 
 	public static void main(final String[] args) {
 		LOGGER.info("Strat app info");
@@ -126,21 +146,23 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 		SpringApplication.run((Class) EtatLvSvcApplication.class, args);
 		 //etatProjetServiceStatic.loadProjetsFromSap();
 		 //EtatLvSvcApplication.produitServiceStatic.loadProduitFromSap();
+		//stockProjetServiceStatic.loadStockFromSap();
 		// loadFromSap();
-		// loadDocumentsFromSap();
+		//loadDocumentsFromSap();
 		// etatProjetServiceStatic.importInfoFournisseurFromSAP();
 		// 3 produitServiceStatic.loadProduitFromSap();
 	}
 
 	@PostConstruct
 	public void init() {
-		EtatLvSvcApplication.etatProjetRepositoryStatic = this.etatProjetRepository;
+		EtatLvSvcApplication.projetRepositoryStatic = this.projetRepository;
 		EtatLvSvcApplication.etatProjetServiceStatic = this.etatProjetService;
 		EtatLvSvcApplication.etatRecouvrementServiceStatic = this.etatRecouvrementService;
 		EtatLvSvcApplication.produitServiceStatic = this.produitService;
 		EtatLvSvcApplication.contratServiceStatic = this.contratService;
 		EtatLvSvcApplication.commandeFournisseurServiceStatic = this.commandeFournisseurService;
 		EtatLvSvcApplication.factureServiceStatic = this.factureService;
+		EtatLvSvcApplication.stockProjetServiceStatic = this.stockProjetService;
 	}
 
 	@Bean // ce bean sera utilise n'importe ou
@@ -152,9 +174,10 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 		this.storageService.init();
 		LOGGER.info("Start Full Synchros");
 		System.out.println("run");
-		commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();
-		//EtatLvSvcApplication.contratServiceStatic.loadContratFromSap();
+		//commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();
+		EtatLvSvcApplication.contratServiceStatic.loadContratFromSap();
 		factureServiceStatic.loadFactureFromSap();
+		commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();
 		//EtatLvSvcApplication.contratServiceStatic.loadContratPieceSap();
 		/*CompletableFuture<String> pieces =EtatLvSvcApplication.contratServiceStatic.loadContratPieceSap();
 		CompletableFuture<String> factures =factureServiceStatic.loadFactureFromSap();
@@ -215,7 +238,14 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 		loadFromSap();
 		//LOGGER.debug("ENDING TASK Produits CRON ");
 	}
-
+	
+	@Scheduled(cron = "0 0 1 * * *")
+	public static void loadStockFromSap() {
+	
+		EtatLvSvcApplication.stockProjetServiceStatic.loadStockFromSap();
+		loadFromSap();
+	}
+	
 	@Scheduled(cron = "0 0 13 * * *")
 	public static void loadProduitFromSap2() {
 		//LOGGER.debug("STARTING TASK Produits CRON ");
@@ -381,7 +411,25 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 			}
 			etatRecouvrement.setDocuments(documents);
 			EtatLvSvcApplication.etatRecouvrementServiceStatic.updateDocumentsFromSap(etatRecouvrement);
-
+			
+			Collection<Projet> projets = etatProjetServiceStatic.getAllProjets();
+			
+			for(Projet p : projets) {
+				
+				//p.setMontantPayer(montantPayer);
+				Collection<Document> documentsRes =etatRecouvrementServiceStatic.getDocumentsByCodeProjet(p.getCodeProjet());
+				Double montantPaye=0.0;
+				if(documents!=null && documentsRes.isEmpty()) {
+					for(Document d : documentsRes) {
+						montantPaye = montantPaye+(d.getMontantPiece()- d.getMontantOuvert());
+					}
+				}
+				p.setMontantPayer(montantPaye);
+				
+			}
+			
+			EtatLvSvcApplication.projetRepositoryStatic.saveAll(projets);
+			
 	
 		} catch (Exception e) {
 			//logger.debug("exception " + e.getMessage());

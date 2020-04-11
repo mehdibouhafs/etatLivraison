@@ -45,6 +45,10 @@ public class ContratModel implements Serializable,Cloneable {
 	private String codeProjet;
 	
 	
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "contratModel", cascade = { CascadeType.ALL }, orphanRemoval = true)
+	private Set<Echeance> echeances;
+	
+	
 	private Double montant;
 	
 	private String periodeFacturationLabel;
@@ -59,8 +63,7 @@ public class ContratModel implements Serializable,Cloneable {
 	
 	
 	public ContratModel() {
-		
-		
+		this.echeances = new HashSet<Echeance>();
 		
 	}
 
@@ -186,6 +189,18 @@ public class ContratModel implements Serializable,Cloneable {
 	public void setOccurenceFacturation(OccurenceFacturation occurenceFacturation) {
 		this.occurenceFacturation = occurenceFacturation;
 	}
+
+	@JsonIgnore
+	public Set<Echeance> getEcheances() {
+		return echeances;
+	}
+
+
+	public void setEcheances(Set<Echeance> echeances) {
+		this.echeances = echeances;
+	}
+	
+	
 
 
 	
