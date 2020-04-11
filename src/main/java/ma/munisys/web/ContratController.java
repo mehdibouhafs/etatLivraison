@@ -189,7 +189,5 @@ public class ContratController {
 		}
 	}
 	
-	
-	
 
 }
