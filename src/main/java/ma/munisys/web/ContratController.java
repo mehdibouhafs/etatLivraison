@@ -131,13 +131,6 @@ public class ContratController {
 		
 
 	
-	/*@RequestMapping(value = "/deleteCommentaire/{idCommentaire}", method = RequestMethod.DELETE)
-	public void deleteCommentaire(@PathVariable("idCommentaire") final Long idCommentaire) {
-		commentaireContratRepository.deleteById(idCommentaire);
-	}*/
-	
-	
-	
 	@RequestMapping(value = "/contratsFilter", method = RequestMethod.GET)
 	public Collection<Contrat> getContratByPredicate(
 			@RequestParam(name = "numMarche", required = false) String numMarche,

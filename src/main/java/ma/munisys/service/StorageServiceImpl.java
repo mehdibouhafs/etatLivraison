@@ -42,6 +42,7 @@ import ma.munisys.entities.AppUser;
 import ma.munisys.entities.Commentaire;
 import ma.munisys.entities.CommentaireContrat;
 import ma.munisys.entities.CommentaireProduit;
+import ma.munisys.entities.CommentaireStock;
 import ma.munisys.entities.Contrat;
 import ma.munisys.entities.Document;
 import ma.munisys.entities.Echeance;
@@ -1109,7 +1110,7 @@ public class StorageServiceImpl {
 		return workbook;
 		
 	}
-  
+
   public Workbook generateWorkBookContrat(List<Contrat> contrats) {
 		 String pattern = "dd/MM/yyyy HH:mm";
 		 String pattern2 = "dd/MM/yyyy";

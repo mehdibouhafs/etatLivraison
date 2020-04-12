@@ -383,7 +383,6 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 			document.setInfoProjet(lastDocument.getInfoProjet());
 			document.setPriorite(lastDocument.getPriorite());
 			document.setTypeBloquage(lastDocument.getTypeBloquage());
-			
 
 			lastEtatRecouvrement.getDocuments().remove(lastDocument);
 			//System.out.println("document must be " + document);
