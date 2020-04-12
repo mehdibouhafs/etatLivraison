@@ -64,7 +64,11 @@ public class CommandeFournisseur implements Serializable,Comparable<CommandeFour
 	private int qteRnf;
 	private Double montantRnf;
 	private String technologie;
-	 
+	
+	@Temporal(TemporalType.DATE)
+	private Date du; 
+	@Temporal(TemporalType.DATE)
+	private Date au; 
 	
 	
 	public CommandeFournisseur() {
@@ -312,6 +316,36 @@ public class CommandeFournisseur implements Serializable,Comparable<CommandeFour
 	public void setTechnologie(String technologie) {
 		this.technologie = technologie;
 	}
+
+
+
+
+	public Date getDu() {
+		return du;
+	}
+
+
+
+
+	public void setDu(Date du) {
+		this.du = du;
+	}
+
+
+
+
+	public Date getAu() {
+		return au;
+	}
+
+
+
+
+	public void setAu(Date au) {
+		this.au = au;
+	}
+	
+	
 	
 	
 
