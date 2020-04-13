@@ -206,6 +206,7 @@ public class StockProjetServiceImp implements StockProjetService {
 	@Transactional
 	public void loadStockFromSap() {
 
+		stockProjetRepository.deleteAll();
 		System.out.println("load stock PROJET from SAP");
 		Set<StockProjet> produits = new HashSet<StockProjet>();
 
@@ -219,7 +220,7 @@ public class StockProjetServiceImp implements StockProjetService {
 				System.out.println("column Name " + name);
 			}
 
-			while (rs1.next()) {
+			while (rs1.next()) { 
 
 
 				StockProjet p = new StockProjet();
