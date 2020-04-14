@@ -1,6 +1,7 @@
 package ma.munisys.web;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -33,10 +34,10 @@ public class StockProjetController {
 	
 	
 	@RequestMapping(value="/getAllStockProjetByFiltre",method=RequestMethod.GET)
-	public Collection<StockProjet> getStockProjetByFiltre( @RequestParam("numLot") String numLot,@RequestParam("client") String client,@RequestParam("annee")String annee,@RequestParam("magasin")String magasin){
+	public Collection<StockProjet> getStockProjetByFiltre( @RequestParam("numLot") String numLot,@RequestParam("client") String client,@RequestParam("annee")String annee,@RequestParam("magasin")String magasin,@RequestParam("com")String com){
 	
 		System.out.println("NIVEAU 1" + magasin);
-		return stockProjetService.getStockProjetByFiltre(numLot, client, annee, magasin);
+		return stockProjetService.getStockProjetByFiltre(numLot, client, annee, magasin,com);
 	}
 	
 	@RequestMapping(value = "/getStockParProjet", method = RequestMethod.GET)
@@ -45,7 +46,11 @@ public class StockProjetController {
 		return stockProjetService.getStockParProjet();
 	}
 	
-	
+	@RequestMapping(value = "/getMontantByNature", method = RequestMethod.GET)
+	public List<String> getMontantByNature(@RequestParam("numLot") String numLot){
+		
+		return stockProjetService.getMontantByNature(numLot);
+	}
 	
 	@RequestMapping(value = "/commentaireDelete", method = RequestMethod.POST)
 	public void  deleteCommentaire(@RequestBody Long c,@RequestParam("id") Long id){

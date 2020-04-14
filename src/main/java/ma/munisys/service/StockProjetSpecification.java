@@ -34,9 +34,14 @@ public class StockProjetSpecification {
 	  }
 	
 	public static Specification<StockProjet> byAnnee(String annee) {
-		System.out.println("ANNEE BEFORE QUERY ");
 	     return (root, query, cb) -> {
 	         return cb.equal(root.get("annee"), annee);
+	     };
+	  }
+	
+	public static Specification<StockProjet> byCommercial(String com) {
+	     return (root, query, cb) -> {
+	         return cb.equal(root.get("commercial"), com);
 	     };
 	  }
 	

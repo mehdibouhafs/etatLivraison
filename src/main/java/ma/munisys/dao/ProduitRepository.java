@@ -26,6 +26,8 @@ public interface ProduitRepository extends JpaRepository<Produit,String>,JpaSpec
 	
 	@Query("select SUM(p.montant) from Produit p where p.numLot=:x")
 	public Double getMontantStock(@Param("x") String codeProjet);
+
+
 	
 	
 

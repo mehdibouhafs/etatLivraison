@@ -27,6 +27,7 @@ import ma.munisys.entities.Reunion;
 import ma.munisys.service.EtatProjetService;
 import ma.munisys.service.ProduitService;
 import ma.munisys.service.ReunionService;
+import ma.munisys.service.StockProjetService;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -42,6 +43,9 @@ public class ProduitController {
 	
 	@Autowired
 	private ProduitRepository produitRepository;
+	
+	@Autowired
+	private StockProjetService stockProjetService;
 
 	@RequestMapping(value="/getAllStockByFiltre",method=RequestMethod.GET)
 	public Collection<Produit> getAllStockByFiltre( @RequestParam("nature") String nature,@RequestParam("sousNature") String sousNature,@RequestParam("domaine") String domaine,@RequestParam("sousDomaine") String sousDomaine,@RequestParam("numLot")String numLot,@RequestParam("client")String client,@RequestParam("nomMagasin")String nomMagasin) {
@@ -83,6 +87,7 @@ public class ProduitController {
 	public String refreshProduits() {
 		etatProjetService.loadProjetsFromSap();
 		produitService.loadProduitFromSap();
+		stockProjetService.loadStockFromSap();
 		return "{'statut':'ok'}";
 	}
 

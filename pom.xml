@@ -10,7 +10,7 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>WebEtatMgouv</artifactId>
+	<artifactId>pdc</artifactId>
 	<version>1.0.0</version>
 	<packaging>war</packaging>
 	<name>WebEtat</name>
