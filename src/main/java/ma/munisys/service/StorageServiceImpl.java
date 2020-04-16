@@ -1175,7 +1175,7 @@ Row row = sheet.createRow(rowNum++);
 
 Cell cell0 = row.createCell(0);
 if(contrat.getNumMarche()!=null)
-cell0.setCellValue(contrat.getNumMarche());
+cell0.setCellValue(contrat.getNumContrat());
 
 Cell cell1 = row.createCell(1);
 if(contrat.getNumMarche()!=null)
@@ -1276,26 +1276,30 @@ for(Echeance echeance: contrat.getEcheances()) {
 		cell14.setCellValue(echeance.getMontantPrevision());//Date CMD
 	   
 	   Cell cell15 =  row1.createCell(4);
-	   if(echeance.getPeriodeFacturation()!=null)
-		cell15.setCellValue(echeance.getPeriodeFacturation().toString());//Date CMD
+	   if(echeance.getOccurenceFacturation()!=null)
+		cell15.setCellValue(echeance.getOccurenceFacturation().toString());//Date CMD
 	   
 	   Cell cell16 =  row1.createCell(5);
-	   if(echeance.getFactures()!=null)
-		cell16.setCellValue(echeance.getFactures());//Date CMD
+	   if(echeance.getPeriodeFacturation()!=null)
+		cell16.setCellValue(echeance.getPeriodeFacturation().toString());//Date CMD
 	   
 	   Cell cell17 =  row1.createCell(6);
-	   cell17.setCellType(CellType.NUMERIC);
-	   if(echeance.getMontantFacture()!=null)
-		  cell17.setCellValue(echeance.getMontantFacture());//Date CMD
+	   if(echeance.getFactures()!=null)
+		cell17.setCellValue(echeance.getFactures());//Date CMD
 	   
 	   Cell cell18 =  row1.createCell(7);
 	   cell18.setCellType(CellType.NUMERIC);
-	   if(echeance.getMontantRestFacture()!=null)
-		cell18.setCellValue(echeance.getMontantRestFacture());//Date CMD
+	   if(echeance.getMontantFacture()!=null)
+		  cell18.setCellValue(echeance.getMontantFacture());//Date CMD
 	   
 	   Cell cell19 =  row1.createCell(8);
+	   cell19.setCellType(CellType.NUMERIC);
+	   if(echeance.getMontantRestFacture()!=null)
+		cell19.setCellValue(echeance.getMontantRestFacture());//Date CMD
+	   
+	   Cell cell110 =  row1.createCell(9);
 	   if(echeance.getCommentaire()!=null)
-		   cell19.setCellValue(echeance.getCommentaire().getComment());//Date CMD
+		   cell110.setCellValue(echeance.getCommentaire().getComment());//Date CMD
 	   
 	   
 	   
