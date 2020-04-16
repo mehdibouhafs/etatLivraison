@@ -18,7 +18,7 @@ public interface StockProjetService {
 	
 	public void loadStockFromSap();
 
-	public List<String> getMontantByNature(String numLot);
+	public List<String> getMontantByNature(String numLot,String magasin);
 
 	
 }

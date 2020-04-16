@@ -47,9 +47,9 @@ public class StockProjetController {
 	}
 	
 	@RequestMapping(value = "/getMontantByNature", method = RequestMethod.GET)
-	public List<String> getMontantByNature(@RequestParam("numLot") String numLot){
+	public List<String> getMontantByNature(@RequestParam("numLot") String numLot,@RequestParam("magasin") String magasin){
 		
-		return stockProjetService.getMontantByNature(numLot);
+		return stockProjetService.getMontantByNature(numLot,magasin);
 	}
 	
 	@RequestMapping(value = "/commentaireDelete", method = RequestMethod.POST)

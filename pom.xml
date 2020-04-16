@@ -10,8 +10,7 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>pdc</artifactId>
-	<version>1.0.0</version>
+	<artifactId>WebEtatMgouvDev</artifactId>
 	<packaging>war</packaging>
 	<name>WebEtat</name>
 	<description>etat des livraison services </description>
@@ -125,6 +124,8 @@
 	</dependencies>
 
 	<build>
+				<finalName>WebEtatMgouvDev</finalName>
+	
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

@@ -76,7 +76,7 @@ public class StockProjetServiceImp implements StockProjetService {
 	       //filtre par magasin uniquement
 	       if(numLot.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && !magasin.equals("undefined") && com.equals("undefined")){
 	    		   if(magasin.equals("Stock commercial")) {
-	    				return stockProjetRepository.getStockProjetByFiltre2(numLot,client,annee,com);
+	    				return stockProjetRepository.getStockProjetByFiltre3(numLot,client,annee,com);
 
 	    		   }
 	    	   	else {
@@ -110,6 +110,7 @@ public class StockProjetServiceImp implements StockProjetService {
 	       if(numLot.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") && !magasin.equals("undefined") && com.equals("undefined")){
 
     		   if(magasin.equals("Stock commercial")) {
+    			   System.out.println("TEEST "+annee);
     				return stockProjetRepository.getStockProjetByFiltre2(numLot,client,annee,com);
 
     		   }
@@ -123,11 +124,13 @@ public class StockProjetServiceImp implements StockProjetService {
 	       if(!numLot.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && !magasin.equals("undefined") && com.equals("undefined")){
 
     		   if(magasin.equals("Stock commercial")) {
+    			  System.out.println("NIVEAU STOCK COMMERCIAL ");
     				return stockProjetRepository.getStockProjetByFiltre2(numLot,client,annee,com);
 
     		   }
     	   	else {
-	    	   
+  			  System.out.println("NIVEAU AUTRE STOCK ");
+
 	        return stockProjetRepository.findAll(StockProjetSpecification.byMagasin(magasin).and(StockProjetSpecification.byNumLot(numLot)));
 	       }
     		   }
@@ -440,9 +443,9 @@ public class StockProjetServiceImp implements StockProjetService {
 	
 	
 	
-	public List<String> getMontantByNature(String numLot){
+	public List<String> getMontantByNature(String numLot,String magasin){
 		
-		return stockProjetRepository.getMontantByNature(numLot);
+		return stockProjetRepository.getMontantByNature(numLot,magasin);
 	}
 
 	
