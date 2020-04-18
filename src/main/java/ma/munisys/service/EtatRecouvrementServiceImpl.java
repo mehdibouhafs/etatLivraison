@@ -357,6 +357,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 			if(lastDocument.isDisableUpdateChefProjet()) {
 				document.setCodeChefProjet(lastDocument.getCodeChefProjet());
 				document.setChefProjet(lastDocument.getChefProjet());
+				document.setDisableUpdateChefProjet(lastDocument.isDisableUpdateChefProjet());
 			}
 
 			document.setMotif(lastDocument.getMotif());
@@ -868,6 +869,17 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 							.and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification
 									.byCommercial(commercial).and(DocumentSpecification.byAnnee(annee))))));
 		}
+		
+		// filtre par chargeRecouvrement et chefProjet et client et année
+				// uniquement. 
+				if (!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+						&& commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined")) {
+					return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
+							.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
+									.or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement))
+									.and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification
+											.byClient(client).and(DocumentSpecification.byAnnee(annee))))));
+				}
 
 		// filtre par statut et chefProjet et commercial et client uniquement. BCDE
 		if (chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
