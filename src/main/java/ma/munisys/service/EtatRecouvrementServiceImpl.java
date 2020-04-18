@@ -701,6 +701,16 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 					.or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement))
 					.and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byAnnee(annee)))));
 		}
+		
+
+		// filtre par chargeRecouvrement et client et annee uniquement. AEF
+		if (!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+				&& commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined")) {
+			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification
+					.byChargeRecouvrement(chargeRecouvrement)
+					.or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement))
+					.and(DocumentSpecification.byClient(client).and(DocumentSpecification.byAnnee(annee)))));
+		}
 
 		// filtre par statut et chefProjet et commercial uniquement. BCD
 		if (chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
@@ -743,8 +753,16 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 			return documentRepository
 					.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byStatut(statut).and(
 							DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byAnnee(annee)))));
-
 		}
+		
+		// filtre par statut et client et annee uniquement. BEF
+				if (chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+						&& commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined")) {
+					return documentRepository
+							.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byStatut(statut).and(
+									DocumentSpecification.byClient(client).and(DocumentSpecification.byAnnee(annee)))));
+
+				}
 
 		// filtre par chefProjet et commercial et client uniquement. CDE
 		if (chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
@@ -860,6 +878,16 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 									.byCommercial(commercial).and(DocumentSpecification.byClient(client))))));
 
 		}
+		
+		// filtre par statut et chefProjet et client et annee uniquement. BCDE
+				if (chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+						&& commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined")) {
+					return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
+							.and(DocumentSpecification.byStatut(statut)
+									.and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification
+											.byClient(client).and(DocumentSpecification.byAnnee(annee))))));
+
+				}
 
 		// filtre par statut et chefProjet et commercial et annee uniquement. BCDF
 		if (chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
@@ -870,6 +898,15 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 									.byCommercial(commercial).and(DocumentSpecification.byAnnee(annee))))));
 
 		}
+		
+		// filtre par statut et client et commercial et annee uniquement. BDEF
+				if (chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+						&& !commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined")) {
+					return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
+							.and(DocumentSpecification.byStatut(statut)
+									.and(DocumentSpecification.byClient(client).and(DocumentSpecification
+											.byCommercial(commercial).and(DocumentSpecification.byAnnee(annee))))));
+				}
 
 		// filtre par chefProjet et commercial client et annee uniquement. CDFE
 		if (chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
@@ -880,7 +917,8 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 							.and(DocumentSpecification.byClient(client).and(DocumentSpecification.byAnnee(annee))))));
 
 		}
-
+		
+	
 		// filtre par chargeRecouvrement et statut et chefProjet et commercial et client
 		// uniquement. ABCDE
 		if (!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")

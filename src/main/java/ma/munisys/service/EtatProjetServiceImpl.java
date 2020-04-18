@@ -1118,7 +1118,7 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 		 // filtre par bu et chefProjet et client uniquement.  ACE
 		     if(!bu1.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
 			      && commercial.equals("undefined") && !client.equals("undefined") ){
-		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byBu(bu1).or(ProjetSpecification.byBu(bu2)).and(ProjetSpecification.byCommercial(commercial).and(ProjetSpecification.byClient(client)))));
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byBu(bu1).or(ProjetSpecification.byBu(bu2)).and(ProjetSpecification.byChefProjet(chefProjet).and(ProjetSpecification.byClient(client)))));
 		     }
 		 
 		 
@@ -1136,9 +1136,9 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 		     }
 
 		 	// filtre par statut et chefProjet et client uniquement.  BCE
-		     if(bu1.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
-			      && !commercial.equals("undefined") && !client.equals("undefined") ){
-		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byStatut(statut).and(ProjetSpecification.byCommercial(commercial).and(ProjetSpecification.byClient(client)))));
+		     if(bu1.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+			      && commercial.equals("undefined") && !client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byStatut(statut).and(ProjetSpecification.byChefProjet(chefProjet).and(ProjetSpecification.byClient(client)))));
 		    
 		     }
 		     
