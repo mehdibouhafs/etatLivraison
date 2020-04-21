@@ -30,10 +30,10 @@ public class StockProjetController {
 	
 	
 	@RequestMapping(value="/getAllStockProjetByFiltre",method=RequestMethod.GET)
-	public Collection<StockProjet> getStockProjetByFiltre( @RequestParam("numLot") String numLot,@RequestParam("client") String client,@RequestParam("annee")String annee,@RequestParam("magasin")String magasin,@RequestParam("com")String com){
+	public Collection<StockProjet> getStockProjetByFiltre( @RequestParam("numLot") String numLot,@RequestParam("client") String client,@RequestParam("annee")String annee,@RequestParam("magasin")String magasin,@RequestParam("com")String com,@RequestParam("cp")String cp){
 	
 		System.out.println("NIVEAU 1" + magasin);
-		return stockProjetService.getStockProjetByFiltre(numLot, client, annee, magasin,com);
+		return stockProjetService.getStockProjetByFiltre(numLot, client, annee, magasin,com,cp);
 	}
 	
 	@RequestMapping(value = "/getStockParProjet", method = RequestMethod.GET)

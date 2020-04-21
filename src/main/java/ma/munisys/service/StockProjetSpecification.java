@@ -63,5 +63,12 @@ public class StockProjetSpecification {
 	     };
 	  }
 	
+	public static Specification<StockProjet> byChefProjet(String cp) {
+		
+	     return (root, query, cb) -> {
+	    	 return cb.equal(root.get("chefProjet"), cp);
+	     };
+	  }
+	
 	
 }
