@@ -175,7 +175,7 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 		LOGGER.info("Start Full Synchros");
 		System.out.println("run");
 		//commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();
-		EtatLvSvcApplication.loadDocumentsFromSap();
+		EtatLvSvcApplication.loadProduitFromSap();
 		System.out.println("end");
 		//factureServiceStatic.loadFactureFromSap();
 		//commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();
