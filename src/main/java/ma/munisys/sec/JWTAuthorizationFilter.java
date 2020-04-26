@@ -25,13 +25,26 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		
-		//System.out.println("Before");
+	String origin;
+    String credentialFlag;
+    if (request.getHeader("Origin") == null) {
+        origin = "*";
+        credentialFlag = "false";
+     } else {
+        origin = request.getHeader("Origin");
+        credentialFlag = "true";
+     }
+
+    // need to do origin.toString() to avoid findbugs error about response splitting        
+    response.addHeader("Access-Control-Allow-Origin", origin.toString());
+    response.setHeader("Access-Control-Allow-Credentials", credentialFlag);
 		
-		response.addHeader("Access-Control-Allow-Origin", "*");
+		//response.addHeader("Access-Control-Allow-Origin", "*");
 		response.addHeader("Access-Control-Allow-Headers", "Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers,authorization");
 		response.addHeader("Access-Control-Expose-Headers","Access-Control-Allow-Origin, Access-Control-Allow-Credentials, authorization");
 		response.addHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
-		
+		//response.addHeader("Access-Control-Allow-Credentials", "true");
+		response.setHeader("Access-Control-Max-Age", "3600");
 		if(request.getMethod().equals("OPTIONS")) {
 			
 			response.setStatus(HttpServletResponse.SC_OK);

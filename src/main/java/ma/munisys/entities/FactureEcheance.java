@@ -91,7 +91,11 @@ public class FactureEcheance implements Serializable, Comparable<FactureEcheance
 
 	@Override
 	public int compare(FactureEcheance o1, FactureEcheance o2) {
-		    return o1.getEcheance().compareTo(o2.getEcheance());
+		    if(o1.getEcheance()!=null) {
+		    	 return 	o1.getEcheance().compareTo(o2.getEcheance());
+		    }else {
+		    	return o1.getFacture().compareTo(o2.getFacture());
+		    }
 	}
 	
 	

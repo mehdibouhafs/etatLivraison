@@ -32,7 +32,7 @@
   
     </Appenders>
     <Loggers>
-        <logger name="ma.munisys" level="info" additivity="false">
+        <logger name="ma.munisys" level="debug" additivity="false">
             <AppenderRef ref="console" />
             <AppenderRef ref="rollingFile" />
         </logger>

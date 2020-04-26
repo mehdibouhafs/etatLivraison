@@ -544,9 +544,6 @@ public class ContratServiceImp implements ContratService {
 	private Collection<Contrat> sortingContratInPeriode(Collection<Contrat> contrats,int startDate,int endDate){
 		LOGGER.info("Sorting contrats in periode");
 		Collection<Contrat> contratsRes = new ArrayList<Contrat>();
-		System.out.println("start date " + startDate);
-		
-		System.out.println("end Date " +endDate);
 		int addingId=0;
 		
 		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
@@ -588,6 +585,19 @@ public class ContratServiceImp implements ContratService {
 						}
 					}
 				}
+				
+				for(FactureEcheance fe :c1.getFactureEcheances()) {
+					//System.out.println("numFacture " +fe.getFacture().getNumFacture());
+					if(fe.getEcheance()==null) {
+						System.out.println("fe "  + fe.getId());
+						FactureEcheance fe2 = (FactureEcheance) fe.clone();
+						addingId= addingId+1;
+						fe2.setId(fe2.getId()+""+addingId);
+						facturesEcheancess.add(fe2);
+						factureEcheances.add(fe2);
+					}
+				}
+				
 				c1.setEcheances(echeances);
 				c1.setFactureEcheances(factureEcheances);
 				c1.setCommandesFournisseurs(commandeFournisseurs);
