@@ -156,6 +156,10 @@ public class ContratServiceImp implements ContratService {
 				if (rs1.getString(8) != null && !rs1.getString(8).equals("null")) {
 
 					contrat.setNomSousTraitant(rs1.getString(8));
+					if(contrat.getNomSousTraitant()!=null && !contrat.getNomSousTraitant().isEmpty()) {
+						contrat.setSousTraiter(true);
+					}
+					
 				}
 				if (rs1.getString(9) != null && !rs1.getString(9).equals("null")) {
 
@@ -644,9 +648,9 @@ public class ContratServiceImp implements ContratService {
 					System.out.println("rs1.getString(2) " + rs1.getString(2));
 					continue;
 				}else {
-					Contrat c =contratRepository.getOne(rs1.getLong(2));
+					Contrat c =contratRepository.findById(rs1.getLong(2)).orElse(null);
 					if(c==null) {
-					continue;
+						continue;
 					}else {
 						p.setContrat(c);
 					}

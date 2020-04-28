@@ -172,11 +172,12 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 
 	public void run(final String... args) throws Exception {
 		this.storageService.init();
-		LOGGER.info("Start Full Synchros");
+		LOGGER.info("Start PDC 360");
 		System.out.println("run");
 		//commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();
-		EtatLvSvcApplication.loadProduitFromSap();
-		System.out.println("end");
+		//EtatLvSvcApplication.loadProduitFromSap();
+		//EtatLvSvcApplication.loadContrat();
+		//System.out.println("end");
 		//factureServiceStatic.loadFactureFromSap();
 		//commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();
 		//EtatLvSvcApplication.contratServiceStatic.loadContratPieceSap();
