@@ -29,7 +29,7 @@ public class StockProjetSpecification {
 
 	public static Specification<StockProjet> byNumLot(String numLot) {
 	     return (root, query, cb) -> {
-	         return cb.equal(root.get("numLot"), numLot);
+	         return cb.equal(root.get("num_lot"), numLot);
 	     };
 	  }
 	
@@ -66,7 +66,7 @@ public class StockProjetSpecification {
 	public static Specification<StockProjet> byChefProjet(String cp) {
 		
 	     return (root, query, cb) -> {
-	    	 return cb.equal(root.get("chefProjet"), cp);
+	    	 return cb.equal(root.get("chef_projet"), cp);
 	     };
 	  }
 	

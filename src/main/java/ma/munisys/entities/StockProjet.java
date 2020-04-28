@@ -37,16 +37,16 @@ public class StockProjet implements Serializable {
 	private String annee;
 	private String client;
     @Column(name = "num_lot")
-	private String numLot;
+	private String num_lot;
 	private String commercial;
 	private Double montant;
     @Column(name = "chef_projet")
-	private String chefProjet;
+	private String chef_projet;
     @Column(name="nom_lot")
-    private String nomLot; 
+    private String nom_lot; 
     private String magasin;
     @Column(name="date_rec")
-    private Date dateRec;
+    private Date date_rec;
     
    @JsonManagedReference
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "stock", cascade = { CascadeType.ALL }, orphanRemoval = true)
@@ -64,13 +64,13 @@ public class StockProjet implements Serializable {
 	this.id_stock = id_stock;
 	this.annee = annee;
 	this.client = client;
-	this.numLot = numLot;
+	this.num_lot = numLot;
 	this.commercial = commercial;
 	this.montant = montant;
-	this.chefProjet = chefProjet;
-	this.nomLot = nomLot;
+	this.chef_projet = chefProjet;
+	this.nom_lot = nomLot;
 	this.magasin = magasin;
-	this.dateRec = dateRec;
+	this.date_rec = dateRec;
 	this.commentaires = commentaires;
 }
 	public StockProjet() {
@@ -105,13 +105,6 @@ public class StockProjet implements Serializable {
 		this.client = client;
 	}
 
-	public String getNumLot() {
-		return numLot;
-	}
-
-	public void setNumLot(String numLot) {
-		this.numLot = numLot;
-	}
 
 	public String getCommercial() {
 		return commercial;
@@ -123,13 +116,7 @@ public class StockProjet implements Serializable {
 	
 	
 
-	public String getChefProjet() {
-		return chefProjet;
-	}
 
-	public void setChefProjet(String chefProjet) {
-		this.chefProjet = chefProjet;
-	}
 
 	public Double getMontant() {
 		return montant;
@@ -159,25 +146,46 @@ public class StockProjet implements Serializable {
 	public void setId_stock(Long id_stock) {
 		this.id_stock = id_stock;
 	}
-	public String getNomLot() {
-		return nomLot;
-	}
-	public void setNomLot(String nomLot) {
-		this.nomLot = nomLot;
-	}
+
 	public String getMagasin() {
 		return magasin;
 	}
 	public void setMagasin(String magasin) {
 		this.magasin = magasin;
 	}
-	public Date getDateRec() {
-		return dateRec;
-	}
-	public void setDateRec(Date dateRec) {
-		this.dateRec = dateRec;
-	}
 
+	public String getNom_lot() {
+		return nom_lot;
+	}
+	public void setNom_lot(String nom_lot) {
+		this.nom_lot = nom_lot;
+	}
+	public Date getDate_rec() {
+		return date_rec;
+	}
+	public void setDate_rec(Date date_rec) {
+		this.date_rec = date_rec;
+	}
+	public String getNum_lot() {
+		return num_lot;
+	}
+	public void setNum_lot(String num_lot) {
+		this.num_lot = num_lot;
+	}
+	public String getChef_projet() {
+		return chef_projet;
+	}
+	public void setChef_projet(String chef_projet) {
+		this.chef_projet = chef_projet;
+	}
+	
+	
+	
+	
+	
+	
+
+	
 	
 
 	

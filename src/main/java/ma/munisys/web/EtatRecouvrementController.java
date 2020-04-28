@@ -122,8 +122,8 @@ public class EtatRecouvrementController {
 	
 	@RequestMapping(value="/getDocuments",method=RequestMethod.GET)
 	public Collection<Document> getDocumentsWithoutPagination(@RequestParam(name="idEtatRecouvrement",defaultValue="1") Long idEtatRecouvrement,@RequestParam(name="cloturer",defaultValue="false") Boolean cloturer,@RequestParam(name = "statut") String statut, 
-			@RequestParam(name = "commercial") String commercial,@RequestParam(name = "client") String client,@RequestParam(name = "chefProjet") String chefProjet,@RequestParam(name = "chargeRecouvrement") String chargeRecouvrement,@RequestParam(name = "anneePiece") String anneePiece) {
-		return  etatRecouvrementService.getDocumentsFromEtatRecouvrement(idEtatRecouvrement, cloturer, chargeRecouvrement, commercial, chefProjet, client, statut,anneePiece);
+			@RequestParam(name = "commercial") String commercial,@RequestParam(name = "client") String client,@RequestParam(name = "chefProjet") String chefProjet,@RequestParam(name = "chargeRecouvrement") String chargeRecouvrement,@RequestParam(name = "anneePiece") String anneePiece,@RequestParam(name = "age") String age) {
+		return  etatRecouvrementService.getDocumentsFromEtatRecouvrement(idEtatRecouvrement, cloturer, chargeRecouvrement, commercial, chefProjet, client, statut,anneePiece,age);
 	}
 	
 	@RequestMapping(value="/documents",method=RequestMethod.PUT)

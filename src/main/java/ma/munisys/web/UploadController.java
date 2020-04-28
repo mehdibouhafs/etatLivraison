@@ -42,6 +42,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
+import ma.munisys.entities.BalanceAgee;
 import ma.munisys.entities.Contrat;
 import ma.munisys.entities.Document;
 import ma.munisys.entities.EtatProjet;
@@ -350,7 +351,7 @@ public class UploadController {
 	
 	@PostMapping("/exportStockExcel")
 	@ResponseBody
-	public ResponseEntity<Resource> exportStockExcel(@RequestBody List<StockProjet> produits)  {
+	public ResponseEntity<Resource> exportStockExcel(@RequestBody List<StockProjet> produit)  {
 		     
 	    XSSFWorkbook workbook = null;
 	    Resource file = null;
@@ -361,11 +362,13 @@ public class UploadController {
 	        /* Logic to Export Excel */
 	        LocalDateTime localDate = LocalDateTime.now();
 	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm"); 
-	         fileName = "Etat_Stock/Projet"+ "-" + localDate.format(formatter) + ".xlsx";
+	         fileName = "Etat_StockProjet"+ "-" + localDate.format(formatter) + ".xlsx";
 	        //response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-	        
+	       for(StockProjet p : produit) {
+	    	   System.out.println("CONTROLLER "+p.getId_stock());
+	       }
 	        OutputStream out;
-	        workbook = (XSSFWorkbook) storageService.generateWorkBookStockProjet(produits);
+	        workbook = (XSSFWorkbook) storageService.generateWorkBookStockProjet(produit);
 	        
 	        
 	        FileOutputStream fileOut = new FileOutputStream("upload-dir/"+fileName);
@@ -402,7 +405,57 @@ public class UploadController {
 
 	
 	
-     
+	@PostMapping("/exportBalance")
+	@ResponseBody
+	public ResponseEntity<Resource> exportBalance(@RequestBody List<BalanceAgee> balance)  {
+		     
+	    XSSFWorkbook workbook = null;
+	    Resource file = null;
+	    String fileName = null;
+	    /* Here I got the object structure (pulling it from DAO layer) that I want to be export as part of Excel. */
+	    //vehicleLastSeenByCampaignReport.setCvsSummary(cvsSummary);
+	    try{
+	        /* Logic to Export Excel */
+	        LocalDateTime localDate = LocalDateTime.now();
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm"); 
+	         fileName = "Balance_Agee"+ "-" + localDate.format(formatter) + ".xlsx";
+	        //response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+	        
+	        OutputStream out;
+	        workbook = (XSSFWorkbook) storageService.generateWorkBookBalance(balance);
+	        
+	        
+	        FileOutputStream fileOut = new FileOutputStream("upload-dir/"+fileName);
+	        workbook.write(fileOut);
+	        fileOut.close();
+	        workbook.close();
+	         file = storageService.loadFile(fileName);
+	        
+	        /* Export Excel logic end */
+	        
+	             
+	        } catch (Exception ecx) {
+	        	ecx.printStackTrace();
+	           // vehicleLastSeenByCampaignReport vehicleCampaignReport = new VehicleLastSeenByCampaignReport();
+	            //vehicleCampaignReport.setErrorMessage("Campaign Not Found");
+	            //return  ResponseEntity.;
+	        }/*finally {
+	            if (null != workbook) {
+	                try {
+	                    workbook.close();
+	                     //file.getFile().delete(); 
+	                } catch (Exception e) {
+	                	e.printStackTrace();
+	                  //  logger.error("Error Occurred while exporting to XLS ", eio);
+	                }
+	            }
+	        }*/
+	    return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+				.body(file);
+	         
+	       
+	    }
    
 	
 

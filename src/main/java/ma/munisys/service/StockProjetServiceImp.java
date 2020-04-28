@@ -517,7 +517,7 @@ public class StockProjetServiceImp implements StockProjetService {
 					p.setAnnee(rs1.getString(1));
 				}
 				if (rs1.getString(2) != null && !rs1.getString(2).equals("null")) {
-					p.setDateRec(rs1.getDate(2));
+					p.setDate_rec(rs1.getDate(2));
 				}
 				
 				if (rs1.getString(3) != null && !rs1.getString(3).equals("null")) {
@@ -527,28 +527,28 @@ public class StockProjetServiceImp implements StockProjetService {
 				
 				if (rs1.getString(4) != null && !rs1.getString(4).equals("null")) {
 
-					p.setNumLot(rs1.getString(4));
+					p.setNum_lot(rs1.getString(4));
 
 				}
 				else {
-					p.setNumLot("");
+					p.setNum_lot("");
 				}
 				
 				
 				if (rs1.getString(5) != null && !rs1.getString(5).equals("null")) {
 
-					p.setNomLot(rs1.getString(5));
+					p.setNom_lot(rs1.getString(5));
 
 				}
 				else {
-					p.setNomLot("");
+					p.setNom_lot("");
 				}
 				if (rs1.getString(6) != null && !rs1.getString(6).equals("null")) {
 
 					p.setCommercial(rs1.getString(6));
 				}
 				if (rs1.getString(7) != null && !rs1.getString(7).equals("null")) {
-					p.setChefProjet(rs1.getString(7));
+					p.setChef_projet(rs1.getString(7));
 				}
 	
 				if (rs1.getString(8) != null && !rs1.getString(8).equals("null")) {

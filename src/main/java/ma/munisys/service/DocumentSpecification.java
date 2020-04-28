@@ -18,6 +18,12 @@ public class DocumentSpecification {
 	     };
 	  }
 	
+	public static Specification<Document> byAge(String age) {
+	     return (root, query, cb) -> {
+	         return cb.equal(root.get("age"), age);
+	     };
+	  }
+	
 	
 	public static Specification<Document> byClient(String client) {
 	     return (root, query, cb) -> {

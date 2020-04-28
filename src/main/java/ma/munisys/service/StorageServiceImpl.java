@@ -39,6 +39,7 @@ import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import ma.munisys.entities.AppUser;
+import ma.munisys.entities.BalanceAgee;
 import ma.munisys.entities.Commentaire;
 import ma.munisys.entities.CommentaireContrat;
 import ma.munisys.entities.CommentaireProduit;
@@ -411,7 +412,7 @@ public class StorageServiceImpl {
     return workbook;
   }
   
-  public Workbook generateWorkBookStockProjet(List<StockProjet> produits) {
+  public Workbook generateWorkBookStockProjet(List<StockProjet> stocks) {
 	     String pattern = "dd/MM/yyyy HH:mm";
 	     String pattern2 = "dd/MM/yyyy";
 	      DateFormat df = new SimpleDateFormat(pattern2);
@@ -447,8 +448,7 @@ public class StorageServiceImpl {
 	    
 	    
 	    String[] columns = {"Magasin","Num Lot","Nom Lot","Client","Commercial",
-	       "Chef Projet","Année CMD","Date Réception","Montant",
-	       "Commentaire Réfèrence","Commentaires"};
+	       "Chef Projet","Année CMD","Date Réception","Montant"};
 
 	 
 	    // Create cells
@@ -464,19 +464,21 @@ public class StorageServiceImpl {
 
 	    
 	    int rowNum = 1;
-	    for(StockProjet produit: produits) {
+	    for(StockProjet produit: stocks) {
 	        Row row = sheet.createRow(rowNum++);
 
 	        Cell cell0 = row.createCell(0);
 	        if(produit.getMagasin()!=null)
 	       cell0.setCellValue(produit.getMagasin());
 
+	        System.out.println("NUM LOT "+ produit);
 	        Cell cell1 = row.createCell(1);
-	        if(produit.getNumLot()!=null)
-	        cell1.setCellValue(produit.getNumLot());
+	        if(produit.getNum_lot()!=null)
+	        cell1.setCellValue(produit.getNum_lot());
 	        
 	        Cell cell2 =  row.createCell(2);
-	       cell2.setCellValue(produit.getNomLot());
+	        if(produit.getNom_lot()!=null)
+	       cell2.setCellValue(produit.getNom_lot());
 	        
 	        Cell cell3= row.createCell(3);
 	        if(produit.getClient()!=null)
@@ -484,33 +486,32 @@ public class StorageServiceImpl {
 	        
 	        Cell cell4=  row.createCell(4);
 	        if(produit.getCommercial()!=null)       
-	       cell4 .setCellValue(produit.getCommercial());
+	       cell4.setCellValue(produit.getCommercial());
 	        
 	        Cell cell5 = row.createCell(5);
-	        if(produit.getChefProjet()!=null)
-	        cell5.setCellValue(produit.getChefProjet());
+	        if(produit.getChef_projet()!=null)
+	        cell5.setCellValue(produit.getChef_projet());
 	        
 	      
 	        
 	        Cell cell6  =row.createCell(6);	        
 	        cell6.setCellValue(produit.getAnnee());
 	        
-	        Cell cell7 =row.createCell(7);        
-	         cell7.setCellValue(produit.getDateRec());
+	        Cell cell7 =row.createCell(7);
+	        if(produit.getDate_rec()!=null)	
+	        cell7.setCellValue(df.format(produit.getDate_rec()));
 	        
 	        Cell cell8 = row.createCell(8);    
 	        cell8.setCellType(CellType.NUMERIC);
 	        cell8.setCellValue(produit.getMontant());
 	 
 
-	      
-	         
 	         
 	      // Create an instance of SimpleDateFormat used for formatting 
 	      // the string representation of date according to the chosen pattern
 	         
 	         
-	         if(produit.getCommentaires()!=null) {
+	        /* if(produit.getCommentaires()!=null) {
 	           List<CommentaireStock> comments = new ArrayList<CommentaireStock>(produit.getCommentaires());
 	           StringBuilder s = new StringBuilder();
 	           if(comments.size()>=1) {
@@ -524,14 +525,14 @@ public class StorageServiceImpl {
 	           if(comments.size()>=3) {
 	             s.append(df2.format(comments.get(comments.size()-3).getDate()) + " " +comments.get(comments.size()-3).getUser_username().getSigle() + " : " + comments.get(comments.size()-3).getContent() + "\n");
 	           }
-	           
+	          
 	           
 	           
 	           XSSFRichTextString richString = new XSSFRichTextString(s.toString());
 
 	        
 	         
-	         }
+	         } */
 	         
 	         //to enable newlines you need set a cell styles with wrap=true
 	         CellStyle cs = workbook.createCellStyle();
@@ -1323,5 +1324,114 @@ sheet2.autoSizeColumn(i);
 return workbook;	
 }
 
+  
+  
+  
+  
+  // GENERATE EXECL BALANCE
+  
+  public Workbook generateWorkBookBalance(List<BalanceAgee> balance) {
+	     String pattern = "dd/MM/yyyy HH:mm";
+	     String pattern2 = "dd/MM/yyyy";
+	      DateFormat df = new SimpleDateFormat(pattern2);
+	      DateFormat df2 = new SimpleDateFormat(pattern);
+	    Workbook workbook = new XSSFWorkbook();
+	    
+	    
+	    /* CreationHelper helps us create instances of various things like DataFormat, 
+	       Hyperlink, RichTextString etc, in a format (HSSF, XSSF) independent way */
+	    CreationHelper createHelper = workbook.getCreationHelper();
+
+	    // Create a Sheet
+	    Sheet sheet = workbook.createSheet("Balance_agée");
+	    
+	   
+	    // Create a Font for styling header cells
+	    Font headerFont = workbook.createFont();
+	    headerFont.setBold(true);
+	    headerFont.setFontHeightInPoints((short) 14);
+	    headerFont.setColor(IndexedColors.GREEN.getIndex());
+
+	    // Create a CellStyle with the font
+	    CellStyle headerCellStyle = workbook.createCellStyle();
+	    headerCellStyle.setFont(headerFont);
+
+	    // Create a Row
+	    Row headerRow = sheet.createRow(0);
+	    
+	    // Create a Row Comment
+	    
+	    /*Row HeaderRowComment = sheetComments.createRow(0);
+	    String[] columnsComment = {"codeProjet","commentaire","date","utilisateur"};*/
+	    
+	    
+	    String[] columns = {"Client","3Mois",
+	       "6Mois","A 12Mois","SUP. 12Mois","Total"};
+
+	 
+	    // Create cells
+	    for(int i = 0; i < columns.length; i++) {
+	        Cell cell = headerRow.createCell(i);
+	        cell.setCellValue(columns[i]);
+	        cell.setCellStyle(headerCellStyle);
+	    }
+	   
+	    // Create Cell Style for formatting Date
+	    CellStyle dateCellStyle = workbook.createCellStyle();
+	    dateCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+
+	    
+	    int rowNum = 1;
+	    for(BalanceAgee b: balance) {
+	        Row row = sheet.createRow(rowNum++);
+
+	        Cell cell0 = row.createCell(0);
+	        if(b.getClient()!=null)
+	       cell0.setCellValue(b.getClient());
+
+	        Cell cell1 = row.createCell(1);
+	        cell1.setCellType(CellType.NUMERIC);
+	        if(b.getTois_mois()!=null)
+	        cell1.setCellValue(b.getTois_mois());
+	        
+	        Cell cell2 =  row.createCell(2);
+	        cell2.setCellType(CellType.NUMERIC);
+	        if(b.getSix_mois()!=null)
+	        cell2.setCellValue(b.getSix_mois());	
+	        
+	        Cell cell3= row.createCell(3);
+	        cell3.setCellType(CellType.NUMERIC);
+	        if(b.getDouze_mois()!=null)
+	        cell3.setCellValue(b.getDouze_mois());	
+	        
+	        Cell cell4=  row.createCell(4);
+	        cell4.setCellType(CellType.NUMERIC);
+	        if(b.getSup_douze_mois()!=null)
+	        cell4.setCellValue(b.getSup_douze_mois());	
+	        
+	        Cell cell5 = row.createCell(5);
+	        cell5.setCellType(CellType.NUMERIC);
+	        if(b.getTotal()!=null)
+	        cell5.setCellValue(b.getTotal());		        
+	       
+
+	    
+	        
+	     }
+
+
+	    // Resize all columns to fit the content size
+	     for(int i = 0; i < columns.length; i++) {
+	         sheet.autoSizeColumn(i);
+	     }
+	    
+	    return workbook;
+	    
+	  }
+  
+  
+  
+  
+  
 
 }
