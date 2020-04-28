@@ -148,7 +148,7 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 		 //EtatLvSvcApplication.produitServiceStatic.loadProduitFromSap();
 		//stockProjetServiceStatic.loadStockFromSap();
 		// loadFromSap();
-		//loadDocumentsFromSap();
+		loadDocumentsFromSap();
 		// etatProjetServiceStatic.importInfoFournisseurFromSAP();
 		// 3 produitServiceStatic.loadProduitFromSap();
 	}

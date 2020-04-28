@@ -21,7 +21,6 @@ public class EtatRecouvrement implements Serializable {
 	@Id
 	private Long id;
 	
-	
 	private Date dateCreation;
 	
 	private Date lastUpdate;
