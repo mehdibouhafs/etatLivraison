@@ -2,7 +2,6 @@ package ma.munisys.web;
 
 import java.util.Collection;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,11 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import ma.munisys.entities.AppUser;
-import ma.munisys.entities.Commentaire;
 import ma.munisys.entities.CommentaireStock;
-import ma.munisys.entities.Projet;
 import ma.munisys.entities.StockProjet;
 import ma.munisys.service.CommentaireStockService;
 import ma.munisys.service.StockProjetService;
@@ -62,22 +58,14 @@ public class StockProjetController {
 	
 	@RequestMapping(value = "/saveCommentProjet", method = RequestMethod.POST)
 	public CommentaireStock saveCommentProjet(@RequestBody CommentaireStock c,@RequestParam("projet") String projet,@RequestParam("id") Long id,@RequestParam("user") String user) {
-		
-			Projet p = new Projet();
-			p.setCodeProjet(projet);
-			c.setProjet_code_projet(p);
-			System.out.println("COMMENTAIRE "+id+" user "+user);
-			
+
 			AppUser u = new AppUser();
 			u.setUsername(user);
 			c.setUser_username(u);
 			
 			StockProjet s = new StockProjet(id);
 			c.setStock(s);
-			
 	
-			
-			
 			return commentaireStockService.saveCommentProjet(c);
 		}
 	

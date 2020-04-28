@@ -1,6 +1,7 @@
 package ma.munisys.entities;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,7 +24,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-public class Facture implements Serializable,Cloneable {
+public class Facture implements Serializable,Comparable<Facture>,Comparator<Facture>,Cloneable {
 	
 	@Id
 	private Long numFacture;
@@ -143,23 +144,15 @@ public class Facture implements Serializable,Cloneable {
 		this.montantTTC = montantTTC;
 	}
 
-	
+	@Override
+	public int compareTo(Facture o) {
+		return getNumFacture().compareTo(o.getNumFacture());
+	}
 
-	
+	@Override
+	public int compare(Facture o1, Facture o2) {
+		return o1.getNumFacture().compareTo(o2.getNumFacture());
+	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 }

@@ -34,8 +34,6 @@ public class CommentaireStock implements Serializable {
 	@ManyToOne
 	private AppUser user;
 
-	@ManyToOne
-	private Projet projet;
 	
 	@ManyToOne
 	@JsonBackReference
@@ -43,19 +41,18 @@ public class CommentaireStock implements Serializable {
 	
 
 	public CommentaireStock(Long id, String content, Date date, String employer, AppUser user_username,
-			Projet projet_code_projet,StockProjet stock) {
+			StockProjet stock) {
 		super();
 		this.id = id;
 		this.content = content;
 		this.date = date;
 		this.employer = employer;
 		this.user = user_username;
-		this.projet = projet_code_projet;
 		this.stock = stock;
 	}
 
 	public CommentaireStock() {
-		// TODO Auto-generated constructor stub
+	
 	}
 
 	public Long getId() {
@@ -106,16 +103,6 @@ public class CommentaireStock implements Serializable {
 	public void setUser_username(AppUser user_username) {
 		this.user = user_username;
 	}
-	
-	
-	public Projet getProjet_code_projet() {
-		return projet;
-	}
-
-	public void setProjet_code_projet(Projet projet_code_projet) {
-		this.projet = projet_code_projet;
-	}
-	
 	
 
 	

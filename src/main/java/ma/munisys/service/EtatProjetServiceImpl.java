@@ -329,15 +329,7 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 	public void addOrUpdateProjet(EtatProjet lastEtatProjet, Projet projet) {
 
 		Projet lastProjet = findProjetFromEtatProjet(lastEtatProjet, projet.getCodeProjet());
-		
-		/*if(projet.getCodeCommercial()!=null && !projet.getCodeCommercial().isEmpty() &&
-				projet.getNomCommercial()!=null && !projet.getNomCommercial().isEmpty()	) {
-			Employer commercial= checkAndAddEmployer(projet.getCodeCommercial(),projet.getNomCommercial(),"Commercial");	
-			System.out.println("not equals commercial");
-			System.out.println("newCom " + commercial);
-			
-			projet.setCommercial(commercial);	
-		}*/
+	
 		if (lastProjet != null) {
 			projet.setCommentaireDirection(lastProjet.getCommentaireDirection());
 			projet.setCommentaires(lastProjet.getCommentaires());
@@ -359,14 +351,12 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 			projet.setSuivre(lastProjet.getSuivre());
 			projet.setPerimetreProjet(lastProjet.getPerimetreProjet());
 			projet.setInfoClient(lastProjet.getInfoClient());
-			projet.setInfoFournisseur(lastProjet.getInfoFournisseur());
 			projet.setInfoProjet(lastProjet.getInfoProjet());
 			projet.setPriorite(lastProjet.getPriorite());
 			projet.setDatePvReceptionDefinitive(lastProjet.getDatePvReceptionDefinitive());
 			projet.setDatePvReceptionProvisoire(lastProjet.getDatePvReceptionProvisoire());
 			projet.setStatutProjet(lastProjet.getStatutProjet());
 			projet.setTauxAvancement(lastProjet.getTauxAvancement());
-			
 			lastEtatProjet.getProjets().remove(lastProjet);
 			lastEtatProjet.addProjet(projet);
 		} else {
@@ -852,15 +842,9 @@ public class EtatProjetServiceImpl implements EtatProjetService {
                     p.setConditionFacturation(rs1.getString(24));
                 }
                 
-                /*
-                if (rs1.getString(25) != null && !rs1.getString(25).equals("null")) {
-                    p.setMontantResteAReceptionnner(rs1.getDouble(25));
-                }*/
-                
                 if(commentairesInfoProjet.get(p.getCodeProjet())!=null){
                 	p.setInfoFournisseur(commentairesInfoProjet.get(p.getCodeProjet()));
                 }
-                
                 
                 p.setEtatProjet(etatProjet);
                 projets.add(p);
@@ -1118,7 +1102,7 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 		 // filtre par bu et chefProjet et client uniquement.  ACE
 		     if(!bu1.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
 			      && commercial.equals("undefined") && !client.equals("undefined") ){
-		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byBu(bu1).or(ProjetSpecification.byBu(bu2)).and(ProjetSpecification.byCommercial(commercial).and(ProjetSpecification.byClient(client)))));
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byBu(bu1).or(ProjetSpecification.byBu(bu2)).and(ProjetSpecification.byChefProjet(chefProjet).and(ProjetSpecification.byClient(client)))));
 		     }
 		 
 		 
@@ -1136,9 +1120,9 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 		     }
 
 		 	// filtre par statut et chefProjet et client uniquement.  BCE
-		     if(bu1.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
-			      && !commercial.equals("undefined") && !client.equals("undefined") ){
-		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byStatut(statut).and(ProjetSpecification.byCommercial(commercial).and(ProjetSpecification.byClient(client)))));
+		     if(bu1.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+			      && commercial.equals("undefined") && !client.equals("undefined") ){
+		    	 return projetRepository.findAll(ProjetSpecification.isCloture(cloturer).and(ProjetSpecification.byStatut(statut).and(ProjetSpecification.byChefProjet(chefProjet).and(ProjetSpecification.byClient(client)))));
 		    
 		     }
 		     

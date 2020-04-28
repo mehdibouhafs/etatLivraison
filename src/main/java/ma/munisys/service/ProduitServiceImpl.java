@@ -202,7 +202,13 @@ public class ProduitServiceImpl implements ProduitService {
 				produitRepository.save(p);
 			}
 			
-			produitRepository.deleteAll(produitRepository.findAll(ProduitSpecification.byQteEqualsZero()));
+			Collection<Produit> produitsToDelete = produitRepository.findAll(ProduitSpecification.byQteEqualsZero());
+			
+			for(Produit p : produitsToDelete) {
+				eventRepository.deleteAll(eventRepository.getEventProduit(p.getId()));
+			}
+			
+			produitRepository.deleteAll(produitsToDelete);
 				
 			Collection<Projet> projets = projetRepository.findAll();
 			for(Projet p : projets) {

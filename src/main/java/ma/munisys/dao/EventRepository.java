@@ -27,5 +27,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 	@Query(value="select e from Event e where e.user.username=:y  and e.createdBy !=:y and e.produit.id = :c  ")
 	public Collection<Event> getEventProduit(@Param("y") String username,@Param("c") String idProduit);
 	
+	@Query(value="select e from Event e where e.produit.id = :c ")
+	public Collection<Event> getEventProduit(@Param("c") String idProduit);
+	
 
 }
