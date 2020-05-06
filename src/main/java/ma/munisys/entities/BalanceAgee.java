@@ -55,7 +55,6 @@ public class BalanceAgee implements Serializable {
 	private Double total;
 	
 	private Date last_update;
-	
 
 	public BalanceAgee() {
 		super();
@@ -67,6 +66,7 @@ public class BalanceAgee implements Serializable {
 		super();
 		this.client = client;
 		this.chargee_recouv = chargee_recouv;
+
 		this.tois_mois = tois_mois;
 		this.six_mois = six_mois;
 		this.douze_mois = douze_mois;
@@ -162,8 +162,7 @@ public class BalanceAgee implements Serializable {
 		this.last_update = last_update;
 	}
 	
-	
-	
+		
 	
 	
 	

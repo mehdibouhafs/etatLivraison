@@ -1365,6 +1365,7 @@ return workbook;
 	    String[] columnsComment = {"codeProjet","commentaire","date","utilisateur"};*/
 	    
 	    
+
 	    String[] columns = {"Client","Chargé de recouvrement","3Mois",
 	       "6Mois","A 12Mois","SUP. 12Mois","Total"};
 
@@ -1419,6 +1420,7 @@ return workbook;
 	        cell6.setCellType(CellType.NUMERIC);
 	        if(b.getTotal()!=null)
 	        cell6.setCellValue(b.getTotal());		        
+     
 	       
 
 	    

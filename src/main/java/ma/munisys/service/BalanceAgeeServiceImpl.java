@@ -25,6 +25,7 @@ public class BalanceAgeeServiceImpl implements BalanceAgeeService {
 		
 	}
 	
+
 	public Collection<BalanceAgee> getBalanceByFiltre(String client,String cr){
 		
 	       if(client.equals("undefined") && cr.equals("undefined")){
@@ -53,6 +54,9 @@ public class BalanceAgeeServiceImpl implements BalanceAgeeService {
 		
 	}
 	
+
+
+
 
 
 
