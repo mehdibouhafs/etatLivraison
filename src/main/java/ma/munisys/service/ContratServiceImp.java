@@ -114,6 +114,7 @@ public class ContratServiceImp implements ContratService {
 		contratRepository.saveAll(contrats2);
 		
 		ResultSet rs1 = null;
+		ResultSet rs2 = null;
 		try {
 			String req1 = "SELECT * FROM DB_MUNISYS.\"V_ECH_CM\"";
 			rs1 = DBA.request(req1);
@@ -121,6 +122,7 @@ public class ContratServiceImp implements ContratService {
 			SimpleDateFormat sp = new SimpleDateFormat("yyyy-MM-dd");
 			Map<Long, Contrat> contrats = new HashMap<Long, Contrat>();
 			while (rs1.next()) {
+				
 				final Contrat contrat = new Contrat();
 				
 				if (rs1.getString(1) == null) {
@@ -249,7 +251,7 @@ public class ContratServiceImp implements ContratService {
 			LOGGER.info("Loading modele contrat from SAP");
 			
 			
-			ResultSet rs2 = null;
+			
 				String req2 = "SELECT * FROM DB_MUNISYS.\"V_CM_MOD\"";
 				rs2 = DBA.request(req2);
 				java.sql.ResultSetMetaData rsmd1 = rs2.getMetaData();
@@ -262,7 +264,9 @@ public class ContratServiceImp implements ContratService {
 					
 					ContratModel contratModel = new ContratModel();
 					 Contrat currentContrat=null;
-					if (rs2.getString(1) != null ) {
+					
+					 
+					if (rs2.getString(1) != null  ) {
 						  currentContrat = contratRepository.findById(rs2.getLong(1)).orElse(null);
 						 if(currentContrat==null) {
 							 continue;
@@ -313,7 +317,9 @@ public class ContratServiceImp implements ContratService {
 							lastContratModel.setCloture(false);
 							
 							for(Echeance e : lastContratModel.getEcheances()) {
-								e.setCloture(false);
+								if(!e.isDeletedByUser()) {
+									e.setCloture(false);
+								}
 							}
 							contratRepository.save(currentContrat);
 							found =true;
@@ -351,9 +357,7 @@ public class ContratServiceImp implements ContratService {
 								
 				}
 				
-
 			LOGGER.info("done synchro contrat");
-			
 		
 		}
 
@@ -361,6 +365,17 @@ public class ContratServiceImp implements ContratService {
 			LOGGER.error("Error loading contrat from Sap " + e.getMessage());
 			e.printStackTrace();
 		} finally {
+			if(rs2!=null) {
+				try {
+					rs2.close();
+					DBA.getConnection().close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					LOGGER.error("Error closing connextion  to Sap " + e.getMessage());
+					e.printStackTrace();
+				}
+			}
+			
 			if (rs1 != null) {
 				try {
 					rs1.close();
@@ -383,6 +398,7 @@ public class ContratServiceImp implements ContratService {
 			Contrat lastContrat = contratRepository.findById(contrat.getNumContrat()).orElse(null);
 			if(lastContrat!=null) {
 				lastContrat.setPeriodeFacturation(contrat.getPeriodeFacturation());
+				lastContrat.setCodeProjet(contrat.getCodeProjet());
 				lastContrat.setMontantContrat(contrat.getMontantContrat());
 				lastContrat.setPilote(contrat.getPilote());
 				lastContrat.setOccurenceFacturation(contrat.getOccurenceFacturation());
@@ -575,16 +591,18 @@ public class ContratServiceImp implements ContratService {
 						Calendar calendarEnd = new java.util.GregorianCalendar();
 						calendarEnd.setTime(e.getAu());
 						if(calendarDu.get(Calendar.YEAR)==startDate || calendarEnd.get(Calendar.YEAR)==startDate || calendarDu.get(Calendar.YEAR)==endDate || calendarEnd.get(Calendar.YEAR)==endDate  ) {
-							System.out.println("valid ech "+e.getId());
 								echeances.add(e);
 							for(FactureEcheance fe :e.getFactureEcheances()) {
-								System.out.println("fe "  + fe.getId());
 								//System.out.println("numFacture " +fe.getFacture().getNumFacture());
-								FactureEcheance fe2 = (FactureEcheance) fe.clone();
-								addingId = addingId+1;
-								fe2.setId(fe2.getId()+""+addingId);
-								facturesEcheancess.add(fe2);
-								factureEcheances.add(fe2);
+								Calendar calendar = Calendar.getInstance();
+								calendar.setTime(fe.getFacture().getDateEnregistrement());
+								if(calendar.get(Calendar.YEAR)==currentYear) {
+									FactureEcheance fe2 = (FactureEcheance) fe.clone();
+									addingId = addingId+1;
+									fe2.setId(fe2.getId()+""+addingId);
+									facturesEcheancess.add(fe2);
+									factureEcheances.add(fe2);
+								}
 							}
 						}
 					}
@@ -609,13 +627,8 @@ public class ContratServiceImp implements ContratService {
 			}
 		}
 		
-		/*for(Contrat c : contrats) {
-			for(Echeance  e:c.getEcheances()) {
-				System.out.println(e.getDu());
-			}
-		}*/
 		}catch (CloneNotSupportedException e) {
-			LOGGER.error("error clone object " + e.getMessage());
+			LOGGER.error("error clone object " , e);
 			e.printStackTrace();
 		}
 		

@@ -4,37 +4,22 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.util.Set;
-import java.util.TimeZone;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.text.SimpleDateFormat;
 import ma.munisys.sap.dao.DBA;
-
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-
-import ma.munisys.entities.AppUser;
-import ma.munisys.entities.Authorisation;
-import ma.munisys.entities.CommandeFournisseur;
-import ma.munisys.entities.Contrat;
 import ma.munisys.entities.Document;
-import ma.munisys.entities.EtatProjet;
 import ma.munisys.entities.EtatRecouvrement;
 import ma.munisys.entities.Projet;
-import ma.munisys.entities.Service;
-
 import java.util.HashSet;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import javax.annotation.PostConstruct;
-import javax.management.loading.ClassLoaderRepository;
-
 import org.springframework.boot.SpringApplication;
 import ma.munisys.dao.ServiceRepository;
-import ma.munisys.dao.StockProjetRepository;
 import ma.munisys.dao.CommentaireRepository;
 import ma.munisys.dao.ContratRepository;
 import ma.munisys.dao.EcheanceRepository;
@@ -42,11 +27,9 @@ import ma.munisys.dao.EmployerRepository;
 import ma.munisys.service.ReunionService;
 import ma.munisys.service.StorageService;
 import ma.munisys.dao.UserRepository;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import ma.munisys.service.CommandeFournisseurService;
 import ma.munisys.service.ContratService;
 import ma.munisys.service.EtatProjetService;
@@ -64,12 +47,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
 @EnableScheduling
@@ -144,13 +124,6 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 		LOGGER.warn("Strat app warn");
 		LOGGER.debug("Strat app");
 		SpringApplication.run((Class) EtatLvSvcApplication.class, args);
-		 //etatProjetServiceStatic.loadProjetsFromSap();
-		 //EtatLvSvcApplication.produitServiceStatic.loadProduitFromSap();
-		//stockProjetServiceStatic.loadStockFromSap();
-		// loadFromSap();
-		loadDocumentsFromSap();
-		// etatProjetServiceStatic.importInfoFournisseurFromSAP();
-		// 3 produitServiceStatic.loadProduitFromSap();
 	}
 
 	@PostConstruct
@@ -176,6 +149,7 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 		System.out.println("run");
 		//commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();
 		//EtatLvSvcApplication.loadProduitFromSap();
+		//factureServiceStatic.loadFactureFromSap2();
 		//EtatLvSvcApplication.loadContrat();
 		//System.out.println("end");
 		//factureServiceStatic.loadFactureFromSap();
@@ -219,15 +193,15 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 
 	@Scheduled(cron = "0 0 21 * * *")
 	public static void loadContrat() {
-		//LOGGER.debug("STARTING TASK contrat  CRON ");
-		CompletableFuture<String> contrats =EtatLvSvcApplication.contratServiceStatic.loadContratFromSap();
-		CompletableFuture<String> pieces =EtatLvSvcApplication.contratServiceStatic.loadContratPieceSap();
-		CompletableFuture<String> factures =factureServiceStatic.loadFactureFromSap();
-		CompletableFuture<String> commandes =commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();
+		LOGGER.debug("STARTING TASK synchro contrat  ");
+		EtatLvSvcApplication.contratServiceStatic.loadContratFromSap();
+		EtatLvSvcApplication.contratServiceStatic.loadContratPieceSap();
+		factureServiceStatic.loadFactureFromSap();
+		commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();
 		
 		
-		CompletableFuture.allOf(contrats,pieces,commandes,factures).join();
-		//LOGGER.debug("ENDING TASK contrat  CRON ");
+		//CompletableFuture.allOf(contrats,pieces,commandes,factures).join();
+		LOGGER.debug("ENDING TASK synchro contrat");
 	}
 
 	@Scheduled(cron = "0 0 1 * * *")

@@ -59,7 +59,6 @@ public class Echeance implements Serializable, Comparable<Echeance>,Comparator<E
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "echeance", cascade = { CascadeType.ALL }, orphanRemoval = true)
 	private Set<FactureEcheance> factureEcheances = new HashSet<FactureEcheance>();
 	
-	
 	@ManyToOne
 	private ContratModel contratModel;
 	
@@ -68,6 +67,12 @@ public class Echeance implements Serializable, Comparable<Echeance>,Comparator<E
 	private CommentaireEcheance commentaire;
 	
 	private boolean cloture;
+	
+	private boolean addedByUser;
+	
+	private boolean deletedByUser;
+	
+	private String messageDelete;
 	
 	public Echeance() {
 		
@@ -281,26 +286,34 @@ public class Echeance implements Serializable, Comparable<Echeance>,Comparator<E
 			return false;
 		return true;
 	}
-	
-	
-	
-	
-	
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	public boolean isAddedByUser() {
+		return addedByUser;
+	}
 
+	public void setAddedByUser(boolean addedByUser) {
+		this.addedByUser = addedByUser;
+	}
+
+	public boolean isDeletedByUser() {
+		return deletedByUser;
+	}
+
+	public void setDeletedByUser(boolean deletedByUser) {
+		this.deletedByUser = deletedByUser;
+	}
+
+	public String getMessageDelete() {
+		return messageDelete;
+	}
+
+	public void setMessageDelete(String messageDelete) {
+		this.messageDelete = messageDelete;
+	}
+	
+	
+	
+	
 	
 	
 }

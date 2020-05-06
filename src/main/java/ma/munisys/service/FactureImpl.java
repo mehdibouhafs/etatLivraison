@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -74,7 +76,7 @@ public class FactureImpl implements FactureService {
 			java.sql.ResultSetMetaData rsmd = rs1.getMetaData();
 			for (int columnCount = rsmd.getColumnCount(), i = 1; i <= columnCount; ++i) {
 				final String name = rsmd.getColumnName(i);
-				// System.out.println("column Name " + name);
+				System.out.println("column Name " + name);
 			}
 			SimpleDateFormat sp = new SimpleDateFormat("yyyy-MM-dd");
 			Contrat contrat = null;
@@ -129,10 +131,197 @@ public class FactureImpl implements FactureService {
 				factures.add(facture);
 
 			}
+			
+			factureRepository.saveAll(factures);
 
 			for (Facture f : factures) {
 				List<Echeance> ecs = affecterEcheance(f);
 				if (ecs != null && !ecs.isEmpty()) {
+					
+					FactureEcheance lastFactureEchanceNotLinked = factureEcheanceRepository.findById(f.getNumFacture() + "/" + f.getContrat().getNumContrat()).orElse(null);
+					if(lastFactureEchanceNotLinked!=null) {
+						factureEcheanceRepository.delete(lastFactureEchanceNotLinked);
+					}
+					
+					for (Echeance e : ecs) {
+						
+						FactureEcheance lastFactureEcheance= factureEcheanceRepository.findById(f.getNumFacture() + "/" + e.getId() + "/" + f.getContrat().getNumContrat()).orElse(null);
+							
+						FactureEcheance fe = new FactureEcheance();;
+						fe.setId(f.getNumFacture() + "/" + e.getId() + "/" + f.getContrat().getNumContrat());
+						fe.setContrat(f.getContrat());
+						fe.setFacture(f);
+						fe.setMontant(f.getMontantHT() / ecs.size());
+						fe.setEcheance(e);
+						fe.setCloture(false);
+						
+						if(lastFactureEcheance==null ) {
+							factureEcheanceRepository.save(fe);
+						}else {
+							if(!lastFactureEcheance.isAffectedByUser()) {
+								factureEcheanceRepository.save(fe);
+							}
+						}
+					}
+				} else {
+					FactureEcheance fe = new FactureEcheance();
+					fe.setId(f.getNumFacture() + "/" + f.getContrat().getNumContrat());
+					fe.setContrat(f.getContrat());
+					fe.setFacture(f);
+					fe.setCloture(false);
+					fe.setMontant(f.getMontantHT());
+					factureEcheanceRepository.save(fe);
+					
+				}
+			}
+
+			
+
+			int currentYear = Calendar.getInstance(TimeZone.getTimeZone("africa/Casablanca")).get(Calendar.YEAR);
+
+			for (Contrat c : contratRepository.findAll()) {
+				
+					for (FactureEcheance fe : c.getFactureEcheances()) {
+
+						Echeance e = fe.getEcheance();
+						if (e != null && !e.getCloture()) {
+							e.calculMontantFacture();
+							echeanceRepository.save(e);
+						}
+					}
+				
+
+				Double montantFactureAn = factureRepository.sumAmountContrat(c.getNumContrat(), currentYear);
+
+				if (montantFactureAn != null) {
+					c.setMontantFactureAn(montantFactureAn);
+				} else {
+					c.setMontantFactureAn(0.0);
+				}
+
+				Double montantProvisonFacture = factureRepository.sumAmountContratInfAn(c.getNumContrat(), currentYear);
+				Double montantRestAFactureInfAn = echeanceRepository.sumAmountRestAFacture(c.getNumContrat(),
+						currentYear);
+				if (montantProvisonFacture != null) {
+					c.setMontantProvisionFactureInfAnneeEnCours(montantProvisonFacture);
+					if (montantRestAFactureInfAn != null && montantRestAFactureInfAn - montantProvisonFacture > 0) {
+						c.setMontantProvisionAFactureInfAnneeEnCours(montantRestAFactureInfAn - montantProvisonFacture);
+					} else {
+						c.setMontantProvisionAFactureInfAnneeEnCours(0.00);
+					}
+				} else {
+					c.setMontantProvisionFactureInfAnneeEnCours(0.0);
+					if (montantRestAFactureInfAn != null) {
+						c.setMontantProvisionAFactureInfAnneeEnCours(montantRestAFactureInfAn);
+					} else {
+						c.setMontantProvisionAFactureInfAnneeEnCours(0.0);
+					}
+				}
+
+				contratRepository.save(c);
+
+			}
+
+			LOGGER.info("end loading facture ");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (rs1 != null) {
+				try {
+					rs1.close();
+					DBA.getConnection().close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+		}
+
+		return CompletableFuture.completedFuture("loaded Factures");
+	}
+	
+	
+	public  void loadFactureFromSap2() {
+		LOGGER.info("load facture from SAP");
+
+		// factureRepository.deleteAll();
+
+		ResultSet rs1 = null;
+		Set<Facture> factures = new HashSet<Facture>();
+
+		try {
+			String req1 = "SELECT * FROM DB_MUNISYS.\"V_FACT_MAINT\"";
+			rs1 = DBA.request(req1);
+			java.sql.ResultSetMetaData rsmd = rs1.getMetaData();
+			for (int columnCount = rsmd.getColumnCount(), i = 1; i <= columnCount; ++i) {
+				final String name = rsmd.getColumnName(i);
+				System.out.println("column Name " + name);
+			}
+			SimpleDateFormat sp = new SimpleDateFormat("yyyy-MM-dd");
+			Contrat contrat = null;
+			while (rs1.next()) {
+				final Facture facture = new Facture();
+				System.out.println("numFacture "+ rs1.getLong(1));
+				if (rs1.getString(1) != null && !rs1.getString(1).equals("null")) {
+
+					facture.setNumFacture(rs1.getLong(1));
+				} else {
+					continue;
+				}
+				if (rs1.getString(2) != null && !rs1.getString(2).equals("null")) {
+
+					try {
+						contrat = contratRepository.findById(rs1.getLong(2)).get();
+						facture.setContrat(contrat);
+					} catch (Exception e) {
+						continue;
+					}
+
+				}
+				if (rs1.getString(3) != null && !rs1.getString(3).equals("null")) {
+
+					facture.setDateEnregistrement(sp.parse(rs1.getString(3).split("\\s+")[0]));
+				}
+				if (rs1.getString(4) != null && !rs1.getString(4).equals("null")) {
+
+					facture.setMontantTTC(rs1.getDouble(4));
+				} else {
+					// System.out.println("nulllll");
+				}
+
+				if (rs1.getString(5) != null && !rs1.getString(5).equals("null")) {
+
+					facture.setMontantHT(rs1.getDouble(5));
+				}
+
+				if (rs1.getString(6) != null && !rs1.getString(6).equals("null")) {
+
+					facture.setMontantRestant(rs1.getDouble(6));
+				}
+
+				if (rs1.getString(7) != null && !rs1.getString(7).equals("null")) {
+
+					facture.setDebutPeriode(sp.parse(rs1.getString(7).split("\\s+")[0]));
+				}
+				if (rs1.getString(8) != null && !rs1.getString(8).equals("null")) {
+					facture.setFinPeriode(sp.parse(rs1.getString(8).split("\\s+")[0]));
+				}
+
+				factures.add(facture);
+
+			}
+
+			for (Facture f : factures) {
+				List<Echeance> ecs = affecterEcheance(f);
+				if (ecs != null && !ecs.isEmpty()) {
+					
+					FactureEcheance lastFactureEchanceNotLinked = factureEcheanceRepository.findById(f.getNumFacture() + "/" + f.getContrat().getNumContrat()).orElse(null);
+					if(lastFactureEchanceNotLinked!=null) {
+						factureEcheanceRepository.delete(lastFactureEchanceNotLinked);
+					}
+					
 					for (Echeance e : ecs) {
 						FactureEcheance fe = new FactureEcheance();
 						fe.setId(f.getNumFacture() + "/" + e.getId() + "/" + f.getContrat().getNumContrat());
@@ -218,7 +407,7 @@ public class FactureImpl implements FactureService {
 
 		}
 
-		return CompletableFuture.completedFuture("loaded Factures");
+		
 	}
 
 	public List<Echeance> genereateEcheance(Facture f) {
@@ -247,19 +436,43 @@ public class FactureImpl implements FactureService {
 
 		List<Echeance> echeances = new ArrayList<>();
 
+		
+		
 		for (Echeance e : f.getContrat().getEcheances()) {
-			if(!e.getCloture()) {
+			if(!e.getCloture() && !e.isAddedByUser()) {
 				if (f.getDebutPeriode() != null && f.getFinPeriode() != null
 						&& new DateTime(f.getDebutPeriode()).toLocalDate()
 								.compareTo(new DateTime(e.getDu()).toLocalDate()) == 0
 						&& f.getFinPeriode() != null && new DateTime(f.getFinPeriode()).toLocalDate()
-								.compareTo(new DateTime(e.getAu()).toLocalDate()) == 0) {
+								.compareTo(new DateTime(e.getAu()).toLocalDate()) == 0 && f.getMontantHT()==e.getMontantPrevision()) {
 					echeances.add(e);
 				}
 			}
 		}
 		return echeances;
 
+	}
+
+	@Override
+	public FactureEcheance updateFactureEcheance(Long numContrat,FactureEcheance factureEcheance) {
+		
+		Contrat c =new Contrat();
+		c.setNumContrat(numContrat);
+		factureEcheance.setContrat(c);
+		
+		if(factureEcheance.getEcheance()!=null) {
+			Echeance  e = echeanceRepository.findById(factureEcheance.getEcheance().getId()).orElse(null);
+			
+			if(e!=null) {
+					e.getFactureEcheances().add(factureEcheance);
+					e.calculMontantFacture();
+					factureEcheance.setEcheance(e);
+					echeanceRepository.save(e);
+			}
+		}
+		factureEcheance.setAffectedByUser(true);
+			
+		return factureEcheanceRepository.save(factureEcheance);
 	}
 
 }

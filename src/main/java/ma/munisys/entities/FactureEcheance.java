@@ -30,6 +30,8 @@ public class FactureEcheance implements Serializable, Comparable<FactureEcheance
 	
 	private boolean cloture;
 	
+	private boolean affectedByUser;
+	
 
 	
 	public FactureEcheance() {
@@ -147,11 +149,17 @@ public class FactureEcheance implements Serializable, Comparable<FactureEcheance
 		this.cloture = cloture;
 	}
 
-	
-	
-	
-	
-	
+
+
+	public boolean isAffectedByUser() {
+		return affectedByUser;
+	}
+
+
+
+	public void setAffectedByUser(boolean affectedByUser) {
+		this.affectedByUser = affectedByUser;
+	}
 	
 
 }

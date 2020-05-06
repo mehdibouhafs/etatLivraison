@@ -59,6 +59,7 @@ public class ContratController {
 	private ContratService contratService;
 	@Autowired
 	private FactureService factureService;
+
 	
 	@Autowired
 	private CommandeFournisseurService commandeFournisseurService;
@@ -107,12 +108,16 @@ public class ContratController {
 		//commandeFournisseurService.loadCommandeFournisseurFromSap();
 		
 		System.out.println("start refresh");
-		CompletableFuture<String> contrats = contratService.loadContratFromSap();
-		CompletableFuture<String> pieces = contratService.loadContratPieceSap();
-		CompletableFuture<String> commandes =commandeFournisseurService.loadCommandeFournisseurFromSap();
-		CompletableFuture<String> factures = factureService.loadFactureFromSap();
+		//CompletableFuture<String> contrats = 
+		contratService.loadContratFromSap();
+		//CompletableFuture<String> pieces = 
+		contratService.loadContratPieceSap();
+		//CompletableFuture<String> commandes =
+		commandeFournisseurService.loadCommandeFournisseurFromSap();
+		//CompletableFuture<String> factures =
+		factureService.loadFactureFromSap();
 		
-		CompletableFuture.allOf(contrats,pieces,commandes,factures).join();
+		//CompletableFuture.allOf(contrats,pieces,commandes,factures).join();
 		System.out.println("end refresh");
 		
 		
@@ -155,6 +160,25 @@ public class ContratController {
 	
 		return echeanceService.updateEcheance(echeance.getId(), echeance.getCommentaire().getId());
 		
+	}
+	
+	@RequestMapping(value = "/editEcheance/{numContrat}", method = RequestMethod.PUT)
+	public Echeance updateEcheance2(@PathVariable("numContrat") final Long numContrat,
+			@RequestBody Echeance echeance){
+		return echeanceService.editEcheance(numContrat,echeance);
+		
+	}
+	
+	@RequestMapping(value = "/deleteEcheance/{idEcheance}", method = RequestMethod.DELETE)
+	public void deleteEcheance(@PathVariable("idEcheance") String idEcheance){
+		 echeanceService.deleteEcheance(Long.parseLong(idEcheance));
+		
+	}
+	
+	@RequestMapping(value = "/editFactureEcheance/{numContrat}", method = RequestMethod.PUT)
+	public FactureEcheance updateFactureEcheance(@PathVariable("numContrat") final Long numContrat,
+			@RequestBody FactureEcheance factureEcheance){
+		return factureService.updateFactureEcheance(numContrat,factureEcheance);
 	}
 	
 	@PostMapping("/exportPiece")
