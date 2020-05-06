@@ -1365,7 +1365,7 @@ return workbook;
 	    String[] columnsComment = {"codeProjet","commentaire","date","utilisateur"};*/
 	    
 	    
-	    String[] columns = {"Client","3Mois",
+	    String[] columns = {"Client","Chargé de recouvrement","3Mois",
 	       "6Mois","A 12Mois","SUP. 12Mois","Total"};
 
 	 
@@ -1389,30 +1389,36 @@ return workbook;
 	        if(b.getClient()!=null)
 	       cell0.setCellValue(b.getClient());
 
+	        
 	        Cell cell1 = row.createCell(1);
-	        cell1.setCellType(CellType.NUMERIC);
-	        if(b.getTois_mois()!=null)
-	        cell1.setCellValue(b.getTois_mois());
+	        if(b.getChargee_recouv()!=null)
+	        cell1.setCellValue(b.getChargee_recouv());
 	        
-	        Cell cell2 =  row.createCell(2);
+	        
+	        Cell cell2 = row.createCell(2);
 	        cell2.setCellType(CellType.NUMERIC);
-	        if(b.getSix_mois()!=null)
-	        cell2.setCellValue(b.getSix_mois());	
+	        if(b.getTois_mois()!=null)
+	        cell2.setCellValue(b.getTois_mois());
 	        
-	        Cell cell3= row.createCell(3);
+	        Cell cell3 =  row.createCell(3);
 	        cell3.setCellType(CellType.NUMERIC);
-	        if(b.getDouze_mois()!=null)
-	        cell3.setCellValue(b.getDouze_mois());	
+	        if(b.getSix_mois()!=null)
+	        cell3.setCellValue(b.getSix_mois());	
 	        
-	        Cell cell4=  row.createCell(4);
+	        Cell cell4= row.createCell(4);
 	        cell4.setCellType(CellType.NUMERIC);
-	        if(b.getSup_douze_mois()!=null)
-	        cell4.setCellValue(b.getSup_douze_mois());	
+	        if(b.getDouze_mois()!=null)
+	        cell4.setCellValue(b.getDouze_mois());	
 	        
-	        Cell cell5 = row.createCell(5);
+	        Cell cell5=  row.createCell(5);
 	        cell5.setCellType(CellType.NUMERIC);
+	        if(b.getSup_douze_mois()!=null)
+	        cell5.setCellValue(b.getSup_douze_mois());	
+	        
+	        Cell cell6 = row.createCell(6);
+	        cell6.setCellType(CellType.NUMERIC);
 	        if(b.getTotal()!=null)
-	        cell5.setCellValue(b.getTotal());		        
+	        cell6.setCellValue(b.getTotal());		        
 	       
 
 	    

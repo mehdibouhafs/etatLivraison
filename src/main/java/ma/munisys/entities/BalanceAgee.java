@@ -37,6 +37,8 @@ public class BalanceAgee implements Serializable {
 		
 	private String client;
 
+	private String chargee_recouv;
+	
 	@Column(name="toisMois", nullable= true)
 	private Double tois_mois;
 	
@@ -52,6 +54,7 @@ public class BalanceAgee implements Serializable {
 	@Column(name="total", nullable= true)
 	private Double total;
 	
+	private Date last_update;
 	
 
 	public BalanceAgee() {
@@ -59,15 +62,17 @@ public class BalanceAgee implements Serializable {
 		// TODO Auto-generated constructor stub
 	}
 
-	public BalanceAgee(String client, Double tois_mois, Double six_mois, Double douze_mois, Double sup_douze_mois,
-			double total) {
+	public BalanceAgee(String client, String chargee_recouv, Double tois_mois, Double six_mois, Double douze_mois, Double sup_douze_mois,
+			double total,Date last) {
 		super();
 		this.client = client;
+		this.chargee_recouv = chargee_recouv;
 		this.tois_mois = tois_mois;
 		this.six_mois = six_mois;
 		this.douze_mois = douze_mois;
 		this.sup_douze_mois = sup_douze_mois;
 		this.total = total;
+		this.last_update = last;
 	}
 
 	public int getId_balance() {
@@ -84,6 +89,29 @@ public class BalanceAgee implements Serializable {
 
 	public void setClient(String client) {
 		this.client = client;
+	}
+
+	
+	
+	
+	public String getChargee_recouv() {
+		return chargee_recouv;
+	}
+
+	public void setChargee_recouv(String chargee_recouv) {
+		this.chargee_recouv = chargee_recouv;
+	}
+
+	public void setDouze_mois(Double douze_mois) {
+		this.douze_mois = douze_mois;
+	}
+
+	public void setSup_douze_mois(Double sup_douze_mois) {
+		this.sup_douze_mois = sup_douze_mois;
+	}
+
+	public void setTotal(Double total) {
+		this.total = total;
 	}
 
 	public Double getTois_mois() {
@@ -125,6 +153,16 @@ public class BalanceAgee implements Serializable {
 	public void setTotal(double total) {
 		this.total = total;
 	}
+
+	public Date getLast_update() {
+		return last_update;
+	}
+
+	public void setLast_update(Date last_update) {
+		this.last_update = last_update;
+	}
+	
+	
 	
 	
 	

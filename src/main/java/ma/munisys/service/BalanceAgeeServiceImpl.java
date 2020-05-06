@@ -25,13 +25,36 @@ public class BalanceAgeeServiceImpl implements BalanceAgeeService {
 		
 	}
 	
-	public Collection<BalanceAgee> getBalanceByClient(String client){
+	public Collection<BalanceAgee> getBalanceByFiltre(String client,String cr){
 		
+	       if(client.equals("undefined") && cr.equals("undefined")){
 
+		        return balanceAgeeRepo.getBalance();
+		        
+		       }
+	       
+	       
+	       if(!client.equals("undefined") && cr.equals("undefined")){
+
+		        return balanceAgeeRepo.findAll(BalanceAgeeSpecification.byClient(client));
+		       }
+	       
+	       if(client.equals("undefined") && !cr.equals("undefined")){
+
+		        return balanceAgeeRepo.findAll(BalanceAgeeSpecification.byCR(cr));
+		       }
+	       
+	       if(!client.equals("undefined") && !cr.equals("undefined")){
+
+		        return balanceAgeeRepo.findAll(BalanceAgeeSpecification.byCR(cr).and(BalanceAgeeSpecification.byClient(client)));
+		       }
 		
-		return balanceAgeeRepo.getBalanceByClient(client);
+		return balanceAgeeRepo.getBalanceByFiltre(client,cr);
 		
 	}
+	
+
+
 
 	
 

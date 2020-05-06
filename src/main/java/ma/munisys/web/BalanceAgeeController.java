@@ -32,12 +32,14 @@ public class BalanceAgeeController {
 		return balanceAgeeService.getBalance();
 	}
 	
-	@RequestMapping(value = "/getBalanceByClient", method = RequestMethod.GET)
-	public Collection<BalanceAgee> getBalanceByClient(String client){
+	@RequestMapping(value = "/getBalanceByFiltre", method = RequestMethod.GET)
+	public Collection<BalanceAgee> getBalanceByClient(String client,String cr){
 	
-	return balanceAgeeService.getBalanceByClient(client);
+	return balanceAgeeService.getBalanceByFiltre(client,cr);
 	
 	}
+	
+
 
 	
 
