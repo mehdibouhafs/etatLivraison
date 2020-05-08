@@ -436,8 +436,6 @@ public class FactureImpl implements FactureService {
 
 		List<Echeance> echeances = new ArrayList<>();
 
-		
-		
 		for (Echeance e : f.getContrat().getEcheances()) {
 			if(!e.getCloture() && !e.isAddedByUser()) {
 				if (f.getDebutPeriode() != null && f.getFinPeriode() != null
@@ -459,9 +457,9 @@ public class FactureImpl implements FactureService {
 		Contrat c =new Contrat();
 		c.setNumContrat(numContrat);
 		factureEcheance.setContrat(c);
-		
+		Echeance  e;
 		if(factureEcheance.getEcheance()!=null) {
-			Echeance  e = echeanceRepository.findById(factureEcheance.getEcheance().getId()).orElse(null);
+			e = echeanceRepository.findById(factureEcheance.getEcheance().getId()).orElse(null);
 			
 			if(e!=null) {
 					e.getFactureEcheances().add(factureEcheance);

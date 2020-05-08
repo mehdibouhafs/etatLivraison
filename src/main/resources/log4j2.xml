@@ -3,7 +3,7 @@
     <Properties>
         <Property name="LOG_PATTERN">%d [%-6p] %C{3}.%M(%F:%L) – %m%n</Property>
         <Property name="APP_LOG_ROOT">c:/logs</Property>
-         <Property name="ENV">M-GouvDev</Property>
+         <Property name="ENV">M-GouvProd</Property>
     </Properties>
     <Appenders>
         <Console name="console" target="SYSTEM_OUT">

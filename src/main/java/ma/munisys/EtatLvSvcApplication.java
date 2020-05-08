@@ -147,6 +147,7 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 		this.storageService.init();
 		LOGGER.info("Start PDC 360");
 		System.out.println("run");
+		//EtatLvSvcApplication.loadProduitFromSap();
 		//commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();
 		//EtatLvSvcApplication.loadProduitFromSap();
 		//factureServiceStatic.loadFactureFromSap2();

@@ -96,11 +96,10 @@ public class ContratController {
 	}
 	
 	
-	
-	@RequestMapping(value="/getAllFactureEcheances",method=RequestMethod.GET)
-	public Collection<FactureEcheance> getAllFactureEcheances() {
+	@RequestMapping(value="/getAllEcheancesForContrat",method=RequestMethod.GET)
+	public Collection<Echeance> getAllEcheances(@RequestParam(name = "numContrat") Long numContrat) {
 		
-		return factureEcheanceRepository.getFactureEcheance(480636L);
+		return echeanceRepository.getAllEcheancesFromContrat(numContrat);
 	}
 	
 	@RequestMapping(value = "/refreshContrats", method = RequestMethod.GET)

@@ -55,8 +55,8 @@ public class Produit {
 	
 	private String bu;
 	
-	private int qte;
-	private int qteRal;
+	private float qte;
+	private float qteRal;
 	private double pmp;
 	private double montant;
 	
@@ -219,19 +219,20 @@ public class Produit {
 		this.bu = bu;
 	}
 
-	public int getQte() {
+	
+	public float getQte() {
 		return qte;
 	}
 
-	public void setQte(int qte) {
+	public void setQte(float qte) {
 		this.qte = qte;
 	}
 
-	public int getQteRal() {
+	public float getQteRal() {
 		return qteRal;
 	}
 
-	public void setQteRal(int qteRal) {
+	public void setQteRal(float qteRal) {
 		this.qteRal = qteRal;
 	}
 

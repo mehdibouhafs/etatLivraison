@@ -128,10 +128,10 @@ public class ProduitServiceImpl implements ProduitService {
 					p.setBu(rs1.getString(16));
 				}
 				if (rs1.getString(17) != null && !rs1.getString(17).equals("null")) {
-					p.setQte(rs1.getInt(17));
+					p.setQte(rs1.getFloat(17));
 				}
 				if (rs1.getString(18) != null && !rs1.getString(18).equals("null")) {
-					p.setQteRal(rs1.getInt(18));
+					p.setQteRal(rs1.getFloat(18));
 				}
 				if (rs1.getString(19) != null && !rs1.getString(19).equals("null")) {
 					p.setPmp(rs1.getDouble(19));

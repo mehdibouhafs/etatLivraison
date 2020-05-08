@@ -73,6 +73,12 @@ public class EcheanceServiceImpl implements EcheanceService {
 		
 		
 	}
+
+	@Override
+	public Collection<Echeance> getAllEcheancesFromContrat(Long numContrat) {
+		// TODO Auto-generated method stub
+		return echeanceRepository.getAllEcheancesFromContrat(numContrat);
+	}
 	
 	
 	
