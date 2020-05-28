@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -121,8 +122,9 @@ public class EtatRecouvrementController {
 	}
 	
 	@RequestMapping(value="/getDocuments",method=RequestMethod.GET)
-	public Collection<Document> getDocumentsWithoutPagination(@RequestParam(name="idEtatRecouvrement",defaultValue="1") Long idEtatRecouvrement,@RequestParam(name="cloturer",defaultValue="false") Boolean cloturer,@RequestParam(name = "statut") String statut, 
+	public Collection<Document> getDocumentsWithoutPagination(@RequestParam(name="idEtatRecouvrement",defaultValue="1") Long idEtatRecouvrement,@RequestParam(name="cloturer",defaultValue="false") Boolean cloturer,@RequestParam(name = "statut") String[] statut, 
 			@RequestParam(name = "commercial") String commercial,@RequestParam(name = "client") String client,@RequestParam(name = "chefProjet") String chefProjet,@RequestParam(name = "chargeRecouvrement") String chargeRecouvrement,@RequestParam(name = "anneePiece") String anneePiece,@RequestParam(name = "age") String age) {
+		System.out.println("TEST CLIENT "+client);
 		return  etatRecouvrementService.getDocumentsFromEtatRecouvrement(idEtatRecouvrement, cloturer, chargeRecouvrement, commercial, chefProjet, client, statut,anneePiece,age);
 	}
 	
