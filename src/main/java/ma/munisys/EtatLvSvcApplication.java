@@ -156,9 +156,7 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 		//commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();
 		//EtatLvSvcApplication.loadProduitFromSap();
 		//factureServiceStatic.loadFactureFromSap2();
-		EtatLvSvcApplication.loadContrat();
-		Collection<FactureEcheance> factureEcheances = EtatLvSvcApplication.factureEcheanceRepositoryStatic.getFactureEcheance(92L, 1600350L);
-		System.out.println(factureEcheances);
+		//EtatLvSvcApplication.loadContrat();
 		//EtatLvSvcApplication.factureServiceStatic.loadFactureFromSapByContrat(1L);
 		//System.out.println("end");
 		//factureServiceStatic.loadFactureFromSap();
