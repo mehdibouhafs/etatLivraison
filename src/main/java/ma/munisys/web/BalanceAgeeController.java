@@ -33,9 +33,24 @@ public class BalanceAgeeController {
 	}
 	
 	@RequestMapping(value = "/getBalanceByFiltre", method = RequestMethod.GET)
-	public Collection<BalanceAgee> getBalanceByClient(String client,String cr){
+	public Collection<BalanceAgee> getBalanceByClient(String client,String cr,String age){
 	
-	return balanceAgeeService.getBalanceByFiltre(client,cr);
+		if(age.equals("3M")) {
+			age = "tois_mois";
+		}
+		if(age.equals("6M")) {
+			age = "six_mois";
+		}
+		
+		if(age.equals("A12M")) {
+			age = "douze_mois";
+		}
+		
+		if(age.equals("Sup. 12M")) {
+			age = "sup_douze_mois";
+		}
+		System.out.println("AGE "+age);
+	return balanceAgeeService.getBalanceByFiltre(client,cr,age);
 	
 	}
 	

@@ -25,7 +25,7 @@ public interface EtatRecouvrementService {
 	
 	public Page<Document> getDocumentsFromEtatRecouvrement(Long idEtatRecouvrement,Boolean cloture,int page,int size);
 	
-	public Collection<Document> getDocumentsFromEtatRecouvrement(Long idEtatRecouvrement, Boolean cloturer,String chargeRecouvrement,String commercial,String chefProjet,String client,String statut,String annee,String age);
+	public Collection<Document> getDocumentsFromEtatRecouvrement(Long idEtatRecouvrement, Boolean cloturer,String chargeRecouvrement,String commercial,String chefProjet,String client,String[] statut,String annee,String age);
 	
 	public Set<Document> getDocumentsFromInputFile(String fileName);
 	

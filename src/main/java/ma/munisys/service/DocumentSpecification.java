@@ -49,9 +49,9 @@ public class DocumentSpecification {
 	     };
 	  }
 	
-	public static Specification<Document> byStatut(String statut) {
+	public static Specification<Document> byStatut(String[] status) {
 	     return (root, query, cb) -> {
-	         return cb.equal(root.get("statut"), statut);
+	         return root.get("statut").in(status);
 	     };
 	  }
 	

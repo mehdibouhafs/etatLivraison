@@ -26,29 +26,82 @@ public class BalanceAgeeServiceImpl implements BalanceAgeeService {
 	}
 	
 
-	public Collection<BalanceAgee> getBalanceByFiltre(String client,String cr){
+	public Collection<BalanceAgee> getBalanceByFiltre(String client,String cr,String age){
 		
-	       if(client.equals("undefined") && cr.equals("undefined")){
+	       if(client.equals("undefined") && cr.equals("undefined") && age.equals("undefined")){
 
 		        return balanceAgeeRepo.getBalance();
 		        
 		       }
 	       
 	       
-	       if(!client.equals("undefined") && cr.equals("undefined")){
+	       if(!client.equals("undefined") && cr.equals("undefined") && age.equals("undefined")){
 
 		        return balanceAgeeRepo.findAll(BalanceAgeeSpecification.byClient(client));
 		       }
 	       
-	       if(client.equals("undefined") && !cr.equals("undefined")){
+	       if(client.equals("undefined") && !cr.equals("undefined") && age.equals("undefined")){
 
 		        return balanceAgeeRepo.findAll(BalanceAgeeSpecification.byCR(cr));
 		       }
 	       
-	       if(!client.equals("undefined") && !cr.equals("undefined")){
+	       if(!client.equals("undefined") && !cr.equals("undefined") && age.equals("undefined")){
 
 		        return balanceAgeeRepo.findAll(BalanceAgeeSpecification.byCR(cr).and(BalanceAgeeSpecification.byClient(client)));
 		       }
+	       
+	       if(client.equals("undefined") && cr.equals("undefined") && !age.equals("undefined")) {
+
+	    	   if(age == "tois_mois") {
+	    	   return balanceAgeeRepo.findAllByAge3();
+	    			   }
+	    	   
+	    	   if(age == "six_mois") {
+	    	   return balanceAgeeRepo.findAllByAge6();
+	    			   }
+	       	   if(age == "douze_mois") {
+		    	   return balanceAgeeRepo.findAllByAge12();
+		    			   }
+	       	   if(age == "sup_douze_mois") {
+		    	   return balanceAgeeRepo.findAllByAgeSup12();
+		    			   }
+	       }
+	       
+	       if((client.equals("undefined") && !cr.equals("undefined") && !age.equals("undefined")) || (!client.equals("undefined") && cr.equals("undefined") && !age.equals("undefined")) ) {
+
+	    	   if(age == "tois_mois") {
+	    	   return balanceAgeeRepo.findAllByAge3(client,cr);
+	    			   }
+	    	   
+	    	   if(age == "six_mois") {
+	    	   return balanceAgeeRepo.findAllByAge6(client,cr);
+	    			   }
+	       	   if(age == "douze_mois") {
+		    	   return balanceAgeeRepo.findAllByAge12(client,cr);
+		    			   }
+	       	   if(age == "sup_douze_mois") {
+		    	   return balanceAgeeRepo.findAllByAgeSup12(client,cr);
+		    			   }
+	       }
+	       
+	       
+	       if(!client.equals("undefined") && !cr.equals("undefined") && !age.equals("undefined")) {
+
+	    	   if(age == "tois_mois") {
+	    	   return balanceAgeeRepo.findAllByAge33(client,cr);
+	    			   }
+	    	   
+	    	   if(age == "six_mois") {
+	    	   return balanceAgeeRepo.findAllByAge66(client,cr);
+	    			   }
+	       	   if(age == "douze_mois") {
+		    	   return balanceAgeeRepo.findAllByAge122(client,cr);
+		    			   }
+	       	   if(age == "sup_douze_mois") {
+		    	   return balanceAgeeRepo.findAllByAgeSup122(client,cr);
+		    			   }
+	       }
+
 		
 		return balanceAgeeRepo.getBalanceByFiltre(client,cr);
 		

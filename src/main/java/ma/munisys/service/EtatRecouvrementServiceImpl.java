@@ -450,12 +450,17 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 
 	@Override
 	public Collection<Document> getDocumentsFromEtatRecouvrement(Long idEtatRecouvrement, Boolean cloturer,
-			String chargeRecouvrement, String commercial, String chefProjet, String client, String statut,
+			String chargeRecouvrement, String commercial, String chefProjet, String client, String[] statut,
 			String annee,String age) {
 
+        List<String> list = Arrays.asList(statut);
+        
+
 		// aucun filtre
-		if (chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty()) && chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
+			System.out.println("EVERYTHING");
+			
 			return documentRepository.getDocuments(idEtatRecouvrement, cloturer);
 
 		}
@@ -463,7 +468,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		
 		
 		// filtre par age uniquement. A
-		if (chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && !age.equals("undefined")) {
 
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
@@ -471,16 +476,16 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 		
 		// filtre par age & client uniquement. A
-		if (chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") && !age.equals("undefined")) {
-
+System.out.println("CLIENT SHOULDNT WORK");
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byAge(age)).and(DocumentSpecification.byClient(client)));
 		}
 		
 		
 		// filtre par age & cr uniquement. A
-		if (!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && !age.equals("undefined")) {
 
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
@@ -488,15 +493,15 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 
 		// filtre par age & cp uniquement. A
-		if (chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && !chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && !age.equals("undefined")) {
 
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byAge(age)).and(DocumentSpecification.byChefProjet(chefProjet)));
 		}
 		
-		// filtre par age & cp uniquement. A
-		if (chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+		// filtre par age & comm uniquement. A
+		if (chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && !age.equals("undefined")) {
 
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
@@ -504,8 +509,8 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 
 		// filtre par chargeRecouvrement uniquement. A
-		if (!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
-				&& commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
+		if (!chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && chefProjet.equals("undefined")
+				&& commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && !age.equals("undefined")) {
 
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
@@ -513,42 +518,44 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 
 		// filtre par statut uniquement B
-		if (chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository
 					.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byStatut(statut)));
 		}
 
 		// filtre par chefProjet uniquement C
-		if (chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && !chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(
 					DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChefProjet(chefProjet)));
 		}
 
 		// filtre par commercial uniquement D
-		if (chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(
 					DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byCommercial(commercial)));
 		}
 
 		// filtre par client uniquement E
-		if (chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
+			
+			System.out.println("CLIENT WORKS");
 			return documentRepository
 					.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byClient(client)));
 		}
 
 		// filtre par annee uniquement F
-		if (chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository
 					.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byAnnee(annee)));
 		}
 
 		// filtre par chargeRecouvrement et statut uniquement. AB
-		if (!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
@@ -557,7 +564,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 
 		// filtre par chargeRecouvrement et chefProjet uniquement. AC
-		if (!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && !chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
@@ -566,7 +573,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 
 		// filtre par chargeRecouvrement et commercial uniquement. AD
-		if (!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
@@ -575,7 +582,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 
 		}
 		// filtre par chargeRecouvrement et client uniquement. AE
-		if (!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
@@ -584,7 +591,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 
 		// filtre par chargeRecouvrement et annee uniquement. AF
-		if (!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
@@ -593,77 +600,77 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 
 		// filtre par statut et chefProjet uniquement. BC
-		if (chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && !chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byChefProjet(chefProjet))));
 		}
 
 		// filtre par statut et commercial uniquement. BD
-		if (chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byCommercial(commercial))));
 		}
 
 		// filtre par statut et client uniquement. BE
-		if (chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty() && chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byClient(client))));
 		}
 
 		// filtre par statut et client uniquement. BF
-		if (chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byAnnee(annee))));
 		}
 
 		// filtre par chefProjet et commercial uniquement. CD
-		if (chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && !chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification
 					.byChefProjet(chefProjet).and(DocumentSpecification.byCommercial(commercial))));
 		}
 
 		// filtre par chefProjet et client uniquement. CE
-		if (chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && !chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byClient(client))));
 		}
 
 		// filtre par chefProjet et client uniquement. CF
-		if (chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && !chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification.byAnnee(annee))));
 		}
 
 		// filtre par commercial et client uniquement. DE
-		if (chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byClient(client))));
 		}
 
 		// filtre par commercial et annee uniquement. DF
-		if (chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byCommercial(commercial).and(DocumentSpecification.byAnnee(annee))));
 		}
 
 		// filtre par client et annee uniquement. FE
-		if (chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byClient(client).and(DocumentSpecification.byAnnee(annee))));
 		}
 
 		// filtre par chargeRecouvrement et statut et chefProjet uniquement. ABC
-		if (!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && !chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification
 					.byChargeRecouvrement(chargeRecouvrement)
@@ -673,7 +680,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 
 		// filtre par chargeRecouvrement et statut et commercial uniquement. ABD
-		if (!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification
 					.byChargeRecouvrement(chargeRecouvrement)
@@ -682,7 +689,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 
 		// filtre par chargeRecouvrement et statut et client uniquement. ABE
-		if (!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
@@ -691,7 +698,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 
 		// filtre par chargeRecouvrement et statut et annee uniquement. ABF
-		if (!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
@@ -700,7 +707,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 
 		// filtre par chargeRecouvrement et chefProjet et client uniquement. ACD
-		if (!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
@@ -710,7 +717,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 
 		// filtre par chargeRecouvrement et chefProjet et commercial uniquement. ACE
-		if (!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && !chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
@@ -720,7 +727,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 
 		// filtre par chargeRecouvrement et chefProjet et annee uniquement. ACF
-		if (!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && !chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification
 					.byChargeRecouvrement(chargeRecouvrement)
@@ -729,7 +736,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 
 		// filtre par chargeRecouvrement et commercial et client uniquement. ADE
-		if (!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification
 					.byChargeRecouvrement(chargeRecouvrement)
@@ -738,7 +745,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 
 		// filtre par chargeRecouvrement et commercial et annee uniquement. ADF
-		if (!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification
 					.byChargeRecouvrement(chargeRecouvrement)
@@ -748,8 +755,8 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		
 
 		// filtre par chargeRecouvrement et client et annee uniquement. AEF
-		if (!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
-				&& commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined")) {
+		if (!chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && chefProjet.equals("undefined")
+				&& commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification
 					.byChargeRecouvrement(chargeRecouvrement)
 					.or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement))
@@ -757,7 +764,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 
 		// filtre par statut et chefProjet et commercial uniquement. BCD
-		if (chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && !chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byStatut(statut).and(DocumentSpecification.byChefProjet(chefProjet)
@@ -765,7 +772,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 
 		// filtre par statut et chefProjet et client uniquement. BCE
-		if (chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && !chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification
 					.byStatut(statut)
@@ -774,7 +781,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 
 		// filtre par statut et chefProjet et annee uniquement. BCF
-		if (chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && !chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository
 					.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byStatut(statut).and(
@@ -783,7 +790,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 
 		// filtre par statut et commercial et client uniquement. BDE
-		if (chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification
 					.byStatut(statut)
@@ -792,7 +799,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 
 		// filtre par statut et commercial et annee uniquement. BDF
-		if (chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository
 					.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byStatut(statut).and(
@@ -800,8 +807,8 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 		
 		// filtre par statut et client et annee uniquement. BEF
-				if (chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
-						&& commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined")) {
+				if (chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && chefProjet.equals("undefined")
+						&& commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 					return documentRepository
 							.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byStatut(statut).and(
 									DocumentSpecification.byClient(client).and(DocumentSpecification.byAnnee(annee)))));
@@ -809,7 +816,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 				}
 
 		// filtre par chefProjet et commercial et client uniquement. CDE
-		if (chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && !chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer).and(DocumentSpecification
 					.byChefProjet(chefProjet)
@@ -818,7 +825,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 
 		// filtre par chefProjet et commercial et anee uniquement. CDF
-		if (chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && !chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(
 					DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byChefProjet(chefProjet).and(
@@ -827,7 +834,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 
 		// filtre par commercialet client et anee uniquement. DFE
-		if (chargeRecouvrement.equals("undefined") && statut.equals("undefined") && chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(
 					DocumentSpecification.isCloture(cloturer).and(DocumentSpecification.byCommercial(commercial)
@@ -837,7 +844,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 
 		// filtre par chargeRecouvrement et statut et chefProjet et commercial
 		// uniquement. ABCD
-		if (!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty() && !chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
@@ -849,7 +856,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 
 		// filtre par chargeRecouvrement et statut et chefProjet et client uniquement.
 		// ABCE
-		if (!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && !chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
@@ -860,7 +867,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 
 		// filtre par chargeRecouvrement et statut et chefProjet et annee uniquement.
 		// ABCF
-		if (!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty() && !chefProjet.equals("undefined")
 				&& commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
@@ -871,7 +878,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 
 		// filtre par chargeRecouvrement et statut et commercial et client uniquement.
 		// ABDE
-		if (!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
@@ -882,7 +889,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 
 		// filtre par chargeRecouvrement et statut et commercial et annee uniquement.
 		// ABDF
-		if (!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty() && chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
@@ -893,7 +900,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 
 		// filtre par chargeRecouvrement et chefProjet et commercial et client
 		// uniquement. ACDE
-		if (!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && !chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
@@ -904,7 +911,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 
 		// filtre par chargeRecouvrement et chefProjet et commercial et client
 		// uniquement. ACDF
-		if (!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && !chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
@@ -915,8 +922,8 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		
 		// filtre par chargeRecouvrement et chefProjet et client et année
 				// uniquement. 
-				if (!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
-						&& commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined")) {
+				if (!chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && !chefProjet.equals("undefined")
+						&& commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 					return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 							.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
 									.or(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement))
@@ -925,7 +932,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 				}
 
 		// filtre par statut et chefProjet et commercial et client uniquement. BCDE
-		if (chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && !chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byStatut(statut)
@@ -935,8 +942,8 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 		
 		// filtre par statut et chefProjet et client et annee uniquement. BCDE
-				if (chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
-						&& commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined")) {
+				if (chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && !chefProjet.equals("undefined")
+						&& commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 					return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 							.and(DocumentSpecification.byStatut(statut)
 									.and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification
@@ -945,7 +952,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 				}
 
 		// filtre par statut et chefProjet et commercial et annee uniquement. BCDF
-		if (chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && !chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byStatut(statut)
@@ -955,8 +962,8 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 		}
 		
 		// filtre par statut et client et commercial et annee uniquement. BDEF
-				if (chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && chefProjet.equals("undefined")
-						&& !commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined")) {
+				if (chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty() && chefProjet.equals("undefined")
+						&& !commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 					return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 							.and(DocumentSpecification.byStatut(statut)
 									.and(DocumentSpecification.byClient(client).and(DocumentSpecification
@@ -964,7 +971,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 				}
 
 		// filtre par chefProjet et commercial client et annee uniquement. CDFE
-		if (chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && !chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChefProjet(chefProjet).and(DocumentSpecification
@@ -976,7 +983,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 	
 		// filtre par chargeRecouvrement et statut et chefProjet et commercial et client
 		// uniquement. ABCDE
-		if (!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && !chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
@@ -989,7 +996,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 
 		// filtre par chargeRecouvrement et statut et chefProjet et commercial et annee
 		// uniquement. ABCDF
-		if (!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty() && !chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
@@ -1003,7 +1010,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 
 		// filtre par chargeRecouvrement et chefProjet et commercial et client et annee
 		// uniquement. ACDEF
-		if (!chargeRecouvrement.equals("undefined") && statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && !chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
@@ -1017,7 +1024,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 
 		// filtre par statut et chefProjet et commercial et client et annee uniquement.
 		// BCDEF
-		if (chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty() && !chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
@@ -1031,7 +1038,7 @@ public class EtatRecouvrementServiceImpl implements EtatRecouvrementService {
 
 		// filtre par chargeRecouvrement et statut et chefProjet et commercial et client
 		// et annee uniquement. ABCDEF
-		if (!chargeRecouvrement.equals("undefined") && !statut.equals("undefined") && !chefProjet.equals("undefined")
+		if (!chargeRecouvrement.equals("undefined") && !list.contains("undefined") && !list.isEmpty()  && !chefProjet.equals("undefined")
 				&& !commercial.equals("undefined") && !client.equals("undefined") && !annee.equals("undefined") && age.equals("undefined")) {
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)
