@@ -1,6 +1,6 @@
 package ma.munisys.service;
-import java.util.concurrent.CompletableFuture;
 
+import org.springframework.data.domain.Page;
 import ma.munisys.entities.CommandeFournisseur;
 
 
@@ -8,7 +8,10 @@ public interface CommandeFournisseurService {
 	
 	public CommandeFournisseur saveCommandeFournisseur(CommandeFournisseur commandeFournisseur);
 	
-	public  CompletableFuture<String> loadCommandeFournisseurFromSap() ;
+	public  void loadCommandeFournisseurFromSap() ;
+	
+	
+	public Page<CommandeFournisseur> getCommandeFournisseur (Long numContrat ,int page,int size);
 	
 	
 	

@@ -36,11 +36,9 @@ public class Contrat implements Serializable,Cloneable {
 	private String statut;
 	
 	@Temporal(TemporalType.DATE)
-	@Column(name="du")
 	private Date du;
 
 	@Temporal(TemporalType.DATE)
-	@Column(name="au")
 	private Date au;
 	
 	private String description;
@@ -77,34 +75,38 @@ public class Contrat implements Serializable,Cloneable {
 	
 	private Double montantAssitanceAn;
 	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "contrat")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "contrat")
     @OrderBy("date DESC")
+	@JsonIgnore
     private Set<CommentaireContrat> commentaires = new HashSet<CommentaireContrat>();
 	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "contrat", cascade = { CascadeType.ALL }, orphanRemoval = true)
-	@OrderBy("du ASC")
-	@SortNatural
-	private Set<Echeance> echeances;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "contrat", cascade = { CascadeType.ALL }, orphanRemoval = true)
+	@JsonIgnore
+	private Set<Echeance> echeances = new HashSet<>();
 	
 	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "contrat", cascade = { CascadeType.ALL }, orphanRemoval = true)
-	@OrderBy("du ASC")
-	private Set<Facture> factures;
+	
+	private Set<Facture> factures = new HashSet<>();
 	
 	
-	@ManyToMany(mappedBy = "contrats", fetch = FetchType.EAGER)
+	@ManyToMany(mappedBy = "contrats", fetch = FetchType.LAZY)
 	@OrderBy("dateEnregistrement DESC")
-	private Set<CommandeFournisseur> commandesFournisseurs;
+	@JsonIgnore
+	private Set<CommandeFournisseur> commandesFournisseurs = new HashSet<>();
 	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "contrat", cascade = { CascadeType.ALL }, orphanRemoval = true)
-	private Set<Piece> pieces;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "contrat", cascade = { CascadeType.ALL }, orphanRemoval = true)
+	@JsonIgnore
+	private Set<Piece> pieces = new HashSet<>();;
 	
 	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "contrat", cascade = { CascadeType.ALL }, orphanRemoval = true)
-	private Set<FactureEcheance> factureEcheances;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "contrat", cascade = { CascadeType.ALL }, orphanRemoval = true)
+	@JsonIgnore
+	private Set<FactureEcheance> factureEcheances = new HashSet<>();
 	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "contrat", cascade = { CascadeType.ALL }, orphanRemoval = true)
-    private Set<ContratModel> contratsModel;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "contrat", cascade = { CascadeType.MERGE }, orphanRemoval = true)
+	@JsonIgnore
+	private Set<ContratModel> contratsModel = new HashSet<>();
 	
 	//tables factures
 	private Double montantFactureAn;
@@ -768,7 +770,6 @@ public class Contrat implements Serializable,Cloneable {
 	
 	@Override
 	public Object clone() throws CloneNotSupportedException {
-		// TODO Auto-generated method stub
 		return (Contrat)super.clone();
 	}
 

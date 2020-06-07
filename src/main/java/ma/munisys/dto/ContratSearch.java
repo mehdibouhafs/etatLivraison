@@ -2,6 +2,10 @@ package ma.munisys.dto;
 
 public class ContratSearch {
 	
+	private String numContrat;
+	
+	private String motCle;
+	
 	private String nomPartenaire;
 	
 	private String numMarche;
@@ -10,6 +14,9 @@ public class ContratSearch {
 	private String pilote;
 	
 	private Boolean sousTraiter;
+	
+	
+	
 
 	
 
@@ -52,6 +59,22 @@ public class ContratSearch {
 
 	public void setPilote(String pilote) {
 		this.pilote = pilote;
+	}
+
+	public String getMotCle() {
+		return motCle;
+	}
+
+	public void setMotCle(String motCle) {
+		this.motCle = motCle;
+	}
+
+	public String getNumContrat() {
+		return numContrat;
+	}
+
+	public void setNumContrat(String numContrat) {
+		this.numContrat = numContrat;
 	}
 	
 	

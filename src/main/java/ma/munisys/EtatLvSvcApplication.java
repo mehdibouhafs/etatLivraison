@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Date;
 import ma.munisys.entities.Document;
 import ma.munisys.entities.EtatRecouvrement;
+import ma.munisys.entities.FactureEcheance;
 import ma.munisys.entities.Projet;
 import java.util.HashSet;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -41,7 +42,6 @@ import ma.munisys.dao.EtatProjetRepository;
 import ma.munisys.dao.FactureEcheanceRepository;
 import ma.munisys.dao.FactureRepository;
 import ma.munisys.dao.ProjetRepository;
-
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -74,6 +74,8 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 	private static FactureService factureServiceStatic;
 
 	private static CommandeFournisseurService commandeFournisseurServiceStatic;
+	
+	private static FactureEcheanceRepository factureEcheanceRepositoryStatic;
 	@Autowired
 	EtatProjetRepository etatProjetRepository;
 	@Autowired
@@ -136,6 +138,7 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 		EtatLvSvcApplication.commandeFournisseurServiceStatic = this.commandeFournisseurService;
 		EtatLvSvcApplication.factureServiceStatic = this.factureService;
 		EtatLvSvcApplication.stockProjetServiceStatic = this.stockProjetService;
+		EtatLvSvcApplication.factureEcheanceRepositoryStatic=this.factureEcheanceRepository;
 	}
 
 	@Bean // ce bean sera utilise n'importe ou
@@ -147,11 +150,16 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 		this.storageService.init();
 		LOGGER.info("Start PDC 360");
 		System.out.println("run");
+		
+		
 		//EtatLvSvcApplication.loadProduitFromSap();
 		//commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();
 		//EtatLvSvcApplication.loadProduitFromSap();
 		//factureServiceStatic.loadFactureFromSap2();
-		//EtatLvSvcApplication.loadContrat();
+		EtatLvSvcApplication.loadContrat();
+		Collection<FactureEcheance> factureEcheances = EtatLvSvcApplication.factureEcheanceRepositoryStatic.getFactureEcheance(92L, 1600350L);
+		System.out.println(factureEcheances);
+		//EtatLvSvcApplication.factureServiceStatic.loadFactureFromSapByContrat(1L);
 		//System.out.println("end");
 		//factureServiceStatic.loadFactureFromSap();
 		//commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();
@@ -190,17 +198,15 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 		//LOGGER.debug("ENDING TASK Documents CRON ");
 	}
 
-	
-
 	@Scheduled(cron = "0 0 21 * * *")
 	public static void loadContrat() {
 		LOGGER.debug("STARTING TASK synchro contrat  ");
 		EtatLvSvcApplication.contratServiceStatic.loadContratFromSap();
+	
 		EtatLvSvcApplication.contratServiceStatic.loadContratPieceSap();
 		factureServiceStatic.loadFactureFromSap();
 		commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();
-		
-		
+	
 		//CompletableFuture.allOf(contrats,pieces,commandes,factures).join();
 		LOGGER.debug("ENDING TASK synchro contrat");
 	}

@@ -17,9 +17,11 @@ import java.util.SortedSet;
 import java.util.StringJoiner;
 import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jfree.util.Log;
 import org.joda.time.DateTime;
 import org.joda.time.Months;
 import org.joda.time.Years;
@@ -27,7 +29,10 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ibm.icu.util.GregorianCalendar;
 
 import ma.munisys.dao.AuthRepository;
+import ma.munisys.dao.CommentaireContratRepository;
 import ma.munisys.dao.ContratRepository;
 import ma.munisys.dao.ContratSpecification;
 import ma.munisys.dao.EcheanceRepository;
@@ -54,6 +60,7 @@ import ma.munisys.entities.Contrat;
 import ma.munisys.entities.ContratModel;
 import ma.munisys.entities.Echeance;
 import ma.munisys.entities.Event;
+import ma.munisys.entities.Facture;
 import ma.munisys.entities.FactureEcheance;
 import ma.munisys.entities.OccurenceFacturation;
 import ma.munisys.entities.PeriodeFacturation;
@@ -79,6 +86,9 @@ public class ContratServiceImp implements ContratService {
 	
 	@Autowired
 	private FactureEcheanceRepository factureEcheanceRepository;
+	
+	@Autowired
+	private CommentaireContratRepository commentaireContratRepository;
 
 	@Override
 	public Contrat saveContrat(Contrat contrat) {
@@ -88,26 +98,14 @@ public class ContratServiceImp implements ContratService {
 	}
 
 	@Override
-	@Async
-	@javax.transaction.Transactional
-	public CompletableFuture<String> loadContratFromSap() {
+	//@Async
+	//@javax.transaction.Transactional
+	public void loadContratFromSap() {
 		LOGGER.info("Loading  contrat from SAP");
 		Collection<Contrat> contrats2 =contratRepository.findAll();
 		for(Contrat c : contrats2) {
 			
 			c.setCloture(true);
-			
-			for(ContratModel cm : c.getContratsModel()) {
-				cm.setCloture(true);
-			}
-			
-			for(Echeance e : c.getEcheances()) {
-				e.setCloture(true);
-			}
-			
-			for(FactureEcheance fe : c.getFactureEcheances()) {
-				fe.setCloture(true);
-			}
 			
 		}
 		
@@ -118,7 +116,6 @@ public class ContratServiceImp implements ContratService {
 		try {
 			String req1 = "SELECT * FROM DB_MUNISYS.\"V_ECH_CM\"";
 			rs1 = DBA.request(req1);
-			java.sql.ResultSetMetaData rsmd = rs1.getMetaData();
 			SimpleDateFormat sp = new SimpleDateFormat("yyyy-MM-dd");
 			Map<Long, Contrat> contrats = new HashMap<Long, Contrat>();
 			while (rs1.next()) {
@@ -128,34 +125,34 @@ public class ContratServiceImp implements ContratService {
 				if (rs1.getString(1) == null) {
 					continue;
 				}
-				if (rs1.getString(1) != null && !rs1.getString(1).equals("null")) {
+				if (rs1.getString(1) != null ) {
 
 					contrat.setNumContrat(rs1.getLong(1));
 				}
-				if (rs1.getString(2) != null && !rs1.getString(2).equals("null")) {
+				if (rs1.getString(2) != null ) {
 
 					contrat.setCodePartenaire(rs1.getString(2));
 				}
-				if (rs1.getString(3) != null && !rs1.getString(3).equals("null")) {
+				if (rs1.getString(3) != null ) {
 
 					contrat.setNomPartenaire(rs1.getString(3));
 				}
-				if (rs1.getString(4) != null && !rs1.getString(4).equals("null")) {
+				if (rs1.getString(4) != null ) {
 
 					contrat.setStatut(rs1.getString(4));
 				}
-				if (rs1.getString(5) != null && !rs1.getString(5).equals("null")) {
+				if (rs1.getString(5) != null ) {
 
 					contrat.setDu(sp.parse(rs1.getString(5).split("\\s+")[0]));
 				}
-				if (rs1.getString(6) != null && !rs1.getString(6).equals("null")) {
+				if (rs1.getString(6) != null ) {
 
 					contrat.setAu(sp.parse(rs1.getString(6).split("\\s+")[0]));
 				}
-				if (rs1.getString(7) != null && !rs1.getString(7).equals("null")) {
+				if (rs1.getString(7) != null) {
 					contrat.setDescription(rs1.getString(7));
 				}
-				if (rs1.getString(8) != null && !rs1.getString(8).equals("null")) {
+				if (rs1.getString(8) != null ) {
 
 					contrat.setNomSousTraitant(rs1.getString(8));
 					if(contrat.getNomSousTraitant()!=null && !contrat.getNomSousTraitant().isEmpty()) {
@@ -163,7 +160,7 @@ public class ContratServiceImp implements ContratService {
 					}
 					
 				}
-				if (rs1.getString(9) != null && !rs1.getString(9).equals("null")) {
+				if (rs1.getString(9) != null ) {
 
 					if (rs1.getString(9).toUpperCase().equals("OUI")) {
 						contrat.setContratSigne(true);
@@ -172,21 +169,21 @@ public class ContratServiceImp implements ContratService {
 					}
 
 				}
-				if (rs1.getString(10) != null && !rs1.getString(10).equals("null")) {
+				if (rs1.getString(10) != null ) {
 					contrat.setCodeProjet(rs1.getString(10));
 				}
-				if (rs1.getString(11) != null && !rs1.getString(11).equals("null")) {
+				if (rs1.getString(11) != null) {
 					contrat.setNumMarche(rs1.getString(11));
 				}
-				if (rs1.getString(12) != null && !rs1.getString(12).equals("null")) {
+				if (rs1.getString(12) != null ) {
 					contrat.setPilote(rs1.getString(12));
 				}
-				if (rs1.getString(13) != null && !rs1.getString(13).equals("null")) {
+				if (rs1.getString(13) != null ) {
 					contrat.setMontantContrat(Double.valueOf(rs1.getDouble(13)));
 					contrat.setMontantFactureAn(0.0);
 					contrat.setMontantRestFactureAn(contrat.getMontantContrat());
 				}
-				if (rs1.getString(14) != null && !rs1.getString(14).equals("null")) {
+				if (rs1.getString(14) != null ) {
 
 					PeriodeFacturation periodeFacturation;
 					try {
@@ -197,7 +194,7 @@ public class ContratServiceImp implements ContratService {
 					contrat.setPeriodeFacturationLabel(rs1.getString(14));
 					contrat.setPeriodeFacturation(periodeFacturation);
 				}
-				if (rs1.getString(15) != null && !rs1.getString(15).equals("null")) {
+				if (rs1.getString(15) != null ) {
 
 					OccurenceFacturation c;
 
@@ -214,28 +211,10 @@ public class ContratServiceImp implements ContratService {
 					contrat.setOccurenceFacturationLabel(rs1.getString(15));
 					contrat.setOccurenceFacturation(c);
 				}
-				/*
-				 * if (rs1.getString(16) != null && !rs1.getString(16).equals("null")) {
-				 * contrat.setMontantValueSi(rs1.getDouble(16)); }
-				 * 
-				 * if (rs1.getString(17) != null && !rs1.getString(17).equals("null")) {
-				 * contrat.setMontantValueRs(rs1.getDouble(17)); }
-				 * 
-				 * if (rs1.getString(18) != null && !rs1.getString(18).equals("null")) {
-				 * contrat.setMontantValueSw(rs1.getDouble(18)); }
-				 * 
-				 * if (rs1.getString(19) != null && !rs1.getString(19).equals("null")) {
-				 * contrat.setMontantVolume(rs1.getDouble(19)); }
-				 * 
-				 * if (rs1.getString(20) != null && !rs1.getString(20).equals("null")) {
-				 * contrat.setMontantCablage(rs1.getDouble(20)); }
-				 * 
-				 * if (rs1.getString(21) != null && !rs1.getString(21).equals("null")) {
-				 * contrat.setMontantAssitanceAn(rs1.getDouble(21)); }
-				 */
+				
 			
 				if (!contrats.containsKey(contrat.getNumContrat()) && contrat.getNumContrat() != null) {
-					contrat.setLastUpdate(new Date());
+					
 					contrats.put(contrat.getNumContrat(), contrat);
 
 				} else {
@@ -247,11 +226,10 @@ public class ContratServiceImp implements ContratService {
 				Contrat c =updateContratFromSap(entry.getValue());
 				contratRepository.save(c);
 			}
-			
+			/*
 			LOGGER.info("Loading modele contrat from SAP");
 			
-			
-			
+		
 				String req2 = "SELECT * FROM DB_MUNISYS.\"V_CM_MOD\"";
 				rs2 = DBA.request(req2);
 				java.sql.ResultSetMetaData rsmd1 = rs2.getMetaData();
@@ -298,12 +276,12 @@ public class ContratServiceImp implements ContratService {
 					}
 					
 					
-					if (rs2.getString(5) != null && !rs2.getString(5).equals("null")) {
+					if (rs2.getString(5) != null ) {
 
 						contratModel.setDu(sp.parse(rs2.getString(5).split("\\s+")[0]));
 					}
 					
-					if (rs2.getString(6) != null && !rs2.getString(6).equals("null")) {
+					if (rs2.getString(6) != null) {
 
 						contratModel.setAu(sp.parse(rs2.getString(6).split("\\s+")[0]));
 					}
@@ -355,7 +333,7 @@ public class ContratServiceImp implements ContratService {
 						}
 					}
 								
-				}
+				}*/
 				
 			LOGGER.info("done synchro contrat");
 		
@@ -389,7 +367,7 @@ public class ContratServiceImp implements ContratService {
 
 		}
 		
-		return CompletableFuture.completedFuture("loading Contrats");
+		//return CompletableFuture.completedFuture("loading Contrats");
 	}
 	
 
@@ -413,125 +391,19 @@ public class ContratServiceImp implements ContratService {
 
 	}
 	
-	public Set<Echeance> generateEcheanceModele(ContratModel contratModel) {
-		LOGGER.info("Generating echeance for contrat "+ contratModel.getId());
-		Set<Echeance> echeances = new HashSet<Echeance>();
-
-		Integer nbMonthPeriod = contratModel.getMonthContrat();
-
-		if (contratModel.getDu() != null && contratModel.getAu() != null) {
-			DateTime start = new DateTime(contratModel.getDu());
-			DateTime end = new DateTime(contratModel.getAu());
+	
 
 	
-				while (start.compareTo(end) <= 0) {
-					Echeance c = new Echeance();
-					c.setContrat(contratModel.getContrat());
-					c.setDu(start.toDate());
-					c.setContratModel(contratModel);
-					c.setCloture(false);
-					DateTime dateBetween = start.plusMonths(nbMonthPeriod);
-					start = dateBetween;
-
-		
-					c.setAu(start.plusHours(-1).plusMinutes(59).plusSeconds(59).toDate());
-					
-					
-					//Integer tranche = 12/nbMonthPeriod;
-
-					// System.out.println("montrant Prevu " + contrat.getMontantContrat()/tranche);
-					if (contratModel.getMontant() != null ) {
-						c.setMontantPrevision(contratModel.getMontant() );
-						c.setMontantRestFacture(c.getMontantPrevision());
-						c.setMontantFacture(0.0);
-					}
-
-					c.setPeriodeFacturation(contratModel.getPeriodeFacturation());
-					c.setOccurenceFacturation(contratModel.getOccurenceFacturation());
-
-					if (start.compareTo(end) >= 0)
-						c.setAu(end.toDate());
-					
-				
-					echeances.add(c);
-
-				}
-			}
-		
-
-		return echeances;
-
-	}
-
-	/*public Set<Echeance> generateEcheance(Contrat contrat) {
-		LOGGER.info("Generating echeance for contrat "+ contrat.getNumContrat());
-		Set<Echeance> echeances = new HashSet<Echeance>();
-
-		Integer nbMonthPeriod = contrat.getMonthContrat();
-
-		if (contrat.getDu() != null && contrat.getAu() != null) {
-			DateTime start = new DateTime(contrat.getDu());
-			DateTime end = new DateTime(contrat.getAu());
-
-			if (nbMonthPeriod != null) {
-
-				while (start.compareTo(end) <= 0) {
-					Echeance c = new Echeance();
-					c.setContrat(contrat);
-					c.setDu(start.toDate());
-
-					DateTime dateBetween = start.plusMonths(nbMonthPeriod);
-					start = dateBetween;
-
-		
-					c.setAu(start.plusHours(-1).plusMinutes(59).plusSeconds(59).toDate());
-
-					Integer tranche = contrat.getTrancheFacturationByYear();
-
-					// System.out.println("montrant Prevu " + contrat.getMontantContrat()/tranche);
-					if (contrat.getMontantContrat() != null && tranche != null && contrat.getMontantContrat() > 0
-							&& tranche > 0) {
-						c.setMontantPrevision(contrat.getMontantContrat() / tranche);
-						c.setMontantRestFacture(c.getMontantPrevision());
-						c.setMontantFacture(0.0);
-					}
-
-					c.setPeriodeFacturation(contrat.getPeriodeFacturation());
-					c.setOccurenceFacturation(contrat.getOccurenceFacturation());
-
-					if (start.compareTo(end) >= 0)
-						c.setAu(end.toDate());
-					
-					contrat.getEcheances().add(c);
-
-					echeances.add(c);
-
-				}
-			}
-		}
-
-		return echeances;
-
-	}*/
-
 	@Override
-	public Contrat addCommentaires(Long numContrat,List<CommentaireContrat> commentaires) {
+	public CommentaireContrat addCommentaire(Long numContrat,CommentaireContrat commentaire) {
 		LOGGER.info("adding commentaire to contrat " + numContrat);
-		Contrat c= contratRepository.getOne(numContrat);
-		if(c!=null) {
-			
-			
-			for(CommentaireContrat c1 : commentaires) {
-				
-				c1.setContrat(c);
-				if(!c.getCommentaires().contains(c1)) {
-					c.getCommentaires().add(c1);
-				}
-			}
-		}
 		
+		Contrat c =new Contrat();
+		c.setNumContrat(numContrat);
+		commentaire.setContrat(c);
 		
-		return contratRepository.save(c);
+		return commentaireContratRepository.save(commentaire);
+		
 		
 	}
 
@@ -545,6 +417,7 @@ public class ContratServiceImp implements ContratService {
 		int endYear = year;
 		ContratSpecification contratSpecification = new ContratSpecification(contratSearch);
 		Collection<Contrat> contrats = contratRepository.findAll(contratSpecification);
+		
 		return sortingContratInPeriode(contrats,startYear,endYear);
 	}
 
@@ -636,10 +509,16 @@ public class ContratServiceImp implements ContratService {
 	}
 
 	@Override
-	@Async
-	public CompletableFuture<String> loadContratPieceSap() {
+	//@Async
+	public void loadContratPieceSap() {
 		LOGGER.info("load piece contrat from SAP");
-		//echeanceRepository.deleteAll();
+		
+		Collection<Contrat> allContrats = this.contratRepository.findAll();
+		
+		Map<Long, Contrat> contrats2 = 
+				allContrats.stream().collect(Collectors.toMap(Contrat::getNumContrat, contrat -> contrat));
+
+		
 		ResultSet rs1 = null;
 		try {
 			String req1 = "SELECT * FROM DB_MUNISYS.\"V_CM_PJ\"";
@@ -657,16 +536,12 @@ public class ContratServiceImp implements ContratService {
 				
 				// chemin nomfichier extension
 
-				if (rs1.getString(2) == null) {
-					System.out.println("rs1.getString(2) " + rs1.getString(2));
+				if (rs1.getString(2) == null || !contrats2.containsKey(rs1.getLong(2))) {
 					continue;
 				}else {
-					Contrat c =contratRepository.findById(rs1.getLong(2)).orElse(null);
-					if(c==null) {
-						continue;
-					}else {
-						p.setContrat(c);
-					}
+					Contrat c = contrats2.get(rs1.getLong(2));
+					p.setContrat(c);
+					
 				}
 				if (rs1.getString(1) != null && !rs1.getString(1).equals("null")) {
 
@@ -686,15 +561,7 @@ public class ContratServiceImp implements ContratService {
 				
 			}
 
-			
-
-			LOGGER.info("done synchro contrat");
-
-			// System.out.println("projets1 " +
-			// etatProjetServiceStatic.getProjetFromEtatProjet( false, "undefined"));
-
-			// System.out.println("projets2 " + etatProjetServiceStatic.getAllProjets());
-
+		
 		}
 
 		catch (Exception e) {
@@ -714,15 +581,139 @@ public class ContratServiceImp implements ContratService {
 
 		}
 		
-		
-		return CompletableFuture.completedFuture("loaded Piece de Contrat");
+		LOGGER.info("End load piece contrat from SAP");
+		//return CompletableFuture.completedFuture("loaded Piece de Contrat");
 		
 	}
 
-	/*
-	 * @Override public AppUser saveUser(AppUser appUser) { String hashPW =
-	 * bCryptPasswordEncoder.encode(appUser.getPassword());
-	 * appUser.setPassword(hashPW); return userRepository.save(appUser); }
-	 */
+	@Override
+	public Page<Contrat> getAllContrats(int page, int size) {
+		
+		Page<Contrat> contrats= contratRepository.getAllContrats(PageRequest.of(page-1, size));
+		
+		return contrats;
+		//System.out.println("contrats " + contrats.getTotalElements());
+		
+		/*List<Contrat> contratsCloned = new ArrayList<>();
+		
+		for(Contrat c : contrats) {
+			Contrat c1;
+			try {
+				c1 = (Contrat) c.clone();
+				c1.setEcheances(null);
+				c1.setFactureEcheances(null);
+				c1.setFactures(null); 
+				c1.setContratsModel(null);
+				c1.setCommandesFournisseurs(null);
+				c1.setPieces(null);
+				contratsCloned.add(c1);
+			} catch (CloneNotSupportedException e) {
+				Log.error(e.getMessage(),e);
+			}
+			
+		}*/
+		
+		//System.out.println("contrats " + contrats.getTotalElements());
+		
+		//return  new PageImpl<>(contratsCloned,PageRequest.of(page, size),contrats.getTotalElements());
+	}
+
+	@Override
+	public Contrat getContrat(Long numContrat) {
+		Calendar cal = Calendar.getInstance();
+		int year = cal.get(Calendar.YEAR);
+		Contrat c = contratRepository.findById(numContrat).orElse(null);
+		
+		
+		if(c!=null) {
+			Contrat contratClone;
+			try {
+				contratClone = (Contrat) c.clone();
+				List<Echeance> echeancesToRemove = new ArrayList<Echeance>();
+				List<FactureEcheance> factureEcheancesToRemove = new ArrayList<FactureEcheance>();
+				
+					for(Echeance e : contratClone.getEcheances()) {
+						Calendar calendarEnd = Calendar.getInstance();
+						Calendar calendarDu = Calendar.getInstance();
+						calendarEnd.setTime(e.getAu());
+						calendarDu.setTime(e.getDu());
+						
+					
+						if(calendarDu.get(Calendar.YEAR)!=year && calendarEnd.get(Calendar.YEAR)!=year &&  calendarDu.get(Calendar.YEAR)!=year-1 &&  calendarEnd.get(Calendar.YEAR)!=year-1  ) {
+							echeancesToRemove.add(e);
+							
+						}
+						
+					}
+					
+					for(FactureEcheance fe : c.getFactureEcheances()) {
+						if(fe.getEcheance()!=null) {
+							if(echeancesToRemove.contains(fe.getEcheance())) {
+								factureEcheancesToRemove.add(fe);
+							}
+						}
+					}
+								
+				contratClone.getEcheances().removeAll(echeancesToRemove);
+				contratClone.getFactureEcheances().removeAll(factureEcheancesToRemove);
+				contratClone.setFactures(new HashSet<Facture>());
+				
+				SortedSet<Echeance> echeances =new TreeSet<Echeance>(contratClone.getEcheances());
+				SortedSet<FactureEcheance> factureEcheances =new TreeSet<FactureEcheance>(contratClone.getFactureEcheances());
+				SortedSet<CommandeFournisseur> commandeFournisseurs =new TreeSet<CommandeFournisseur>(contratClone.getCommandesFournisseurs());
+				
+				contratClone.setEcheances(echeances);
+				contratClone.setFactureEcheances(factureEcheances);
+				contratClone.setCommandesFournisseurs(commandeFournisseurs);
+				
+			} catch (CloneNotSupportedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			
+		
+	}
+
+	return c;
+	}
+
+	
+
+	@Override
+	public Page<Contrat> getContratByPredicate2(ContratSearch contratSearch,int page,int size,String sortBy,String sortType) {
+		LOGGER.info("getContratByPredicate2 ");
+	
+		ContratSpecification contratSpecification = new ContratSpecification(contratSearch);
+		
+		if(sortBy!=null) {
+			
+			if("asc".equals(sortType)) {
+				return contratRepository.findAll(contratSpecification,PageRequest.of(page-1, size,Sort.by(sortBy).ascending()));
+				
+			}else {
+				return contratRepository.findAll(contratSpecification,PageRequest.of(page-1, size,Sort.by(sortBy).descending()));
+			}
+			
+		}else {
+			return contratRepository.findAll(contratSpecification,PageRequest.of(page-1, size));
+		}
+				
+	    
+		
+		
+	}
+
+	@Override
+	public Collection<Contrat> getAllContratsWithPredicate(ContratSearch contratSearch) {
+		ContratSpecification contratSpecification = new ContratSpecification(contratSearch);
+		return contratRepository.findAll(contratSpecification);
+	}
+
+	@Override
+	public void deleteCommentaire(Long idCommentaire) {
+		commentaireContratRepository.deleteById(idCommentaire);
+		
+	}
 
 }

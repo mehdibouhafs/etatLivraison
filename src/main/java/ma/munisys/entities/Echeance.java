@@ -1,6 +1,8 @@
 package ma.munisys.entities;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -41,6 +43,8 @@ public class Echeance implements Serializable, Comparable<Echeance>,Comparator<E
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date au;
 	
+	private Double montant;
+	
 	private Double montantPrevision;
 	
 	private PeriodeFacturation PeriodeFacturation;
@@ -56,12 +60,11 @@ public class Echeance implements Serializable, Comparable<Echeance>,Comparator<E
 	
 	private String factures;
 	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "echeance", cascade = { CascadeType.ALL }, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "echeance", cascade = { CascadeType.ALL }, orphanRemoval = true)
 	private Set<FactureEcheance> factureEcheances = new HashSet<FactureEcheance>();
 	
 	@ManyToOne
 	private ContratModel contratModel;
-	
 	
 	@ManyToOne
 	private CommentaireEcheance commentaire;
@@ -148,8 +151,11 @@ public class Echeance implements Serializable, Comparable<Echeance>,Comparator<E
 			double c =0;
 			for(FactureEcheance f : factureEcheances) {
 				
-				facts.add(f.getFacture().getNumFacture().toString());
-				c = c + f.getFacture().getMontantHT();
+				if(!f.isCloture()) {
+					facts.add(f.getFacture().getNumFacture().toString());
+					c = c + f.getFacture().getMontantHT();
+				}
+				
 			}
 			this.montantFacture = c;
 			this.factures = "["+ String.join(",", facts)+"]";
@@ -310,9 +316,22 @@ public class Echeance implements Serializable, Comparable<Echeance>,Comparator<E
 	public void setMessageDelete(String messageDelete) {
 		this.messageDelete = messageDelete;
 	}
-	
-	
-	
+
+	public Double getMontant() {
+		return montant;
+	}
+
+	public void setMontant(Double montant) {
+		this.montant = montant;
+	}
+
+	@Override
+	public String toString() {
+		String pattern = "dd/MM/yyyy";
+		DateFormat df = new SimpleDateFormat(pattern);
+		
+		return "Echeance [du=" + df.format(du) + ", au=" + df.format(au) + ", montant=" + montant + ", contratModel=" + contratModel + "]";
+	}
 	
 	
 	

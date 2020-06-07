@@ -47,7 +47,7 @@ public class Facture implements Serializable,Comparable<Facture>,Comparator<Fact
 	
 	private double montantTTC;
 	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "facture", cascade = { CascadeType.ALL }, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "facture")
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Set<FactureEcheance> factureEcheances;
 	
@@ -117,11 +117,8 @@ public class Facture implements Serializable,Comparable<Facture>,Comparator<Fact
 		this.factureEcheances = factureEcheances;
 	}
 
-	@Override
-	public String toString() {
-		return "Facture [numFacture=" + numFacture + ", contrat=" + contrat + "]";
-	}
 	
+
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
 		// TODO Auto-generated method stub
@@ -153,6 +150,8 @@ public class Facture implements Serializable,Comparable<Facture>,Comparator<Fact
 	public int compare(Facture o1, Facture o2) {
 		return o1.getNumFacture().compareTo(o2.getNumFacture());
 	}
+	
+	
 
 
 }

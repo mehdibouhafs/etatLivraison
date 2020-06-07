@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -66,8 +68,10 @@ public class CommandeFournisseur implements Serializable,Comparable<CommandeFour
 	private String technologie;
 	
 	@Temporal(TemporalType.DATE)
+	@Column(name="cmd_du")
 	private Date du; 
 	@Temporal(TemporalType.DATE)
+	@Column(name="cmd_au")
 	private Date au; 
 	
 	

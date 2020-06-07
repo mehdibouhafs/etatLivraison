@@ -53,7 +53,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 					response.addHeader("Access-Control-Allow-Credentials", "true");
 					String jwt = request.getParameter("token");
 					//System.out.println("request with token " + jwt);
-					//System.out.println("JWT " + jwt);
+					System.out.println("JWT " + jwt);
 					if(jwt==null || !jwt.startsWith(SecurityConstants.TOKEN_PREFIX)) {
 						filterChain.doFilter(request, response); return;
 					}else {

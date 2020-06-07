@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,13 +38,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
+import ma.munisys.dao.ContratRepository;
+import ma.munisys.dao.ContratSpecification;
+import ma.munisys.dto.ContratSearch;
 import ma.munisys.entities.BalanceAgee;
 import ma.munisys.entities.Contrat;
+import ma.munisys.entities.DetailRdv;
 import ma.munisys.entities.Document;
 import ma.munisys.entities.EtatProjet;
 import ma.munisys.entities.Produit;
@@ -68,6 +74,9 @@ public class UploadController {
 	
 	@Autowired
 	EtatRecouvrementService etatRecouvrementService;
+	
+	@Autowired
+	ContratRepository contratRepository;
  
 	List<String> files = new ArrayList<String>();
  
@@ -187,6 +196,52 @@ public class UploadController {
 	       
 	    }
 	
+	@PostMapping("/exportDetailRdv")
+	@ResponseBody
+	public ResponseEntity<Resource> exportDetailRdv( @RequestBody String codeProjet)  {
+		
+	    XSSFWorkbook workbook = null;
+	    Resource file = null;
+	    String fileName = null;
+	   
+	    try{
+	        /* Logic to Export Excel */
+	        LocalDateTime localDate = LocalDateTime.now();
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm"); 
+	        fileName = "RDV"+ "-" +codeProjet+"-"+ localDate.format(formatter) + ".xlsx";
+	   
+	        Collection<DetailRdv> detailRdvs=  etatProjetService.getDetailRdvByCodeProjet(codeProjet);
+	         
+	        OutputStream out;
+	        workbook = (XSSFWorkbook) storageService.generateWorkBookRdv(detailRdvs);
+	        
+	        FileOutputStream fileOut = new FileOutputStream("upload-dir/"+fileName);
+	        workbook.write(fileOut);
+	        fileOut.close();
+	        workbook.close();
+	        file = storageService.loadFile(fileName);
+	       
+	            
+	        } catch (Exception ecx) {
+	        	ecx.printStackTrace();
+	        }finally {
+	            if (null != workbook) {
+	                try {
+	                    workbook.close();
+	                     //file.getFile().delete(); 
+	                } catch (Exception e) {
+	                	e.printStackTrace();
+	                  //  logger.error("Error Occurred while exporting to XLS ", eio);
+	                }
+	            }
+	        }
+	    return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+				.body(file);
+	         
+	       
+	    }
+	
 	
 	@PostMapping("/exportDocumentsExcel")
 	@ResponseBody
@@ -294,9 +349,26 @@ public class UploadController {
 	       
 	    }
 	
-	@PostMapping("/exportContratExcel")
-	@ResponseBody
-	public ResponseEntity<Resource> exportContratExcel(@RequestBody List<Contrat> contrats)  {
+	
+	@RequestMapping(value = "/exportContratExcel", method = RequestMethod.GET)
+	public ResponseEntity<Resource> exportContratExcel(@RequestParam(name = "numContrat",required=false) String numContrat,@RequestParam(name = "mc", required = false) String motCle,
+			@RequestParam(name = "numMarche", required = false) String numMarche,
+			@RequestParam(name = "pilote", required = false) String pilote,
+			@RequestParam(name = "nomPartenaire", required = false) String nomPartenaire, 
+			@RequestParam(name = "sousTraiter", required = false) Boolean sousTraiter
+			)  {
+		
+		ContratSearch cs = new ContratSearch();
+		cs.setMotCle(motCle);
+		cs.setNomPartenaire(nomPartenaire);
+		cs.setPilote(pilote);
+		cs.setSousTraiter(sousTraiter);
+		cs.setNumMarche(numMarche);
+		
+		ContratSpecification contratSpecification = new ContratSpecification(cs);
+		
+		Collection<Contrat> contrats = contratRepository.findAll(contratSpecification);
+		
 		     
 	    XSSFWorkbook workbook = null;
 	    Resource file = null;
@@ -311,7 +383,7 @@ public class UploadController {
 	        //response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
 	        
 	        OutputStream out;
-	        workbook = (XSSFWorkbook) storageService.generateWorkBookContrat(contrats);
+	        workbook = (XSSFWorkbook) storageService.generateWorkBookContrat(new ArrayList<>(contrats));
 	        
 	        
 	        FileOutputStream fileOut = new FileOutputStream("upload-dir/"+fileName);

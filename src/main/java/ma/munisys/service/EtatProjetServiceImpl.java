@@ -56,6 +56,7 @@ import ma.munisys.dao.ServiceRepository;
 import ma.munisys.dao.UserRepository;
 import ma.munisys.entities.AppUser;
 import ma.munisys.entities.Detail;
+import ma.munisys.entities.DetailRdv;
 import ma.munisys.entities.Document;
 import ma.munisys.entities.Employer;
 import ma.munisys.entities.EtatProjet;
@@ -157,13 +158,13 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 
 	@Override
 	public Page<Projet> getProjetsFromEtatProjet(Boolean cloture, int page, int size) {
-		// TODO Auto-generated method stub
+		
 		return projetRepository.getProjets( cloture, new PageRequest(page, size));
 	}
 
 	@Override
 	public Set<Projet> getProjetsFromInputFile(String fileName) {
-		// TODO Auto-generated method stub
+		
 
 		//System.out.println("filename " + fileName);
 		logger.debug(" Input File  " + fileName.toString());
@@ -563,7 +564,7 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 
 	@Override
 	public Double getTotalRal() {
-		// TODO Auto-generated method stub
+		
 		Double totalRal = 0.0;
 
 		String sDate1="31/12/1960";  
@@ -639,7 +640,7 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 
 	@Override
 	public Collection<Projet> getProjets(Boolean cloturer) {
-		// TODO Auto-generated method stub
+		
 		return projetRepository.getProjets( cloturer);
 	}
 	
@@ -680,15 +681,16 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 	                projet2.setCloture(false);
 	                this.addOrUpdateProjet(lastEtatProjet, projet2);
 	            }
-	          
-	            lastEtatProjet.setLastUpdate(new Date());
+	            
+	          	lastEtatProjet.setLastUpdate(new Date());
+
 	            this.etatProjetRepository.save(lastEtatProjet);
 	        }
 	    }
 
 	@Override
 	public List<Projet> getAllProjets() {
-		// TODO Auto-generated method stub
+		
 		return (List<Projet>)projetRepository.getAllProjets();
 	}
 	
@@ -762,8 +764,9 @@ public class EtatProjetServiceImpl implements EtatProjetService {
              java.sql.ResultSetMetaData rsmd = rs1.getMetaData();
             for (int columnCount = rsmd.getColumnCount(), i = 1; i <= columnCount; ++i) {
                 final String name = rsmd.getColumnName(i);
-             
+             System.out.println("name " + name);
             }
+            
             while (rs1.next()) {
                 final Projet p = new Projet();
                 if (rs1.getString(1) != null && !rs1.getString(1).equals("null")) {
@@ -865,14 +868,141 @@ public class EtatProjetServiceImpl implements EtatProjetService {
         	if(rs1!=null) {
         		try {
 					rs1.close();
-					DBA.getConnection().close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
+					logger.info("cannot close connection SAP " + e.getMessage());
+				}
+        	}
+        	try {
+				DBA.getConnection().close();
+			} catch (SQLException e) {
+				logger.info("cannot close connection SAP " + e.getMessage());
+			}
+		}
+    }
+	
+	@Override
+	@javax.transaction.Transactional
+	public Projet loadSingleProjetFromSap(String codeProjet) {
+		logger.info("load projet : {} From Sap",codeProjet);
+		  Projet p=null;
+        Map<String,String> commentairesInfoProjet =  this.importInfoFournisseurFromSAP();
+        ResultSet rs1 = null ;
+        try {
+             String req1 = "SELECT * FROM DB_MUNISYS.\"V_OPEN_PRJ\" where \"Code projet\"="+"'"+codeProjet+"'";
+              rs1 = DBA.request(req1);
+            
+            while (rs1.next()) {
+               
+                p = projetRepository.findById(rs1.getString(1)).orElse(null);
+               
+               if(p!=null) {
+            	   if (rs1.getString(2) != null && !rs1.getString(2).equals("null")) {
+                       p.setProjet(rs1.getString(2));
+                   }
+                   if (rs1.getString(3) != null && !rs1.getString(3).equals("null")) {
+                   	
+                        SimpleDateFormat sp = new SimpleDateFormat("yyyy-MM-dd");
+                       p.setDateCmd(sp.parse(rs1.getString(3).split("\\s+")[0]));
+                   }
+                   if (rs1.getString(4) != null && !rs1.getString(4).equals("null")) {
+                       p.setAge(Double.valueOf(rs1.getDouble(4)));
+                   }
+                   if (rs1.getString(5) != null && !rs1.getString(5).equals("null")) {
+                       p.setCodeClient(rs1.getString(5));
+                   }
+                   if (rs1.getString(6) != null && !rs1.getString(6).equals("null")) {
+                       p.setClient(rs1.getString(6));
+                   }
+                   if (rs1.getString(7) != null && !rs1.getString(7).equals("null")) {
+                       p.setCodeCommercial(rs1.getString(7));
+                   }
+                   if (rs1.getString(8) != null && !rs1.getString(8).equals("null")) {
+                       p.setCommercial(rs1.getString(8));
+                   }
+                   if (rs1.getString(9) != null && !rs1.getString(9).equals("null")) {
+                       p.setChefProjet(rs1.getString(9));
+                   }
+                   if (rs1.getString(10) != null && !rs1.getString(10).equals("null")) {
+                       p.setBu(rs1.getString(10));
+                   }
+                   if (rs1.getString(11) != null && !rs1.getString(11).equals("null")) {
+                       p.setRefCom(rs1.getString(11));
+                   }
+                   if (rs1.getString(12) != null && !rs1.getString(12).equals("null")) {
+                       p.setStatut(rs1.getString(12));
+                   }
+                   if (rs1.getString(13) != null && !rs1.getString(13).equals("null")) {
+                       p.setMontantCmd(Double.valueOf(rs1.getDouble(13)));
+                   }
+                   if (rs1.getString(14) != null && !rs1.getString(14).equals("null")) {
+                       p.setRestAlivrer(Double.valueOf(rs1.getDouble(14)));
+                   }
+                   if (rs1.getString(15) != null && !rs1.getString(15).equals("null")) {
+                       p.setLivrer(Double.valueOf(rs1.getDouble(15)));
+                   }
+                   if (rs1.getString(16) != null && !rs1.getString(16).equals("null")) {
+                       p.setLivrerNonFacture(Double.valueOf(rs1.getDouble(16)));
+                   }
+                   if (rs1.getString(17) != null && !rs1.getString(17).equals("null")) {
+                       p.setLivreFacturePayer(Double.valueOf(rs1.getDouble(17)));
+                   }
+                   if (rs1.getString(18) != null && !rs1.getString(18).equals("null")) {
+                       p.setMontantPayer(Double.valueOf(rs1.getDouble(18)));
+                   }
+                   if (rs1.getString(19) != null && !rs1.getString(19).equals("null")) {
+                       p.setFacturation(rs1.getDouble(19));
+                   }
+                   if (rs1.getString(20) != null && !rs1.getString(20).equals("null")) {
+                       p.setFactEncours(rs1.getString(20));
+                   }
+                   if (rs1.getString(21) != null && !rs1.getString(21).equals("null")) {
+                       p.setMontantStock(Double.valueOf(rs1.getDouble(21)));
+                   }
+                   if (rs1.getString(22) != null && !rs1.getString(22).equals("null")) {
+                       p.setPrestationCommande(Double.valueOf(rs1.getDouble(22)));
+                   }
+                   if (rs1.getString(23) != null && !rs1.getString(23).equals("null")) {
+                       p.setRalJrsPrestCalc(Double.valueOf(rs1.getDouble(23)));
+                   }
+                   
+                   if (rs1.getString(24) != null && !rs1.getString(24).equals("null")) {
+                       p.setConditionFacturation(rs1.getString(24));
+                   }
+                   
+                   if(commentairesInfoProjet.get(p.getCodeProjet())!=null){
+                   	p.setInfoFournisseur(commentairesInfoProjet.get(p.getCodeProjet()));
+                   }
+                   
+                   projetRepository.save(p);
+               }
+            
+               
+              
+            }
+           
+           
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            logger.info("error " + e.getMessage());
+        }finally {
+        	if(rs1!=null) {
+        		try {
+					rs1.close();
+					
+				} catch (SQLException e) {
 					logger.info("cannot close connection SAP " + e.getMessage());
 				}
         	}
         	
+        	try {
+				DBA.getConnection().close();
+			} catch (SQLException e) {
+				logger.info("cannot close connection SAP " + e.getMessage());
+			}
+        	
 		}
+        return p;
     }
 
 	@Override
@@ -889,63 +1019,63 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 
 	@Override
 	public Collection<Projet> getProjetFromEtatProjet(Boolean cloture, String bu1, String bu2, String statut1) {
-		// TODO Auto-generated method stub
+		
 		return projetRepository.getProjetsByBuAndStatut( cloture,  bu1,  bu2,  statut1);
 	}
 
 	@Override
 	public Collection<Projet> getProjetsByBu(Boolean cloturer, String bu1, String bu2) {
-		// TODO Auto-generated method stub
+		
 		return projetRepository.getProjetsByBu(cloturer, bu1, bu2);
 	}
 
 	@Override
 	public Collection<Projet> getProjetsByStatut(Boolean cloturer, String statut) {
-		// TODO Auto-generated method stub
+		
 		return projetRepository.getProjetsByStatut(cloturer, statut);
 	}
 
 	@Override
 	public Collection<Projet> getProjetsByChefDeProjetIsNull(Boolean cloturer) {
-		// TODO Auto-generated method stub
+		
 		return projetRepository.getProjetsByChefDeProjetIsNull(cloturer);
 	}
 
 	@Override
 	public Collection<Projet> getProjetsByChefDeProjetNotNull(Boolean cloturer) {
-		// TODO Auto-generated method stub
+		
 		return projetRepository.getProjetsByChefDeProjetNotNull(cloturer);
 	}
 
 	@Override
 	public Collection<Projet> getProjetsByBuAndStatut(Boolean cloturer, String bu1, String bu2, String statut
 			) {
-		// TODO Auto-generated method stub
+		
 		return projetRepository.getProjetsByBuAndStatut(cloturer, bu1, bu2, statut);
 	}
 
 	@Override
 	public Collection<Projet> getProjetsByChefDeProjetNotNullAndBu(Boolean cloturer, String bu1, String bu2
 			) {
-		// TODO Auto-generated method stub
+		
 		return projetRepository.getProjetsByChefDeProjetNotNullAndBu(cloturer, bu1, bu2);
 	}
 
 	@Override
 	public Collection<Projet> getProjetsByChefDeProjetIsNullAndBu(Boolean cloturer, String bu,String bu2) {
-		// TODO Auto-generated method stub
+		
 		return projetRepository.getProjetsByChefDeProjetIsNullAndBu(cloturer, bu,bu2);
 	}
 
 	@Override
 	public Collection<Projet> getProjetsByChefDeProjetIsNullAndStatut(Boolean cloturer, String statut1) {
-		// TODO Auto-generated method stub
+		
 		return projetRepository.getProjetsByChefDeProjetIsNullAndStatut(cloturer, statut1);
 	}
 
 	@Override
 	public Collection<Projet> getProjetsByChefDeProjetNotNullAndStatut(Boolean cloturer, String statut1) {
-		// TODO Auto-generated method stub
+		
 		return projetRepository.getProjetsByChefDeProjetNotNullAndStatut(cloturer, statut1);
 	}
 
@@ -1200,26 +1330,26 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 
 	@Override
 	public List<String> getDistinctClient() {
-		// TODO Auto-generated method stub
+		
 		return projetRepository.getDistinctClient();
 	}
 
 	@Override
 	public List<String> getDistinctCommercial() {
-		// TODO Auto-generated method stub
+		
 		return projetRepository.getDistinctCommercial();
 	}
 
 	@Override
 	public List<String> getDistinctChefProjet() {
-		// TODO Auto-generated method stub
+		
 		return projetRepository.getDistinctChefProjet();
 	}
 
 	@Override
 	
 	public Projet declotureProjet(Projet p) {
-		// TODO Auto-generated method stub
+		
 		logger.info("decloture de Projet " + p.getCodeProjet());
 		
 		int i = projetRepository.updateStatutProjet(false, false, true, p.getCodeProjet());
@@ -1233,7 +1363,7 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 	@Transactional
 	public Projet clotureProjet(Projet p) {
 		logger.info("cloture de Projet " + p.getCodeProjet());
-		// TODO Auto-generated method stub
+		
 		EtatProjet etatProjet = new EtatProjet();
 		etatProjet.setId(1L);
 		p.setEtatProjet(etatProjet);
@@ -1264,6 +1394,87 @@ public class EtatProjetServiceImpl implements EtatProjetService {
 
 	public void setEventRepository(EventRepository eventRepository) {
 		this.eventRepository = eventRepository;
+	}
+
+	@Override
+	public Collection<DetailRdv> getDetailRdvByCodeProjet(String codeProjet) {
+		Collection<DetailRdv> detailRdvs = new ArrayList<DetailRdv>();
+		ResultSet rs1 = null ;
+        try {
+             String req1 = "SELECT * FROM DB_MUNISYS.\"V_PROJECT_DETRDV\" where \"PrjCode\"= "+"'"+codeProjet+"'";
+              rs1 = DBA.request(req1);
+                 
+            while (rs1.next()) {
+               
+              DetailRdv detailRdv = new DetailRdv();
+               
+            	   
+                       detailRdv.setCodeProjet(rs1.getString(1));
+
+                       detailRdv.setNomProjet(rs1.getString(2));
+                   
+                  
+                       detailRdv.setItemCode(rs1.getString(3));
+                   
+                       detailRdv.setDesignation(rs1.getString(4));
+                      
+                       detailRdv.setMontantAchat(rs1.getDouble(5));
+                       
+                       detailRdv.setMontantVente(rs1.getDouble(6));
+                       
+                       detailRdv.setQte(rs1.getFloat(7));
+                       
+                       detailRdv.setQteLiv(rs1.getFloat(8));
+                       
+                       detailRdv.setQteRAL(rs1.getFloat(9));
+                       
+                       detailRdv.setQteLNF(rs1.getFloat(10));
+                       
+                       detailRdv.setMontantLiv(rs1.getDouble(11));
+                       
+                       detailRdv.setMontantRAL(rs1.getDouble(12));
+                       
+                       detailRdv.setMontantLNF(rs1.getDouble(13));
+                       
+                       detailRdv.setNature(rs1.getString(14));
+                       
+                       detailRdv.setSousNature(rs1.getString(15));
+                       
+                       detailRdv.setDomaine(rs1.getString(16));
+                       
+                       detailRdv.setSousDomaine(rs1.getString(17));
+                       
+                       detailRdv.setMarque(rs1.getString(18));
+                       
+                       
+                       detailRdvs.add(detailRdv);
+                   
+               }
+           
+            }
+              
+             
+        catch (Exception e) {
+            e.printStackTrace();
+            logger.info("error " + e.getMessage());
+        }finally {
+        	if(rs1!=null) {
+        		try {
+					rs1.close();
+					
+				} catch (SQLException e) {
+					logger.info("cannot close connection SAP " + e.getMessage());
+				}
+        	}
+        	
+        	try {
+				DBA.getConnection().close();
+			} catch (SQLException e) {
+				logger.info("cannot close connection SAP " + e.getMessage());
+			}
+        	
+		}
+        return detailRdvs;
 	}
 	
 	

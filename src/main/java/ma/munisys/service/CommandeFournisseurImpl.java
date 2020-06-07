@@ -4,10 +4,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,6 +20,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -50,6 +54,9 @@ public class CommandeFournisseurImpl implements CommandeFournisseurService {
 	
 	@Autowired
 	private ContratRepository contratRepository;
+	
+	@Autowired
+	private ContratService contratService;
 
 	@Override
 	public CommandeFournisseur saveCommandeFournisseur(CommandeFournisseur commandeFournisseur) {
@@ -58,14 +65,36 @@ public class CommandeFournisseurImpl implements CommandeFournisseurService {
 		return commandeFournisseurRepository.save(commandeFournisseur);
 	}
 
-	@Async
+	//@Async
 	@Override
 	@javax.transaction.Transactional
-	public  CompletableFuture<String> loadCommandeFournisseurFromSap() {
+	public  void loadCommandeFournisseurFromSap() {
     	//System.out.println("load commandeFournisseur from SAP");
-		logger.info("loading CommandeFournisseur From Sap");
+		logger.info("Loading CommandeFournisseur From Sap");
+		
+		Collection<Contrat> allContrats = this.contratRepository.findAll();
+		
+		Map<Long, Contrat> contrats = 
+				allContrats.stream().collect(Collectors.toMap(Contrat::getNumContrat, contrat -> contrat));
+
         ResultSet rs1 = null ;
         Set<CommandeFournisseur> commandeFournisseurs =new HashSet<CommandeFournisseur>();
+        
+        Map<String,Map<Long,Contrat>> contratsByCodeprojet= new HashMap<String,Map<Long,Contrat>>();
+        
+        for(Map.Entry<Long, Contrat> entry:contrats.entrySet()){
+        	String codeProjet = entry.getValue().getCodeProjet();
+        	if(!contratsByCodeprojet.containsKey(codeProjet)) {
+        		Map<Long,Contrat> contratsProjet = new HashMap<Long, Contrat>();
+        		contratsProjet.put(entry.getKey(), entry.getValue());
+        		contratsByCodeprojet.put(codeProjet,contratsProjet);
+        	}else {
+        		if(!contratsByCodeprojet.get(codeProjet).containsKey(entry.getKey())) {
+        			contratsByCodeprojet.get(codeProjet).put(entry.getKey(), entry.getValue());
+        		}
+        		
+        	}
+        }
         
         try {
              String req1 = "SELECT * FROM DB_MUNISYS.\"V_CM_DETACH\"";
@@ -78,15 +107,15 @@ public class CommandeFournisseurImpl implements CommandeFournisseurService {
             SimpleDateFormat sp = new SimpleDateFormat("yyyy-MM-dd");
            while (rs1.next()) {
                 final CommandeFournisseur commandeFournisseur = new CommandeFournisseur();
-                Collection<Contrat> c =contratRepository.getContratByCodeProjet(rs1.getString(1));
+                Map<Long,Contrat> c =contratsByCodeprojet.get(rs1.getString(1));
                 if (rs1.getString(1) != null && !rs1.getString(1).equals("null")) {
                  
                 	if(c!=null) {
                 		
-                      	commandeFournisseur.setContrats(new HashSet<Contrat>(c));
-                      	for(Contrat c1 : c) {
-                      		c1.setSousTraiter(true);
-                      		contratRepository.save(c1);
+                      	commandeFournisseur.setContrats(new HashSet<Contrat>(c.values()));
+                      	for(Map.Entry<Long, Contrat> c1 : c.entrySet()) {
+                      		c1.getValue().setSousTraiter(true);
+                      		contratRepository.save(c1.getValue());
                       	}
                 	}
                 	
@@ -167,12 +196,8 @@ public class CommandeFournisseurImpl implements CommandeFournisseurService {
            
            commandeFournisseurRepository.deleteAll();
            commandeFournisseurRepository.saveAll(commandeFournisseurs);
-           logger.info("end synchro commande fournisseur");
+           logger.info("End loading CommandeFournisseur From Sap");
             
-            
-            //System.out.println("projets1 " + etatProjetServiceStatic.getProjetFromEtatProjet( false, "undefined"));
-            
-            //System.out.println("projets2 " + etatProjetServiceStatic.getAllProjets());
         }
         catch (Exception e) {
         	logger.error("error loading commande fournisseur "+e.getMessage());
@@ -183,7 +208,6 @@ public class CommandeFournisseurImpl implements CommandeFournisseurService {
 					rs1.close();
 					DBA.getConnection().close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					logger.error("error closing connection sap "+e.getMessage());
 					e.printStackTrace();
 				}
@@ -191,7 +215,12 @@ public class CommandeFournisseurImpl implements CommandeFournisseurService {
         	
 		}
         
-        return CompletableFuture.completedFuture("loaded Commande fournisseur");
+       // return CompletableFuture.completedFuture("loaded Commande fournisseur");
     }
+
+	@Override
+	public Page<CommandeFournisseur> getCommandeFournisseur(Long numContrat, int page, int size) {
+		return commandeFournisseurRepository.getCommandeFournisseur(numContrat, PageRequest.of(page, size));
+	}
 
 }

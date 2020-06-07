@@ -1,9 +1,7 @@
 package ma.munisys.web;
 
-import java.security.Principal;
 import java.util.Collection;
 import java.util.List;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -322,6 +320,13 @@ public class EtatProjetController {
 	public Projet clotureProjet(@RequestBody Projet projet,Authentication authentication) {
 		
 		return etatProjetService2.clotureProjet(projet );
+	}
+	
+	
+	@RequestMapping(value = "/updateProjetFromSAP", method = RequestMethod.GET)
+	public Projet clotureProjet(@RequestParam("codeProjet") String codeProjet,Authentication authentication) {
+		
+		return etatProjetService.loadSingleProjetFromSap(codeProjet);
 	}
 
 	@RequestMapping(value = "/reunions", method = RequestMethod.GET)

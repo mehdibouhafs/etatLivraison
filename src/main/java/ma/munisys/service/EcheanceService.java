@@ -3,6 +3,8 @@ package ma.munisys.service;
 
 import java.util.Collection;
 
+import org.springframework.data.domain.Page;
+
 import ma.munisys.entities.Echeance;
 
 
@@ -15,11 +17,16 @@ public interface EcheanceService {
 	public Echeance updateEcheance(Long id, Long idCommentaire);
 	
 	
-	public Echeance editEcheance(Long numContrat, Echeance e);
+	public int addNewContratModel(Long numContrat, Echeance e);
 	
 	public void deleteEcheance(Long idEcheance);
 	
 	public Collection<Echeance> getAllEcheancesFromContrat(Long numContrat);
+	
+	public Page<Echeance> getEcheance(Long numContrat ,int page,int size,String sortBy,String sortType);
+
+
+	public Echeance addNewEcheanceByUser(Long numContrat, Echeance echeance);
 
 	
 	

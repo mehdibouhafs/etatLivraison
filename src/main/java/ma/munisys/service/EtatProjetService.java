@@ -11,6 +11,7 @@ import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
 
+import ma.munisys.entities.DetailRdv;
 import ma.munisys.entities.EtatProjet;
 import ma.munisys.entities.Header;
 import ma.munisys.entities.Projet;
@@ -74,6 +75,10 @@ public interface EtatProjetService {
 	public void updateProjetsFromSAp(final EtatProjet newEtatProjet);
 	
 	public  void loadProjetsFromSap();
+	
+	public Collection<DetailRdv> getDetailRdvByCodeProjet(String codeProjet);
+	
+	public  Projet loadSingleProjetFromSap(String codeProjet);
 	
 	public Collection<Projet> getProjetsByBu( Boolean cloturer,String bu1,String bu2);
 

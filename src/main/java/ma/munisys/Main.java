@@ -5,14 +5,21 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections4.map.HashedMap;
+import org.joda.time.DateTime;
 
 import ma.munisys.entities.Document;
+import ma.munisys.entities.Echeance;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -31,7 +38,34 @@ public class Main {
 	
 	
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ParseException {
+		
+		 String date11="01/01/2020";
+		 String date22="02/01/2021";
+		 
+		 Date date1=new SimpleDateFormat("dd/MM/yyyy").parse(date11);  
+		 Date date2=new SimpleDateFormat("dd/MM/yyyy").parse(date22); 
+		List<Echeance> echeances = generateEcheanceModele(date1, date2, 6);
+		
+		System.out.println(echeances.size());
+		 for(Echeance e : echeances) {
+			 System.out.println(e.toString());
+		 }
+		
+		
+		/*
+		Map<String,Integer> mp=new HashedMap<String, Integer>();
+		mp.put("a", 10);
+	      mp.put("a", 11);
+	      mp.put("a", 12);
+	      mp.put("b", 13);
+	      mp.put("c", 14);
+	      mp.put("e", 15);
+	      
+	      System.out.println(mp.get("a"));
+		
+		
+		
 		 String outPutFile  = "rapport/jasperReportExample.pdf";
 		Document d = new Document();
 		d.setNumPiece("xxxx");
@@ -60,7 +94,7 @@ public class Main {
 			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters,new JREmptyDataSource());
 			JasperViewer.viewReport(jasperPrint);
 			
-			/* Create PDF  */
+		
 			
 			FileOutputStream fileOutputStream = new FileOutputStream(new File(outPutFile));
 			
@@ -70,9 +104,53 @@ public class Main {
 			e.printStackTrace();
 		}
 		
-		
+		*/
 		
 		
 	}
+	
+	
+	
+public static  List<Echeance> generateEcheanceModele(Date debut,Date fin,int nbMonth) {
+	
+	List<Echeance> echeances = new ArrayList<Echeance>();
+
+	Integer nbMonthPeriod = nbMonth;
+
+	if (debut != null && fin != null) {
+		DateTime start = new DateTime(debut);
+		
+		DateTime end = new DateTime(fin);
+		
+		
+			while (start.compareTo(end) < 0 ) {
+				Echeance c = new Echeance();
+				c.setContrat(null);
+				c.setDu(start.toDate());
+				c.setContratModel(null);
+				c.setCloture(false);
+				DateTime dateBetween = start.plusMonths(nbMonthPeriod);
+				start = dateBetween;
+				System.out.println("start "+ start);
+				c.setAu(start.plusHours(-1).plusMinutes(59).plusSeconds(59).toDate());
+				c.setMontant(0.0);
+				c.setMontantRestFacture(c.getMontant());
+				c.setMontantFacture(0.0);
+			
+				
+				if (start.compareTo(end) >= 0 ) {
+					c.setAu(end.toDate());
+					
+				}
+			
+				echeances.add(c);
+
+			}
+		}
+	
+
+	return echeances;
+
+}
 
 }

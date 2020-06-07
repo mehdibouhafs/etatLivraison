@@ -2,13 +2,9 @@ package ma.munisys.entities;
 
 import java.io.Serializable;
 import java.util.Comparator;
-
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -88,12 +84,16 @@ public class FactureEcheance implements Serializable, Comparable<FactureEcheance
 
 	@Override
 	public int compareTo(FactureEcheance o) {
-		return getEcheance().compareTo(o.getEcheance());
+		if(getEcheance()!=null && o.getEcheance()!=null) {
+	    	 return 	getEcheance().compareTo(o.getEcheance());
+	    }else {
+	    	return getFacture().compareTo(o.getFacture());
+	    }
 	}
 
 	@Override
 	public int compare(FactureEcheance o1, FactureEcheance o2) {
-		    if(o1.getEcheance()!=null) {
+		    if(o1.getEcheance()!=null && o2.getEcheance()!=null) {
 		    	 return 	o1.getEcheance().compareTo(o2.getEcheance());
 		    }else {
 		    	return o1.getFacture().compareTo(o2.getFacture());
