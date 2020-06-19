@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -60,7 +61,7 @@ public class Echeance implements Serializable, Comparable<Echeance>,Comparator<E
 	
 	private String factures;
 	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "echeance", cascade = { CascadeType.ALL }, orphanRemoval = true)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "echeance")
 	private Set<FactureEcheance> factureEcheances = new HashSet<FactureEcheance>();
 	
 	@ManyToOne
@@ -137,13 +138,8 @@ public class Echeance implements Serializable, Comparable<Echeance>,Comparator<E
 		OccurenceFacturation = occurenceFacturation;
 	}
 
-	@JsonIgnore
-	public Set<FactureEcheance> getFactureEcheances() {
-		
-		
-		
-		return factureEcheances;
-	}
+	
+	
 
 	public void calculMontantFacture() {
 		if(factureEcheances!=null) {
@@ -173,10 +169,9 @@ public class Echeance implements Serializable, Comparable<Echeance>,Comparator<E
 			}
 		}
 	}
-	
-	public void setFactureEcheances(Set<FactureEcheance> factureEcheances) {
-		
-		this.factureEcheances = factureEcheances;
+	@JsonIgnore
+	public Set<FactureEcheance> getFactureEcheances() {
+		return factureEcheances;
 	}
 
 	public Double getMontantFacture() {
@@ -332,6 +327,11 @@ public class Echeance implements Serializable, Comparable<Echeance>,Comparator<E
 		
 		return "Echeance [du=" + df.format(du) + ", au=" + df.format(au) + ", montant=" + montant + ", contratModel=" + contratModel + "]";
 	}
+
+	public void setFactureEcheances(Set<FactureEcheance> factureEcheances) {
+		this.factureEcheances = factureEcheances;
+	}
+	
 	
 	
 	

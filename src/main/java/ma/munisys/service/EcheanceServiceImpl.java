@@ -3,6 +3,7 @@ package ma.munisys.service;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -71,9 +72,12 @@ public class EcheanceServiceImpl implements EcheanceService {
 		cm.setDu(e.getDu());
 		cm.setAu(e.getAu());
 		cm.setPeriodeFacturation(e.getPeriodeFacturation());
+		if(e.getPeriodeFacturation()!=null)
 		cm.setPeriodeFacturationLabel(e.getPeriodeFacturation().toString());
-		cm.setOccurenceFacturation(e.getOccurenceFacturation());
-		cm.setOccurenceFacturationLabel(e.getOccurenceFacturation().toString());
+		if(e.getOccurenceFacturation()!=null) {
+			cm.setOccurenceFacturation(e.getOccurenceFacturation());
+			cm.setOccurenceFacturationLabel(e.getOccurenceFacturation().toString());
+		}
 		cm.setMontant(e.getMontant());
 		cm.setMontantPrevisionel(e.getMontantPrevision());
 		cm.setContrat(c);
@@ -92,15 +96,22 @@ public class EcheanceServiceImpl implements EcheanceService {
 		
 		ContratModel cm1 =contratModelRepository.save(cm);
 		
-		List<Echeance> echeances = cm1.generateEcheanceModele();
+		List<Echeance> ecs = cm1.generateEcheanceModele();
 		
-		for(Echeance e1 : echeances) {
-			e1.calculMontantFacture();
-		}
-		
-		echeanceRepository.saveAll(echeances);
+		echeanceRepository.saveAll(ecs);
 		
 		factureService.loadFactureFromSapByContrat(numContrat);
+		
+		/*for(Echeance ec : ecsRes) {
+			Collection<FactureEcheance> factureEcheances = factureEcheanceRepository.getFactureEcheance(ec.getId());
+			if(factureEcheances!=null) {
+				ec.setFactureEcheances(new HashSet<>(factureEcheances));
+				ec.calculMontantFacture();
+				echeanceRepository.save(ec);
+			}
+		}*/
+		
+		
 		i=1;
 		}else {
 			throw new RuntimeException("Echeance existe dejà !");
@@ -157,10 +168,10 @@ public class EcheanceServiceImpl implements EcheanceService {
 		if (sortBy != null) {
 
 			if ("asc".equals(sortType)) {
-				return echeanceRepository.getEcheance(numContrat,year, PageRequest.of(page, size,Sort.by(sortBy).ascending()));
+				return echeanceRepository.getEcheanceWithoutOrder(numContrat,year, PageRequest.of(page, size,Sort.by(sortBy).ascending()));
 
 			} else {
-				return echeanceRepository.getEcheance(numContrat,year, PageRequest.of(page, size,Sort.by(sortBy).descending()));
+				return echeanceRepository.getEcheanceWithoutOrder(numContrat,year, PageRequest.of(page, size,Sort.by(sortBy).descending()));
 			}
 
 		} else {
@@ -176,6 +187,7 @@ public class EcheanceServiceImpl implements EcheanceService {
 		echeance.setContrat(c);
 		echeance.setCloture(false);
 		echeance.setAddedByUser(true);
+		echeance.setMontantFacture(0.0);
 		
 		if(echeance.getMontant()!=null) {
 			echeance.setMontantRestFacture(echeance.getMontant());

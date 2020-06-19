@@ -19,6 +19,9 @@ public interface FactureEcheanceRepository extends JpaRepository<FactureEcheance
 	@Query("select f from FactureEcheance f where f.contrat.numContrat =:x and f.cloture = false order by f.facture.dateEnregistrement ASC")
 	public Page<FactureEcheance> getFactureEcheance(@Param("x") Long numContrat,Pageable pageable);
 
+	@Query("select f from FactureEcheance f where f.contrat.numContrat =:x and f.cloture = false")
+	public Page<FactureEcheance> getFactureEcheanceWithoutOrder(@Param("x") Long numContrat,Pageable pageable);
+
 	
 	@Query("select fe from FactureEcheance fe where fe.facture.numFacture =:y and fe.contrat.numContrat=:x and fe.cloture = false ")
 	public Collection<FactureEcheance> getFactureEcheance(@Param("x") Long numContrate,@Param("y")Long numFacture);

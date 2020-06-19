@@ -228,7 +228,7 @@ public class ContratModel implements Serializable,Cloneable {
 					c.setCloture(false);
 					DateTime dateBetween = start.plusMonths(nbMonthPeriod);
 					start = dateBetween;
-					c.setAu(start.plusHours(-1).plusMinutes(59).plusSeconds(59).toDate());
+					c.setAu(start.plusDays(-1).toDate());
 					c.setMontant(this.getMontant());
 					c.setMontantRestFacture(c.getMontant());
 					c.setMontantFacture(0.0);

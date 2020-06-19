@@ -151,7 +151,6 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 		LOGGER.info("Start PDC 360");
 		System.out.println("run");
 		
-		
 		//EtatLvSvcApplication.loadProduitFromSap();
 		//commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();
 		//EtatLvSvcApplication.loadProduitFromSap();
@@ -165,8 +164,7 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 		/*CompletableFuture<String> pieces =EtatLvSvcApplication.contratServiceStatic.loadContratPieceSap();
 		CompletableFuture<String> factures =factureServiceStatic.loadFactureFromSap();
 		CompletableFuture<String> commandes =commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();
-		
-		
+
 		CompletableFuture.allOf(contrats,pieces,commandes,factures).join();*/
 		//loadDocumentsFromSap();
 		//factureRepository.deleteAll();
@@ -200,7 +198,6 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 	public static void loadContrat() {
 		LOGGER.debug("STARTING TASK synchro contrat  ");
 		EtatLvSvcApplication.contratServiceStatic.loadContratFromSap();
-	
 		EtatLvSvcApplication.contratServiceStatic.loadContratPieceSap();
 		factureServiceStatic.loadFactureFromSap();
 		commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();

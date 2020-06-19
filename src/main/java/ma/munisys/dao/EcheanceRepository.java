@@ -21,4 +21,10 @@ public interface EcheanceRepository extends JpaRepository<Echeance,Long>,JpaSpec
 	public Page<Echeance> getEcheance(@Param("x") Long numContrat,@Param("y")int anneEcheance ,Pageable pageable);
 	
 
+	@Query("select f from Echeance f where f.contrat.numContrat =:x and f.cloture = false and (year(f.du) =: y-1 or year(f.du)=:y or year(f.au)=:y-1 or year(f.au)=:y)")
+	public Page<Echeance> getEcheanceWithoutOrder(@Param("x") Long numContrat,@Param("y")int anneEcheance ,Pageable pageable);
+	
+	
+	@Query("select f from Echeance f fetch all properties where f.cloture = false and f.id = :x ")
+	public Echeance getEcheanceEager(@Param("x") Long id);
 }

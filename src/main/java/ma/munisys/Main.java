@@ -41,11 +41,11 @@ public class Main {
 	public static void main(String[] args) throws ParseException {
 		
 		 String date11="01/01/2020";
-		 String date22="02/01/2021";
+		 String date22="31/12/2022";
 		 
 		 Date date1=new SimpleDateFormat("dd/MM/yyyy").parse(date11);  
 		 Date date2=new SimpleDateFormat("dd/MM/yyyy").parse(date22); 
-		List<Echeance> echeances = generateEcheanceModele(date1, date2, 6);
+		List<Echeance> echeances = generateEcheanceModele(date1, date2, 12);
 		
 		System.out.println(echeances.size());
 		 for(Echeance e : echeances) {
@@ -132,7 +132,7 @@ public static  List<Echeance> generateEcheanceModele(Date debut,Date fin,int nbM
 				DateTime dateBetween = start.plusMonths(nbMonthPeriod);
 				start = dateBetween;
 				System.out.println("start "+ start);
-				c.setAu(start.plusHours(-1).plusMinutes(59).plusSeconds(59).toDate());
+				c.setAu(start.plusDays(-1).toDate());
 				c.setMontant(0.0);
 				c.setMontantRestFacture(c.getMontant());
 				c.setMontantFacture(0.0);
