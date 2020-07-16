@@ -40,6 +40,19 @@ public class Main {
 	
 	public static void main(String[] args) throws ParseException {
 		
+		
+		Double d = 0.0;
+		Double c = null;
+		try {
+		if(Double.compare(d, c)==0) {
+			System.out.println("equals");
+		}else{
+			System.out.println("not equls");
+		}
+		}catch(Exception e) {
+			System.out.println("catched");
+		}
+		
 		 String date11="01/01/2020";
 		 String date22="31/12/2022";
 		 

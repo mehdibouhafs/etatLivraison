@@ -185,7 +185,16 @@ public class FactureImpl implements FactureService {
 							fe.setCloture(false);
 							fe.setMontant(f.getMontantHT());
 							
-							if(!factureEcheancesAffectedByUser.contains(fe.getId())) {
+							boolean found=false;
+							for(Echeance e : f.getContrat().getEcheances()) {
+								String idFactEcheance = f.getNumFacture() + "/" + e.getId() + "/" + f.getContrat().getNumContrat();
+								if(factureEcheancesAffectedByUser.contains(idFactEcheance)) {
+									found=true;
+									break;
+								}
+							}
+							
+							if(!found) {
 								factureEcheanceRepository.saveAndFlush(fe);
 							}
 						
@@ -355,7 +364,7 @@ public class FactureImpl implements FactureService {
 			
 			if(factureEcheance.getEcheance()!=null ) {
 				
-				factureEcheance.setId(factureEcheance.getFacture().getNumFacture() + "/"
+				factureEcheance.setId(factureEcheance.getFacture().getNumFacture()
 						+ "/"+ factureEcheance.getEcheance().getId()+ "/" + factureEcheance.getContrat().getNumContrat());	
 				
 				

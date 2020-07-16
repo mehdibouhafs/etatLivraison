@@ -510,7 +510,7 @@ System.out.println("CLIENT SHOULDNT WORK");
 
 		// filtre par chargeRecouvrement uniquement. A
 		if (!chargeRecouvrement.equals("undefined") && (list.contains("undefined") || list.isEmpty())  && chefProjet.equals("undefined")
-				&& commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && !age.equals("undefined")) {
+				&& commercial.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && age.equals("undefined")) {
 
 			return documentRepository.findAll(DocumentSpecification.isCloture(cloturer)
 					.and(DocumentSpecification.byChargeRecouvrement(chargeRecouvrement)

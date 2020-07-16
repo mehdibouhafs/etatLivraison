@@ -1,5 +1,7 @@
 package ma.munisys.dto;
 
+import java.util.Date;
+
 public class ContratSearch {
 	
 	private String numContrat;
@@ -14,6 +16,10 @@ public class ContratSearch {
 	private String pilote;
 	
 	private Boolean sousTraiter;
+	
+	private String bu;
+	
+	private Date dateFinContrat;
 	
 	
 	
@@ -75,6 +81,22 @@ public class ContratSearch {
 
 	public void setNumContrat(String numContrat) {
 		this.numContrat = numContrat;
+	}
+
+	public String getBu() {
+		return bu;
+	}
+
+	public void setBu(String bu) {
+		this.bu = bu;
+	}
+
+	public Date getDateFinContrat() {
+		return dateFinContrat;
+	}
+
+	public void setDateFinContrat(Date dateFinContrat) {
+		this.dateFinContrat = dateFinContrat;
 	}
 	
 	

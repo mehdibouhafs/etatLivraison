@@ -25,6 +25,13 @@ public interface EcheanceService {
 	
 	public Page<Echeance> getEcheance(Long numContrat ,int page,int size,String sortBy,String sortType);
 
+	
+	public Page<Echeance> getEcheanceNotLinked(Long numContrat ,int page,int size,String sortBy,String sortType);
+
+	public Page<Echeance> getEcheancesNotLinked(String date,int page,int size,String sortBy,String sortType);
+
+	public Page<Echeance> getEcheanceLinked(Long numContrat ,int page,int size,String sortBy,String sortType);
+
 
 	public Echeance addNewEcheanceByUser(Long numContrat, Echeance echeance);
 

@@ -36,5 +36,5 @@ public interface ContratService {
 	
 	public Collection<Contrat> getAllContratsWithPredicate(ContratSearch contratSearch);
 	
-
+	//public void generateEcheanceFromModels();
 }

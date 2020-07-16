@@ -6,8 +6,13 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -24,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -40,6 +46,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ma.munisys.dao.CommandeFournisseurRepository;
 import ma.munisys.dao.CommandeFournisseurSpecification;
 import ma.munisys.dao.CommentaireContratRepository;
+import ma.munisys.dao.ContratModelRepository;
 import ma.munisys.dao.ContratRepository;
 import ma.munisys.dao.EcheanceRepository;
 import ma.munisys.dao.FactureEcheanceRepository;
@@ -47,10 +54,12 @@ import ma.munisys.dao.FactureRepository;
 import ma.munisys.dao.PieceRepository;
 import ma.munisys.dto.CommandeFournisseurSearch;
 import ma.munisys.dto.ContratSearch;
+import ma.munisys.dto.EcheanceDto;
 import ma.munisys.dto.StatisticContrat;
 import ma.munisys.entities.CommandeFournisseur;
 import ma.munisys.entities.CommentaireContrat;
 import ma.munisys.entities.Contrat;
+import ma.munisys.entities.ContratModel;
 import ma.munisys.entities.Echeance;
 import ma.munisys.entities.FactureEcheance;
 import ma.munisys.entities.Piece;
@@ -90,6 +99,9 @@ public class ContratController {
 
 	@Autowired
 	private CommentaireContratRepository commentaireContratRepository;
+	
+	@Autowired
+	private ContratModelRepository contratModelRepository;
 
 	public ContratController() {
 
@@ -128,6 +140,28 @@ public class ContratController {
 			return pieceRepository.getPieces(numContrat, PageRequest.of(page - 1, size));
 		}
 	}
+	
+	@RequestMapping(value = "/getContratModel", method = RequestMethod.GET)
+	public Page<ContratModel> getContratModel(@RequestParam(name = "numContrat") long numContrat,
+			@RequestParam(name = "page", defaultValue = "1") int page,
+			@RequestParam(name = "size", defaultValue = "5") int size,
+			@RequestParam(name = "sortBy", required = false) String sortBy,
+			@RequestParam(name = "sortType", required = false) String sortType) {
+		if (sortBy != null) {
+
+			if ("asc".equals(sortType)) {
+				return contratModelRepository.getAllContratsModel(numContrat,
+						PageRequest.of(page - 1, size, Sort.by(sortBy).ascending()));
+
+			} else {
+				return contratModelRepository.getAllContratsModel(numContrat,
+						PageRequest.of(page - 1, size, Sort.by(sortBy).descending()));
+			}
+
+		} else {
+			return contratModelRepository.getAllContratsModel(numContrat, PageRequest.of(page - 1, size));
+		}
+	}
 
 	@RequestMapping(value = "/getEcheance", method = RequestMethod.GET)
 	public Page<Echeance> getEcheance(@RequestParam(name = "numContrat") long numContrat,
@@ -139,6 +173,74 @@ public class ContratController {
 		
 
 		return echeanceService.getEcheance(numContrat, page-1, size,sortBy,sortType);
+		
+	}
+	
+	@RequestMapping(value = "/getEcheanceNotLinked", method = RequestMethod.GET)
+	public Page<Echeance> getEcheanceNotLinked(@RequestParam(name = "numContrat") long numContrat,
+			@RequestParam(name = "page", defaultValue = "1") int page,
+			@RequestParam(name = "size", defaultValue = "5") int size,
+			@RequestParam(name = "sortBy", required = false) String sortBy,
+			@RequestParam(name = "sortType", required = false) String sortType) {
+		
+		return echeanceService.getEcheanceNotLinked(numContrat, page-1, size,sortBy,sortType);
+		
+		
+		
+	}
+	
+	@RequestMapping(value = "/getEcheancesNotLinked", method = RequestMethod.GET)
+	public Page<EcheanceDto> getEcheanceNotLinked(
+			@RequestParam(name = "date", required = false) String date,
+			@RequestParam(name = "page", defaultValue = "1") int page,
+			@RequestParam(name = "size", defaultValue = "5") int size,
+			@RequestParam(name = "sortBy", required = false) String sortBy,
+			@RequestParam(name = "sortType", required = false) String sortType) {
+		
+	
+		Page<Echeance> echeances= echeanceService.getEcheancesNotLinked(date,page-1, size,sortBy,sortType);
+		
+		List<EcheanceDto> echeancesDto=new ArrayList<EcheanceDto>();
+		 
+		 for(Echeance e :echeances.getContent()) {
+				EcheanceDto eto=new EcheanceDto();
+				eto.setId(e.getId());
+				eto.setAddedByUser(e.isAddedByUser());
+				eto.setDu(e.getDu());
+				eto.setAu(e.getAu());
+				ma.munisys.dto.Contrat c =new ma.munisys.dto.Contrat();
+				c.setNumContrat(e.getContrat().getNumContrat());
+				eto.setContrat(c);
+				eto.setCommentaire(e.getCommentaire());
+				eto.setNomModele(e.getNomModele());
+				eto.setMontant(e.getMontant());
+				eto.setMontantFacture(e.getMontantFacture());
+				eto.setMontantPrevision(e.getMontantPrevision());
+				eto.setMontantRestFacture(e.getMontantRestFacture());
+				eto.setAddedByUser(e.isAddedByUser());
+				eto.setDeletedByUser(e.isDeletedByUser());
+				eto.setCloture(e.getCloture());
+				eto.setPeriodeFacturation(e.getPeriodeFacturation());
+				eto.setOccurenceFacturation(e.getOccurenceFacturation());
+				
+				echeancesDto.add(eto);
+				
+			}
+			
+			Page<EcheanceDto> pageEcheance = new PageImpl<>(echeancesDto,  PageRequest.of(page, size), echeancesDto.size());
+			return pageEcheance;
+		
+	}
+	
+	@RequestMapping(value = "/getEcheanceLinked", method = RequestMethod.GET)
+	public Page<Echeance> getEcheanceLinked(@RequestParam(name = "numContrat") long numContrat,
+			@RequestParam(name = "page", defaultValue = "1") int page,
+			@RequestParam(name = "size", defaultValue = "5") int size,
+			@RequestParam(name = "sortBy", required = false) String sortBy,
+			@RequestParam(name = "sortType", required = false) String sortType) {
+		
+		
+		return echeanceService.getEcheanceLinked(numContrat, page-1, size,sortBy,sortType);
 		
 	}
 
@@ -257,6 +359,22 @@ public class ContratController {
 		return contratRepository.getDistinctClients();
 
 	}
+	
+	@RequestMapping(value = "/getBus", method = RequestMethod.GET)
+	public Collection<String> getBus() {
+
+		return contratRepository.getDistinctBus();
+
+	}
+	
+	
+	@RequestMapping(value = "/getAllEcheanceAFacturer", method = RequestMethod.GET)
+	public Page<Echeance> getAllEcheanceAFacturer(@RequestParam(name = "page", defaultValue = "1") int page,
+			@RequestParam(name = "size", defaultValue = "5") int size) {
+
+		return echeanceRepository.getAllEcheanceAFacturer(PageRequest.of(page - 1, size));
+
+	}
 
 	@RequestMapping(value = "/getCommentairesContrat", method = RequestMethod.GET)
 	public Page<CommentaireContrat> getCommentairesContrat(@RequestParam(name = "numContrat") Long numContrat,
@@ -287,6 +405,8 @@ public class ContratController {
 			@RequestParam(name = "pilote", required = false) String pilote,
 			@RequestParam(name = "nomPartenaire", required = false) String nomPartenaire,
 			@RequestParam(name = "sousTraiter", required = false) Boolean sousTraiter,
+			@RequestParam(name = "bu", required = false) String bu,
+			@RequestParam(name = "dateFinContrat", required = false) String dateFinContrat,
 			@RequestParam(name = "page", defaultValue = "1") int page,
 			@RequestParam(name = "size", defaultValue = "5") int size,
 			@RequestParam(name = "sortBy", required = false) String sortBy,
@@ -298,6 +418,21 @@ public class ContratController {
 		cs.setPilote(pilote);
 		cs.setSousTraiter(sousTraiter);
 		cs.setNumMarche(numMarche);
+		
+		
+		DateFormat sourceFormat = new SimpleDateFormat("dd/MM/yyyy");
+		
+		if(dateFinContrat!=null && !dateFinContrat.isEmpty()) {
+			try {
+				Date dateFinContrat1 = sourceFormat.parse(dateFinContrat);
+				cs.setDateFinContrat(dateFinContrat1);
+			} catch (ParseException e) {
+				cs.setDateFinContrat(null);
+			}
+		}
+		
+		
+		cs.setBu(bu);
 
 		return contratService.getContratByPredicate2(cs, page, size, sortBy, sortType);
 
@@ -308,7 +443,9 @@ public class ContratController {
 			@RequestParam(name = "numMarche", required = false) String numMarche,
 			@RequestParam(name = "pilote", required = false) String pilote,
 			@RequestParam(name = "nomPartenaire", required = false) String nomPartenaire,
-			@RequestParam(name = "sousTraiter", required = false) Boolean sousTraiter) {
+			@RequestParam(name = "sousTraiter", required = false) Boolean sousTraiter,
+			@RequestParam(name = "bu", required = false) String bu,
+			@RequestParam(name = "dateFinContrat", required = false) String dateFinContrat) {
 
 		ContratSearch cs = new ContratSearch();
 		cs.setMotCle(motCle);
@@ -316,6 +453,17 @@ public class ContratController {
 		cs.setPilote(pilote);
 		cs.setSousTraiter(sousTraiter);
 		cs.setNumMarche(numMarche);
+		cs.setBu(bu);
+		DateFormat sourceFormat = new SimpleDateFormat("dd/MM/yyyy");
+		if(dateFinContrat!=null && !dateFinContrat.isEmpty()) {
+			try {
+				Date dateFinContrat1 = sourceFormat.parse(dateFinContrat);
+				cs.setDateFinContrat(dateFinContrat1);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 
 		Collection<Contrat> contrats = contratService.getAllContratsWithPredicate(cs);
 
@@ -396,5 +544,15 @@ public class ContratController {
 			e.printStackTrace();
 		}
 	}
+
+	public ContratModelRepository getContratModelRepository() {
+		return contratModelRepository;
+	}
+
+	public void setContratModelRepository(ContratModelRepository contratModelRepository) {
+		this.contratModelRepository = contratModelRepository;
+	}
+	
+	
 
 }

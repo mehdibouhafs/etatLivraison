@@ -323,8 +323,8 @@ public class EtatProjetController {
 	}
 	
 	
-	@RequestMapping(value = "/updateProjetFromSAP", method = RequestMethod.GET)
-	public Projet clotureProjet(@RequestParam("codeProjet") String codeProjet,Authentication authentication) {
+	@RequestMapping(value = "/updateProjetFromSAP", method = RequestMethod.POST)
+	public Projet clotureProjet(@RequestBody String codeProjet,Authentication authentication) {
 		
 		return etatProjetService.loadSingleProjetFromSap(codeProjet);
 	}

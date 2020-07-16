@@ -42,6 +42,7 @@ import com.ibm.icu.util.GregorianCalendar;
 
 import ma.munisys.dao.AuthRepository;
 import ma.munisys.dao.CommentaireContratRepository;
+import ma.munisys.dao.ContratModelRepository;
 import ma.munisys.dao.ContratRepository;
 import ma.munisys.dao.ContratSpecification;
 import ma.munisys.dao.EcheanceRepository;
@@ -89,6 +90,9 @@ public class ContratServiceImp implements ContratService {
 	
 	@Autowired
 	private CommentaireContratRepository commentaireContratRepository;
+	
+	@Autowired
+	private ContratModelRepository contratModelRepository;
 
 	@Override
 	public Contrat saveContrat(Contrat contrat) {
@@ -224,6 +228,13 @@ public class ContratServiceImp implements ContratService {
 			
 			for (Map.Entry<Long, Contrat> entry : contrats.entrySet()) {
 				Contrat c =updateContratFromSap(entry.getValue());
+				c.setLastUpdate(new Date());
+				
+				Calendar ca= Calendar.getInstance();
+				int currentYear =ca.get(Calendar.YEAR);
+				int nbEcheances = echeanceRepository.getNbEcheanceAFacturer(entry.getKey(), currentYear);
+				c.setNbEcheancesNonFactureEnRetard(nbEcheances);
+				
 				contratRepository.save(c);
 			}
 			/*
@@ -715,5 +726,7 @@ public class ContratServiceImp implements ContratService {
 		commentaireContratRepository.deleteById(idCommentaire);
 		
 	}
+	
+
 
 }

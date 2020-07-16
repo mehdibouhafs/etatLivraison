@@ -30,6 +30,8 @@ public class ContratModel implements Serializable,Cloneable {
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	private String name;
+	
 	@Temporal(TemporalType.DATE)
 	@Column(name="cm_du")
 	private Date du;
@@ -226,6 +228,7 @@ public class ContratModel implements Serializable,Cloneable {
 					c.setDu(start.toDate());
 					c.setContratModel(this);
 					c.setCloture(false);
+					c.setNomModele(this.name);
 					DateTime dateBetween = start.plusMonths(nbMonthPeriod);
 					start = dateBetween;
 					c.setAu(start.plusDays(-1).toDate());
@@ -320,6 +323,16 @@ public class ContratModel implements Serializable,Cloneable {
 		} else if (!periodeFacturationLabel.equals(other.periodeFacturationLabel))
 			return false;
 		return true;
+	}
+
+
+	public String getName() {
+		return name;
+	}
+
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	

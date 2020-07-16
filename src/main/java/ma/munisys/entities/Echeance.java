@@ -28,9 +28,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-
 @Entity
-public class Echeance implements Serializable, Comparable<Echeance>,Comparator<Echeance> {
+public class Echeance implements Serializable, Comparable<Echeance>, Comparator<Echeance> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,47 +38,49 @@ public class Echeance implements Serializable, Comparable<Echeance>,Comparator<E
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date du;
-	
+
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date au;
-	
+
 	private Double montant;
-	
+
 	private Double montantPrevision;
-	
+
 	private PeriodeFacturation PeriodeFacturation;
-	
+
 	private OccurenceFacturation OccurenceFacturation;
-	
+
 	@ManyToOne
 	private Contrat contrat;
-	
+
 	private Double montantFacture;
-	
+
 	private Double montantRestFacture;
-	
+
 	private String factures;
-	
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "echeance")
 	private Set<FactureEcheance> factureEcheances = new HashSet<FactureEcheance>();
-	
+
 	@ManyToOne
 	private ContratModel contratModel;
-	
+
 	@ManyToOne
 	private CommentaireEcheance commentaire;
-	
+
 	private boolean cloture;
-	
+
 	private boolean addedByUser;
-	
+
 	private boolean deletedByUser;
-	
+
 	private String messageDelete;
 	
+	private String nomModele;
+
 	public Echeance() {
-		
+
 	}
 
 	public Long getId() {
@@ -105,6 +106,7 @@ public class Echeance implements Serializable, Comparable<Echeance>,Comparator<E
 	public void setAu(Date au) {
 		this.au = au;
 	}
+
 	@JsonIgnore
 	public Contrat getContrat() {
 		return contrat;
@@ -138,37 +140,50 @@ public class Echeance implements Serializable, Comparable<Echeance>,Comparator<E
 		OccurenceFacturation = occurenceFacturation;
 	}
 
-	
-	
-
 	public void calculMontantFacture() {
-		if(factureEcheances!=null) {
+		if (factureEcheances != null) {
 			Set<String> facts = new HashSet<>();
-			double c =0;
-			for(FactureEcheance f : factureEcheances) {
-				
-				if(!f.isCloture()) {
+			double c = 0;
+			for (FactureEcheance f : factureEcheances) {
+
+				if (!f.isCloture()) {
 					facts.add(f.getFacture().getNumFacture().toString());
 					c = c + f.getFacture().getMontantHT();
 				}
-				
+
 			}
 			this.montantFacture = c;
-			this.factures = "["+ String.join(",", facts)+"]";
-			if(this.montantFacture==null) {
+			this.factures = "[" + String.join(",", facts) + "]";
+			if (this.montantFacture == null) {
 				this.montantFacture = 0.0;
-				this.montantRestFacture = this.montantPrevision;
+				if (this.montant != null) {
+					this.montantRestFacture = this.montant;
+				}
+
+				if (this.montantPrevision != null) {
+					this.montantRestFacture = this.montantPrevision;
+				}
+
+			}
+
+			if (this.montantFacture != null && this.montant != null) {
+
+				this.montantRestFacture = this.montant - this.montantFacture;
+
+			}
+
+			if (this.montantFacture != null && this.montantPrevision != null) {
+
+				this.montantRestFacture = this.montantPrevision - this.montantFacture;
+
 			}
 			
-			if(this.montantFacture!=null && this.montantPrevision!=null) {
-				if(this.montantPrevision - this.montantFacture>0) {
-					this.montantRestFacture = this.montantPrevision - this.montantFacture;
-				}else {
-					this.montantRestFacture=0.0;
-				}
+			if(this.montantRestFacture!=null && this.montantRestFacture<0) {
+				this.montantRestFacture=0.0;
 			}
 		}
 	}
+
 	@JsonIgnore
 	public Set<FactureEcheance> getFactureEcheances() {
 		return factureEcheances;
@@ -209,29 +224,27 @@ public class Echeance implements Serializable, Comparable<Echeance>,Comparator<E
 	@Override
 	public int compareTo(Echeance o) {
 		if (getDu() == null || o.getDu() == null)
-		      return 0;
+			return 0;
 		int i = getDu().compareTo(o.getDu());
-		if(i!=0) {
+		if (i != 0) {
 			return i;
-		}
-		else {
+		} else {
 			return getAu().compareTo(o.getAu());
 		}
-		 
+
 	}
 
 	@Override
 	public int compare(Echeance o1, Echeance o2) {
 		if (o1.getDu() == null || o2.getDu() == null)
-		      return 0;
+			return 0;
 		int i = o1.getDu().compareTo(o2.getDu());
-		if(i!=0) {
+		if (i != 0) {
 			return i;
-		}
-		else {
+		} else {
 			return o1.getAu().compareTo(o2.getAu());
 		}
-		   
+
 	}
 
 	@JsonIgnore
@@ -324,15 +337,23 @@ public class Echeance implements Serializable, Comparable<Echeance>,Comparator<E
 	public String toString() {
 		String pattern = "dd/MM/yyyy";
 		DateFormat df = new SimpleDateFormat(pattern);
-		
-		return "Echeance [du=" + df.format(du) + ", au=" + df.format(au) + ", montant=" + montant + ", contratModel=" + contratModel + "]";
+
+		return "Echeance [du=" + df.format(du) + ", au=" + df.format(au) + ", montant=" + montant + ", contratModel="
+				+ contratModel + "]";
 	}
 
 	public void setFactureEcheances(Set<FactureEcheance> factureEcheances) {
 		this.factureEcheances = factureEcheances;
 	}
+
+	public String getNomModele() {
+		return nomModele;
+	}
+
+	public void setNomModele(String nomModele) {
+		this.nomModele = nomModele;
+	}
 	
 	
-	
-	
+
 }

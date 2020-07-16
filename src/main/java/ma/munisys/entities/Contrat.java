@@ -130,6 +130,14 @@ public class Contrat implements Serializable,Cloneable {
 	
 	private Date lastUpdate;
 	
+	private String bu;
+	
+	private boolean reconductionTacite;
+	
+	private String delaiPreavisResiliation;
+	
+	private Integer nbEcheancesNonFactureEnRetard;
+	
 	
 	public Contrat() {
 		this.factures = new HashSet<Facture>();
@@ -807,9 +815,54 @@ public class Contrat implements Serializable,Cloneable {
 	public void setContratsModel(Set<ContratModel> contratsModel) {
 		this.contratsModel = contratsModel;
 	}
-	
-	
-	
+
+
+
+	public String getBu() {
+		return bu;
+	}
+
+
+
+	public void setBu(String bu) {
+		this.bu = bu;
+	}
+
+
+
+	public boolean isReconductionTacite() {
+		return reconductionTacite;
+	}
+
+
+
+	public void setReconductionTacite(boolean reconductionTacite) {
+		this.reconductionTacite = reconductionTacite;
+	}
+
+
+
+	public String getDelaiPreavisResiliation() {
+		return delaiPreavisResiliation;
+	}
+
+
+
+	public void setDelaiPreavisResiliation(String delaiPreavisResiliation) {
+		this.delaiPreavisResiliation = delaiPreavisResiliation;
+	}
+
+
+
+	public int getNbEcheancesNonFactureEnRetard() {
+		return nbEcheancesNonFactureEnRetard;
+	}
+
+
+
+	public void setNbEcheancesNonFactureEnRetard(int nbEcheancesNonFactureEnRetard) {
+		this.nbEcheancesNonFactureEnRetard = nbEcheancesNonFactureEnRetard;
+	}
 	
 	
 	

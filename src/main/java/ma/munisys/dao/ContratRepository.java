@@ -40,6 +40,9 @@ public interface ContratRepository extends JpaRepository<Contrat,Long>,JpaSpecif
 	@Query("select distinct p.nomPartenaire from Contrat p where p.nomPartenaire IS NOT NULL and p.nomPartenaire!='' and p.cloture = 0 order by p.nomPartenaire ASC")
 	public Collection<String> getDistinctClients();
 	
+	@Query("select distinct p.bu from Contrat p where p.bu IS NOT NULL and p.bu!='' and p.cloture = 0 order by p.bu ASC")
+	public Collection<String> getDistinctBus();
+	
 	@Query("select distinct p.pilote from Contrat p where p.pilote IS NOT NULL and p.pilote!='' and p.cloture = 0 order by p.pilote ASC")
 	public Collection<String> getDistinctPilotes();
 	@Query("select new ma.munisys.dto.StatisticContrat(sum(p.montantContrat),sum(p.montantFactureAn),sum(p.montantRestFactureAn),sum(p.montantProvisionFactureInfAnneeEnCours),sum(p.montantProvisionAFactureInfAnneeEnCours)) from Contrat p where p.cloture = 0")

@@ -1,6 +1,7 @@
 package ma.munisys.dao;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -78,6 +79,14 @@ public class ContratSpecification implements Specification<Contrat> {
         }
         if(contratSearch.getSousTraiter()!=null) {
             predicates.add(cb.equal(root.get("sousTraiter"),contratSearch.getSousTraiter()));
+        }
+        
+        if(contratSearch.getBu()!=null) {
+            predicates.add(cb.equal(root.get("bu"),contratSearch.getBu()));
+        }
+        
+        if(contratSearch.getDateFinContrat()!=null) {
+            predicates.add(cb.lessThanOrEqualTo(root.<Date>get("au"),contratSearch.getDateFinContrat()));
         }
 		
 		return cb.and(predicates.toArray(new Predicate[predicates.size()]));
