@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: WebEtat
+Implementation-Version: 2.1.8.RELEASE
+Built-By: ohaiki
+Implementation-Vendor-Id: com.example
+Build-Jdk: 1.8.0_231
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/WebEtatMgouvDev
+Created-By: Maven Integration for Eclipse
+
