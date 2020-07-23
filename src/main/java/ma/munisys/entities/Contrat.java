@@ -134,9 +134,15 @@ public class Contrat implements Serializable,Cloneable {
 	
 	private boolean reconductionTacite;
 	
-	private String delaiPreavisResiliation;
-	
 	private Integer nbEcheancesNonFactureEnRetard;
+	
+	private String statutContrat;
+	
+	//mois
+	private Integer delaiPreavis;
+	
+	@Column(columnDefinition = "TEXT")
+	private String info;
 	
 	
 	public Contrat() {
@@ -842,18 +848,6 @@ public class Contrat implements Serializable,Cloneable {
 
 
 
-	public String getDelaiPreavisResiliation() {
-		return delaiPreavisResiliation;
-	}
-
-
-
-	public void setDelaiPreavisResiliation(String delaiPreavisResiliation) {
-		this.delaiPreavisResiliation = delaiPreavisResiliation;
-	}
-
-
-
 	public int getNbEcheancesNonFactureEnRetard() {
 		return nbEcheancesNonFactureEnRetard;
 	}
@@ -863,40 +857,48 @@ public class Contrat implements Serializable,Cloneable {
 	public void setNbEcheancesNonFactureEnRetard(int nbEcheancesNonFactureEnRetard) {
 		this.nbEcheancesNonFactureEnRetard = nbEcheancesNonFactureEnRetard;
 	}
-	
-	
-	
-	
-	
 
 
 
-	
-	
-	
-	
-	
-	
-	
-	
+	public String getStatutContrat() {
+		return statutContrat;
+	}
 
 
 
-	
-
-
-	
-
-	
+	public void setStatutContrat(String statutContrat) {
+		this.statutContrat = statutContrat;
+	}
 
 
 
+	public void setNbEcheancesNonFactureEnRetard(Integer nbEcheancesNonFactureEnRetard) {
+		this.nbEcheancesNonFactureEnRetard = nbEcheancesNonFactureEnRetard;
+	}
 
-	
 
-	
-	
-	
+
+	public String getInfo() {
+		return info;
+	}
+
+
+
+	public void setInfo(String info) {
+		this.info = info;
+	}
+
+
+
+	public Integer getDelaiPreavis() {
+		return delaiPreavis;
+	}
+
+
+
+	public void setDelaiPreavis(Integer delaiPreavis) {
+		this.delaiPreavis = delaiPreavis;
+	}
 	
 	
 

@@ -19,7 +19,9 @@ public interface EcheanceService {
 	
 	public int addNewContratModel(Long numContrat, Echeance e);
 	
-	public void deleteEcheance(Long idEcheance);
+	public void deleteModele(Long idModele);
+	
+	public void deleteEcheance(Long idEcheance,boolean byUser);
 	
 	public Collection<Echeance> getAllEcheancesFromContrat(Long numContrat);
 	

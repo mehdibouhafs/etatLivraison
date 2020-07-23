@@ -61,6 +61,8 @@ public class ContratModel implements Serializable,Cloneable {
 	private String occurenceFacturationLabel;
 	
 	private Boolean cloture;
+	
+	private Boolean deleteByUser;
 		
 	public ContratModel() {
 		this.echeances = new HashSet<Echeance>();
@@ -333,6 +335,16 @@ public class ContratModel implements Serializable,Cloneable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+
+	public Boolean getDeleteByUser() {
+		return deleteByUser;
+	}
+
+
+	public void setDeleteByUser(Boolean deleteByUser) {
+		this.deleteByUser = deleteByUser;
 	}
 
 	

@@ -78,6 +78,10 @@ public class Echeance implements Serializable, Comparable<Echeance>, Comparator<
 	private String messageDelete;
 	
 	private String nomModele;
+	
+	private Boolean bc;
+	
+	private Boolean majContrat;
 
 	public Echeance() {
 
@@ -144,8 +148,9 @@ public class Echeance implements Serializable, Comparable<Echeance>, Comparator<
 		if (factureEcheances != null) {
 			Set<String> facts = new HashSet<>();
 			double c = 0;
+			
+			
 			for (FactureEcheance f : factureEcheances) {
-
 				if (!f.isCloture()) {
 					facts.add(f.getFacture().getNumFacture().toString());
 					c = c + f.getFacture().getMontantHT();
@@ -178,7 +183,7 @@ public class Echeance implements Serializable, Comparable<Echeance>, Comparator<
 
 			}
 			
-			if(this.montantRestFacture!=null && this.montantRestFacture<0) {
+			if(this.montantRestFacture!=null && this.montantRestFacture<0  ) {
 				this.montantRestFacture=0.0;
 			}
 		}
@@ -352,6 +357,22 @@ public class Echeance implements Serializable, Comparable<Echeance>, Comparator<
 
 	public void setNomModele(String nomModele) {
 		this.nomModele = nomModele;
+	}
+
+	public Boolean getBc() {
+		return bc;
+	}
+
+	public void setBc(Boolean bc) {
+		this.bc = bc;
+	}
+
+	public Boolean getMajContrat() {
+		return majContrat;
+	}
+
+	public void setMajContrat(Boolean majContrat) {
+		this.majContrat = majContrat;
 	}
 	
 	

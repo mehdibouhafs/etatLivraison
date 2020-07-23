@@ -210,6 +210,10 @@ public class ContratController {
 				eto.setAu(e.getAu());
 				ma.munisys.dto.Contrat c =new ma.munisys.dto.Contrat();
 				c.setNumContrat(e.getContrat().getNumContrat());
+				c.setNom(e.getContrat().getDescription());
+				c.setClient(e.getContrat().getNomPartenaire());
+				c.setPilote(e.getContrat().getPilote());
+				c.setNumMarche(e.getContrat().getNumMarche());
 				eto.setContrat(c);
 				eto.setCommentaire(e.getCommentaire());
 				eto.setNomModele(e.getNomModele());
@@ -503,8 +507,13 @@ public class ContratController {
 
 	@RequestMapping(value = "/deleteEcheance/{idEcheance}", method = RequestMethod.DELETE)
 	public void deleteEcheance(@PathVariable("idEcheance") String idEcheance) {
-		echeanceService.deleteEcheance(Long.parseLong(idEcheance));
+		echeanceService.deleteEcheance(Long.parseLong(idEcheance),true);
 
+	}
+	
+	@RequestMapping(value = "/deleteModele/{idModele}", method = RequestMethod.DELETE)
+	public void deleteEcheance(@PathVariable("idModele") Long idModele) {
+		echeanceService.deleteModele(idModele);
 	}
 
 	@RequestMapping(value = "/editFactureEcheance/{numContrat}", method = RequestMethod.PUT)

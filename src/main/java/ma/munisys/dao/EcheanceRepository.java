@@ -74,7 +74,23 @@ public interface EcheanceRepository extends JpaRepository<Echeance,Long>,JpaSpec
 	public Collection<Echeance> getEcheancesNotLinked(@Param("y")int anneEcheance);
 	
 	
+	@Query("select f from Echeance f where f.contratModel.id =:x and f.cloture = false order by f.du DESC")
+	public Page<Echeance> getEcheanceByModele(@Param("x") Long numContrat ,Pageable pageable);
 	
+	
+	@Query("select f from Echeance f fetch all properties where f.contratModel.id =:x and f.cloture = false order by f.du DESC")
+	public Collection<Echeance> getEcheanceByModele(@Param("x") Long idModele);
+	
+	
+	@Query("select f from Echeance f where f.contratModel.id =:x  and  f.cloture = false and (f.factures is null or f.factures = '[]' or f.factures='') and f.au<=:date order by f.du DESC")
+	public Page<Echeance> getEcheancesNotLinkedDateParamByModele(@Param("x") Long idModele,@Param("date") Date date,Pageable pageable);
+	
+	
+	@Query("select f from Echeance f where f.contratModel.id =:x and  f.cloture = false and (f.factures is null or f.factures = '[]' or f.factures='') and f.au<=:date order by f.du DESC")
+	public Collection<Echeance> getEcheancesNotLinkedDateParamByModele(@Param("x") Long idModele,@Param("date") Date date);
+	
+	@Query("select f from Echeance f where f.contratModel.id =:x  and f.cloture = false and (f.factures is null or f.factures = '[]'  or f.factures='' )  and f.au<=:date")
+	public Page<Echeance> getEcheancesNotLinkedWithoutOrderDateParamByModele(@Param("x") Long idModele,@Param("date") Date date,Pageable pageable);
 	
 	
 }

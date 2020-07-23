@@ -62,7 +62,6 @@ public class EcheanceServiceImpl implements EcheanceService {
 
 		if (idCommentaire == 0) {
 			c.setCommentaire(null);
-			;
 		} else {
 			c.setCommentaire(new CommentaireEcheance(idCommentaire));
 		}
@@ -170,7 +169,7 @@ public class EcheanceServiceImpl implements EcheanceService {
 	}
 
 	@Override
-	public void deleteEcheance(Long idEcheance) {
+	public void deleteEcheance(Long idEcheance,boolean byUser) {
 
 		Collection<FactureEcheance> factureEcheances = factureEcheanceRepository.getFactureEcheance(idEcheance);
 
@@ -189,7 +188,9 @@ public class EcheanceServiceImpl implements EcheanceService {
 
 		if (e != null) {
 			e.setCloture(true);
-			e.setDeletedByUser(true);
+			if(byUser) {
+				e.setDeletedByUser(true);
+			}
 			echeanceRepository.save(e);
 		}
 
@@ -337,6 +338,30 @@ public class EcheanceServiceImpl implements EcheanceService {
 			}
 		}
 		
+		
+	}
+
+	@Override
+	public void deleteModele(Long idModele) {
+		
+		ContratModel model = contratModelRepository.findById(idModele).orElse(null);
+		
+		if(model!=null) {
+			model.setCloture(true);
+			model.setDeleteByUser(true);
+			
+			Collection<Echeance> echeances = echeanceRepository.getEcheanceByModele(model.getId());
+			if(!echeances.isEmpty()) {
+				for(Echeance e : echeances) {
+					deleteEcheance(e.getId(),false);
+				
+					
+
+	
+				}
+			}
+			
+		}
 		
 	}
 

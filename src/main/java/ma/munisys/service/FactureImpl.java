@@ -386,6 +386,7 @@ public class FactureImpl implements FactureService {
 
 					e2.getFactureEcheances().add(factureEcheance);
 					e2.calculMontantFacture();
+					e2.setMontantRestFacture(0.0);
 					factureEcheance.setEcheance(e2);
 					echeanceRepository.save(e2);
 				}
@@ -512,6 +513,8 @@ public class FactureImpl implements FactureService {
 						fe.setFacture(f);
 						fe.setMontant(f.getMontantHT());
 						fe.setEcheance(e);
+						e.setMontantRestFacture(0.0);
+						echeanceRepository.saveAndFlush(e);
 						fe.setCloture(false);
 
 						if (lastFactureEcheance == null || !lastFactureEcheance.isAffectedByUser()) {
