@@ -103,6 +103,7 @@ public class StockProjetServiceImp implements StockProjetService {
 	        return stockProjetRepository.findAll(StockProjetSpecification.byCommercial(com));
 	       }
 	       
+
 	       
 	       // filtre par Chef projet uniquement.  G
 	       if(numLot.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && magasin.equals("undefined" ) && !com.equals("undefined") && !cp.equals("undefined")){
@@ -320,7 +321,31 @@ public class StockProjetServiceImp implements StockProjetService {
 								        return stockProjetRepository.findAll(StockProjetSpecification.byChefProjet(cp).and(StockProjetSpecification.byAnnee(annee)));
 								       }
 							       
+								       // filtre par commercial uniquement.  G
+								       if(numLot.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && magasin.equals("undefined" ) && !com.equals("undefined") && !cp.equals("undefined") && type.equals("undefined")){
+
+								        return stockProjetRepository.findAll(StockProjetSpecification.byCommercial(com).and(StockProjetSpecification.byChefProjet(cp)));
+								       }
 							      
+								       // filtre par commercial uniquement.  G
+								       if(numLot.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") && magasin.equals("undefined" ) && !com.equals("undefined") && !cp.equals("undefined")){
+
+								        return stockProjetRepository.findAll(StockProjetSpecification.byCommercial(com).and(StockProjetSpecification.byChefProjet(cp)).and(StockProjetSpecification.byClient(client)));
+								       }
+								       
+								       // filtre par commercial uniquement.  G
+								       if(numLot.equals("undefined") && !client.equals("undefined") && annee.equals("undefined") && magasin.equals("undefined" ) && !com.equals("undefined") && cp.equals("undefined") && !type.equals("undefined")){
+
+								        return stockProjetRepository.findAll(StockProjetSpecification.byCommercial(com).and(StockProjetSpecification.byType(type)).and(StockProjetSpecification.byClient(client)));
+								       }
+								       
+								       // filtre par commercial uniquement.  G
+								       if(numLot.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && magasin.equals("undefined" ) && !com.equals("undefined") && !cp.equals("undefined") && !type.equals("undefined")){
+
+								        return stockProjetRepository.findAll(StockProjetSpecification.byCommercial(com).and(StockProjetSpecification.byType(type)).and(StockProjetSpecification.byChefProjet(cp)));
+								       }
+								       
+								       
 								        // filtre par cdp et code projet.  FG
 									       if(!numLot.equals("undefined") && client.equals("undefined") && annee.equals("undefined") && magasin.equals("undefined") && com.equals("undefined") && !cp.equals("undefined")){
 
