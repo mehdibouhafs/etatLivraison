@@ -660,6 +660,7 @@ public class EtatProjetServiceImpl implements EtatProjetService {
        Map<String,String> commentairesInfoProjet =  this.importInfoFournisseurFromSAP();
        ResultSet rs1 = null;
        try {
+    	   System.out.println("OPEN DEP PROJECT");
             String req1 = "SELECT * FROM DB_MUNISYS.\"V_OPEN_DEP_PRJ\"";
              rs1 = DBA.request(req1);
             java.sql.ResultSetMetaData rsmd = rs1.getMetaData();
