@@ -70,6 +70,16 @@ public class ProduitSpecification {
 	     };
 	  }
 	
+<<<<<<< HEAD
+=======
+	public static Specification<Produit> byType(String type) {
+		
+	     return (root, query, cb) -> {
+	    	 return cb.equal(root.get("type_magasin"), type);
+	     };
+	  }
+	
+>>>>>>> munisysRepo/main
 	
 
 }

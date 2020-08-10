@@ -12,7 +12,11 @@ public interface StockProjetService {
 
 	
 	
+<<<<<<< HEAD
 	public Collection<StockProjet> getStockProjetByFiltre(String numLot, String client, String annee, String magasin,String com,String cp);
+=======
+	public Collection<StockProjet> getStockProjetByFiltre(String numLot, String client, String annee, String magasin,String com,String cp,String Type);
+>>>>>>> munisysRepo/main
 
 	public Collection<StockProjet>  getStockParProjet();
 	

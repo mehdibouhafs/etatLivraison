@@ -48,8 +48,13 @@ public class ProduitController {
 	private StockProjetService stockProjetService;
 
 	@RequestMapping(value="/getAllStockByFiltre",method=RequestMethod.GET)
+<<<<<<< HEAD
 	public Collection<Produit> getAllStockByFiltre( @RequestParam("nature") String nature,@RequestParam("sousNature") String sousNature,@RequestParam("domaine") String domaine,@RequestParam("sousDomaine") String sousDomaine,@RequestParam("numLot")String numLot,@RequestParam("client")String client,@RequestParam("nomMagasin")String nomMagasin) {
 		return produitService.getProduitByPredicate(nature, sousNature, domaine, sousDomaine, numLot, client, nomMagasin);
+=======
+	public Collection<Produit> getAllStockByFiltre( @RequestParam("nature") String nature,@RequestParam("sousNature") String sousNature,@RequestParam("domaine") String domaine,@RequestParam("sousDomaine") String sousDomaine,@RequestParam("numLot")String numLot,@RequestParam("client")String client,@RequestParam("nomMagasin")String nomMagasin,@RequestParam("type") String type) {
+		return produitService.getProduitByPredicate(nature, sousNature, domaine, sousDomaine, numLot, client, nomMagasin,type);
+>>>>>>> munisysRepo/main
 	}
 	
 	@RequestMapping(value="/getDistinctLot",method=RequestMethod.GET)
@@ -57,6 +62,13 @@ public class ProduitController {
 		return produitRepository.getDistinctLot();
 	}
 	
+<<<<<<< HEAD
+=======
+	@RequestMapping(value="/getDistinctType",method=RequestMethod.GET)
+	public Collection<String> getAllType() {
+		return produitRepository.getDistinctType();
+	}
+>>>>>>> munisysRepo/main
 	
 	
 	@RequestMapping(value = "/produits", method = RequestMethod.PUT)

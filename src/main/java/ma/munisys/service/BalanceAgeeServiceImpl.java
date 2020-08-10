@@ -107,7 +107,19 @@ public class BalanceAgeeServiceImpl implements BalanceAgeeService {
 		
 	}
 	
+<<<<<<< HEAD
 
+=======
+	public Collection<String> FindByStatus(String[] status){
+		
+		return balanceAgeeRepo.FindByStatus(status);
+	}
+
+	public Collection<BalanceAgee> FindByAM(String client,String cr,String am){
+		
+		return balanceAgeeRepo.FindByAM(am);
+	}
+>>>>>>> munisysRepo/main
 
 
 

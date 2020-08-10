@@ -22,6 +22,7 @@ public interface StockProjetRepository extends JpaRepository<StockProjet,Long>,J
 	@Query(value="SELECT p from StockProjet p ORDER BY annee desc")
 	public Collection<StockProjet> getStockProjet();
 	
+<<<<<<< HEAD
 	@Query(value="SELECT p from StockProjet p  where p.client = :client OR p.num_lot = :num_lot or p.annee= :annee  or p.commercial= :com or p.chef_projet = :cp ORDER BY annee desc")
 	public Collection<StockProjet> getStockProjetByFiltre(@Param("num_lot") String num_lot,@Param("client") String client, @Param("annee") String annee,@Param("com") String com, @Param("cp") String cp);
 
@@ -33,5 +34,18 @@ public interface StockProjetRepository extends JpaRepository<StockProjet,Long>,J
 	
 	@Query(value="select p.nature, REPLACE(CONVERT(varchar, CONVERT(money, Round(SUM(p.montant),2)), 1), ',', ' ') from produits p where p.num_lot = :numLot  Group by p.nature",nativeQuery=true)
 	public List<String> getMontantByNature(@Param("numLot") String numLot);
+=======
+	@Query(value="SELECT p from StockProjet p  where p.client = :client OR p.num_lot = :num_lot or p.annee= :annee or p.type_magasin = :magasin  or p.commercial= :com or p.chef_projet = :cp ORDER BY annee desc")
+	public Collection<StockProjet> getStockProjetByFiltre(@Param("num_lot") String num_lot,@Param("client") String client, @Param("annee") String annee,@Param("magasin") String magasin,@Param("com") String com, @Param("cp") String cp);
+
+	/*@Query(value="SELECT p from StockProjet p  where (p.client = :client or p.annee= :annee or p.commercial = :com OR p.num_lot = :num_lot or p.chef_projet = :cp ) and (p.magasin = 'Stock commercial' OR p.magasin = 'Rabat - stock commercial') ORDER BY annee desc")
+	public Collection<StockProjet> getStockProjetByFiltre2(@Param("num_lot") String num_lot,@Param("client") String client, @Param("annee") String annee, @Param("com") String com, @Param("cp") String cp);
+	*/
+	/*@Query(value="SELECT p from StockProjet p  where p.client = :client OR p.num_lot = :num_lot or p.annee= :annee or p.commercial = :com or p.chef_projet = :cp or p.type_magasin = 'Stock commercial' OR p.magasin = 'Rabat - stock commercial' ORDER BY annee desc")
+	public Collection<StockProjet> getStockProjetByFiltre3(@Param("num_lot") String num_lot,@Param("client") String client, @Param("annee") String annee, @Param("com") String com, @Param("cp") String cp);
+	*/
+	@Query(value="select p.nature, REPLACE(CONVERT(varchar, CONVERT(money, Round(SUM(p.montant),2)), 1), ',', ' ') from produits p where p.num_lot = :numLot and p.type_magasin = :magasin Group by p.nature",nativeQuery=true)
+	public List<String> getMontantByNature(@Param("numLot") String numLot,@Param("magasin") String magasin);
+>>>>>>> munisysRepo/main
 
 }

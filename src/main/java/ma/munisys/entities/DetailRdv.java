@@ -20,6 +20,13 @@ public class DetailRdv {
 	
 	private String marque;
 	
+<<<<<<< HEAD
+=======
+	private double prixAchat;
+	
+	private double prixVente;
+	
+>>>>>>> munisysRepo/main
 	private Double montantAchat;
 	
 	private Double montantVente;
@@ -39,6 +46,13 @@ public class DetailRdv {
 	
 	private Double montantLNF;
 	
+<<<<<<< HEAD
+=======
+	private String codeFrs;
+	
+	private String Frs;
+	
+>>>>>>> munisysRepo/main
 	public DetailRdv() {
 		
 	}
@@ -186,6 +200,43 @@ public class DetailRdv {
 	public void setMarque(String marque) {
 		this.marque = marque;
 	}
+<<<<<<< HEAD
+=======
+
+	public double getPrixAchat() {
+		return prixAchat;
+	}
+
+	public void setPrixAchat(double prixAchat) {
+		this.prixAchat = prixAchat;
+	}
+
+	public double getPrixVente() {
+		return prixVente;
+	}
+
+	public void setPrixVente(double prixVente) {
+		this.prixVente = prixVente;
+	}
+
+	public String getCodeFrs() {
+		return codeFrs;
+	}
+
+	public void setCodeFrs(String codeFrs) {
+		this.codeFrs = codeFrs;
+	}
+
+	public String getFrs() {
+		return Frs;
+	}
+
+	public void setFrs(String frs) {
+		Frs = frs;
+	}
+	
+	
+>>>>>>> munisysRepo/main
 	
 
 }

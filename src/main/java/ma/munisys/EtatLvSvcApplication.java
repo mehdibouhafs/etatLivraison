@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package ma.munisys;
 
 import java.sql.ResultSetMetaData;
