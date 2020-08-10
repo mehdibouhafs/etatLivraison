@@ -454,6 +454,64 @@ public class UploadController {
 		return null;
 
 	}
+	
+	@RequestMapping(value = "/exportEcheancesNotLinkedDelay", method = RequestMethod.GET)
+	public ResponseEntity<Resource> exportEcheanceNotLinkedDelay(
+			@RequestParam(name = "date", required = false) String date) {
+
+		DateFormat sourceFormat = new java.text.SimpleDateFormat("dd/MM/yyyy");
+
+		Calendar c = Calendar.getInstance();
+
+		Collection<Echeance> echeances = null;
+		try {
+
+			if (date != null && date != "") {
+
+				Date date1 = sourceFormat.parse(date);
+				echeances = echeanceRepository.getEcheancesNotLinkedDateParamDelay(date1);
+
+			} else {
+				echeances = echeanceRepository.getEcheancesNotLinkedDelay(c.get(Calendar.YEAR),c.getTime());
+			}
+
+			XSSFWorkbook workbook = null;
+			Resource file = null;
+			String fileName = null;
+			/*
+			 * Here I got the object structure (pulling it from DAO layer) that I want to be
+			 * export as part of Excel.
+			 */
+			// vehicleLastSeenByCampaignReport.setCvsSummary(cvsSummary);
+
+			/* Logic to Export Excel */
+			LocalDateTime localDate = LocalDateTime.now();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm");
+			fileName = "EtatContrat" + "-" + localDate.format(formatter) + ".xlsx";
+			// response.setHeader("Content-Disposition", "attachment; filename=" +
+			// fileName);
+
+			OutputStream out;
+			workbook = (XSSFWorkbook) storageService.generateWorkBookEcheance(new ArrayList<>(echeances));
+
+			FileOutputStream fileOut = new FileOutputStream("upload-dir/" + fileName);
+			workbook.write(fileOut);
+			fileOut.close();
+			workbook.close();
+			file = storageService.loadFile(fileName);
+
+			/* Export Excel logic end */
+
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"").body(file);
+
+		} catch (ParseException | IOException e) {
+			LOGGER.error(e);
+		}
+
+		return null;
+
+	}
 
 	@PostMapping("/exportStockExcel")
 	@ResponseBody

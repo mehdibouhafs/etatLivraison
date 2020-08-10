@@ -25,6 +25,7 @@ public interface FactureService {
 	
 	public Page<FactureEcheance> getFactureEcheance(Long numContrat ,int page,int size,String sortBy,String sortType);
  	
+	public FactureEcheance genereateEcheanceAutomatique(Long numContrat,FactureEcheance factureEcheance);
 	
 	
 	

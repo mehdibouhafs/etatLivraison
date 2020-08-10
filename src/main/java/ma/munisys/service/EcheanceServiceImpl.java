@@ -44,7 +44,7 @@ public class EcheanceServiceImpl implements EcheanceService {
 
 	@Autowired
 	private FactureService factureService;
-	
+
 	@Autowired
 	private ContratRepository contratRepository;
 
@@ -105,17 +105,17 @@ public class EcheanceServiceImpl implements EcheanceService {
 			ContratModel cm1 = contratModelRepository.save(cm);
 
 			List<Echeance> ecs = cm1.generateEcheanceModele();
-			
-			List<Echeance> newEcheances =new ArrayList<Echeance>();
+
+			List<Echeance> newEcheances = new ArrayList<Echeance>();
 
 			Collection<Echeance> echeances = echeanceRepository.getAllEcheancesFromContrat(numContrat);
 
 			if (ecs != null && !ecs.isEmpty()) {
-				
+
 				for (Echeance ec : ecs) {
-					boolean add =true;
+					boolean add = true;
 					for (Echeance e1 : echeances) {
-						
+
 						if (e1.getDu() != null && e1.getAu() != null && ec.getDu() != null && ec.getDu() != null
 								&& e1.getDu().compareTo(ec.getDu()) == 0 && e1.getAu().compareTo(ec.getAu()) == 0) {
 							if ((e1.getMontant() != null && ec.getMontant() != null
@@ -126,7 +126,7 @@ public class EcheanceServiceImpl implements EcheanceService {
 								break;
 
 							}
-							
+
 							if ((e1.getMontantPrevision() != null && ec.getMontantPrevision() != null
 									&& Double.compare(e1.getMontantPrevision(), ec.getMontantPrevision()) == 0)
 									|| (e1.getMontantPrevision() == null && ec.getMontantPrevision() == null)) {
@@ -134,28 +134,27 @@ public class EcheanceServiceImpl implements EcheanceService {
 								break;
 							}
 						}
-						
-						
+
 					}
-					
-					if(add) {
+
+					if (add) {
 						newEcheances.add(ec);
 					}
-					
+
 				}
-				
+
 			}
 
 			echeanceRepository.saveAll(newEcheances);
 
 			factureService.loadFactureFromSapByContrat(numContrat);
-			
-			Calendar ca= Calendar.getInstance();
-			int currentYear =ca.get(Calendar.YEAR);
-			
+
+			Calendar ca = Calendar.getInstance();
+			int currentYear = ca.get(Calendar.YEAR);
+
 			Contrat contrat = this.contratRepository.findById(numContrat).orElse(null);
-			if(contrat!=null) {
-				int nbEcheances = this.echeanceRepository.getNbEcheanceAFacturer(numContrat, currentYear);
+			if (contrat != null) {
+				int nbEcheances = this.echeanceRepository.getNbEcheanceAFacturer(numContrat, currentYear, ca.getTime());
 				contrat.setNbEcheancesNonFactureEnRetard(nbEcheances);
 			}
 			this.contratRepository.save(contrat);
@@ -169,7 +168,7 @@ public class EcheanceServiceImpl implements EcheanceService {
 	}
 
 	@Override
-	public void deleteEcheance(Long idEcheance,boolean byUser) {
+	public void deleteEcheance(Long idEcheance, boolean byUser) {
 
 		Collection<FactureEcheance> factureEcheances = factureEcheanceRepository.getFactureEcheance(idEcheance);
 
@@ -188,10 +187,28 @@ public class EcheanceServiceImpl implements EcheanceService {
 
 		if (e != null) {
 			e.setCloture(true);
-			if(byUser) {
+			if (byUser) {
 				e.setDeletedByUser(true);
 			}
 			echeanceRepository.save(e);
+
+			// cloturation du modele une fois il n'est pas lié à aucune echeances
+			if (e.getContratModel() != null) {
+
+				Long idModele = e.getContratModel().getId();
+
+				Collection<Echeance> echeances = echeanceRepository.getEcheanceByModele(e.getContratModel().getId());
+				if (echeances.isEmpty()) {
+
+					ContratModel cm = this.contratModelRepository.findById(idModele).orElse(null);
+					if (cm != null) {
+						cm.setCloture(false);
+						contratModelRepository.save(cm);
+					}
+
+				}
+			}
+
 		}
 
 	}
@@ -205,25 +222,44 @@ public class EcheanceServiceImpl implements EcheanceService {
 	}
 
 	@Override
-	public Page<Echeance> getEcheance(Long numContrat, int page, int size, String sortBy, String sortType) {
+	public Page<Echeance> getEcheance(Long numContrat,String nameModele, int page, int size, String sortBy, String sortType) {
 		Calendar cal = Calendar.getInstance();
 		int year = cal.get(Calendar.YEAR);
 
-		if (sortBy != null) {
+		if(nameModele==null) {
+			if (sortBy != null) {
 
-			if ("asc".equals(sortType)) {
-				return echeanceRepository.getEcheanceWithoutOrder(numContrat, year,
-						PageRequest.of(page, size, Sort.by(sortBy).ascending()));
+				if ("asc".equals(sortType)) {
+					return echeanceRepository.getEcheanceWithoutOrder(numContrat, year,
+							PageRequest.of(page, size, Sort.by(sortBy).ascending()));
+
+				} else {
+					return echeanceRepository.getEcheanceWithoutOrder(numContrat, year,
+							PageRequest.of(page, size, Sort.by(sortBy).descending()));
+				}
 
 			} else {
-				return echeanceRepository.getEcheanceWithoutOrder(numContrat, year,
-						PageRequest.of(page, size, Sort.by(sortBy).descending()));
+
+				return echeanceRepository.getEcheance(numContrat, year, PageRequest.of(page, size));
 			}
+		}else {
+			if (sortBy != null) {
 
-		} else {
+				if ("asc".equals(sortType)) {
+					return echeanceRepository.getEcheanceWithoutOrderByModeleName(numContrat,nameModele, year,
+							PageRequest.of(page, size, Sort.by(sortBy).ascending()));
 
-			return echeanceRepository.getEcheance(numContrat, year, PageRequest.of(page, size));
+				} else {
+					return echeanceRepository.getEcheanceWithoutOrderByModeleName(numContrat,nameModele, year,
+							PageRequest.of(page, size, Sort.by(sortBy).descending()));
+				}
+
+			} else {
+
+				return echeanceRepository.getEcheanceByModeleName(numContrat,nameModele, year, PageRequest.of(page, size));
+			}
 		}
+		
 	}
 
 	@Override
@@ -246,125 +282,327 @@ public class EcheanceServiceImpl implements EcheanceService {
 	}
 
 	@Override
-	public Page<Echeance> getEcheanceNotLinked(Long numContrat, int page, int size, String sortBy, String sortType) {
+	public Page<Echeance> getEcheanceNotLinked(Long numContrat,String nameModele, int page, int size, String sortBy, String sortType) {
 		Calendar cal = Calendar.getInstance();
 		int year = cal.get(Calendar.YEAR);
 
-		if (sortBy != null) {
-
-			if ("asc".equals(sortType)) {
-				return echeanceRepository.getEcheanceNotLinkedWithoutOrder(numContrat, year,
-						PageRequest.of(page, size, Sort.by(sortBy).ascending()));
-
-			} else {
-				return echeanceRepository.getEcheanceNotLinkedWithoutOrder(numContrat, year,
-						PageRequest.of(page, size, Sort.by(sortBy).descending()));
-			}
-
-		} else {
-			return echeanceRepository.getEcheanceNotLinked(numContrat, year, PageRequest.of(page, size));
-		}
-	}
-
-	@Override
-	public Page<Echeance> getEcheanceLinked(Long numContrat, int page, int size, String sortBy, String sortType) {
-		Calendar cal = Calendar.getInstance();
-		int year = cal.get(Calendar.YEAR);
-
-		if (sortBy != null) {
-
-			if ("asc".equals(sortType)) {
-				return echeanceRepository.getEcheanceLinkedWithoutOrder(numContrat, year,
-						PageRequest.of(page, size, Sort.by(sortBy).ascending()));
-
-			} else {
-				return echeanceRepository.getEcheanceLinkedWithoutOrder(numContrat, year,
-						PageRequest.of(page, size, Sort.by(sortBy).descending()));
-			}
-
-		} else {
-			return echeanceRepository.getEcheanceLinked(numContrat, year, PageRequest.of(page, size));
-		}
-	}
-
-	@Override
-	public Page<Echeance> getEcheancesNotLinked(String date,int page, int size, String sortBy, String sortType) {
-		Calendar cal = Calendar.getInstance();
-		int year = cal.get(Calendar.YEAR);
-		
-		DateFormat sourceFormat = new java.text.SimpleDateFormat("dd/MM/yyyy");
-		Date date1 =null;
-		
-		if(date!=null && !date.isEmpty()) {
-			try {
-				 date1 = sourceFormat.parse(date);
-				
-			} catch (ParseException e) {
-				date1=null;
-			}
-		}
-
-		if(date1!=null ) {
-			
-			
+		if(nameModele==null) {
 			if (sortBy != null) {
 
 				if ("asc".equals(sortType)) {
-					return echeanceRepository.getEcheancesNotLinkedWithoutOrderDateParam( date1,
+					return echeanceRepository.getEcheanceNotLinkedWithoutOrder(numContrat, year,
 							PageRequest.of(page, size, Sort.by(sortBy).ascending()));
 
 				} else {
-					return echeanceRepository.getEcheancesNotLinkedWithoutOrderDateParam( date1,
+					return echeanceRepository.getEcheanceNotLinkedWithoutOrder(numContrat, year,
 							PageRequest.of(page, size, Sort.by(sortBy).descending()));
 				}
 
 			} else {
-				return echeanceRepository.getEcheancesNotLinkedDateParam( date1, PageRequest.of(page, size));
+				return echeanceRepository.getEcheanceNotLinked(numContrat, year, PageRequest.of(page, size));
 			}
 		}else {
 			if (sortBy != null) {
 
 				if ("asc".equals(sortType)) {
-					return echeanceRepository.getEcheancesNotLinkedWithoutOrder( year,
+					return echeanceRepository.getEcheanceNotLinkedWithoutOrderByModeleName(numContrat,nameModele, year,
 							PageRequest.of(page, size, Sort.by(sortBy).ascending()));
 
 				} else {
-					return echeanceRepository.getEcheancesNotLinkedWithoutOrder( year,
+					return echeanceRepository.getEcheanceNotLinkedWithoutOrderByModeleName(numContrat, nameModele,year,
 							PageRequest.of(page, size, Sort.by(sortBy).descending()));
 				}
 
 			} else {
-				return echeanceRepository.getEcheancesNotLinked( year, PageRequest.of(page, size));
+				return echeanceRepository.getEcheanceNotLinkedByModeleName(numContrat, nameModele,year, PageRequest.of(page, size));
 			}
 		}
-		
 		
 	}
 
 	@Override
-	public void deleteModele(Long idModele) {
-		
-		ContratModel model = contratModelRepository.findById(idModele).orElse(null);
-		
-		if(model!=null) {
-			model.setCloture(true);
-			model.setDeleteByUser(true);
-			
-			Collection<Echeance> echeances = echeanceRepository.getEcheanceByModele(model.getId());
-			if(!echeances.isEmpty()) {
-				for(Echeance e : echeances) {
-					deleteEcheance(e.getId(),false);
-				
-					
+	public Page<Echeance> getEcheanceLinked(Long numContrat,String nameModele, int page, int size, String sortBy, String sortType) {
+		Calendar cal = Calendar.getInstance();
+		int year = cal.get(Calendar.YEAR);
 
-	
+		if(nameModele==null) {
+			if (sortBy != null) {
+
+				if ("asc".equals(sortType)) {
+					return echeanceRepository.getEcheanceLinkedWithoutOrder(numContrat, year,
+							PageRequest.of(page, size, Sort.by(sortBy).ascending()));
+
+				} else {
+					return echeanceRepository.getEcheanceLinkedWithoutOrder(numContrat, year,
+							PageRequest.of(page, size, Sort.by(sortBy).descending()));
 				}
+
+			} else {
+				return echeanceRepository.getEcheanceLinked(numContrat, year, PageRequest.of(page, size));
 			}
-			
+		}else {
+			if (sortBy != null) {
+
+				if ("asc".equals(sortType)) {
+					return echeanceRepository.getEcheanceLinkedWithoutOrderByModeleName(numContrat,nameModele, year,
+							PageRequest.of(page, size, Sort.by(sortBy).ascending()));
+
+				} else {
+					return echeanceRepository.getEcheanceLinkedWithoutOrderByModeleName(numContrat,nameModele, year,
+							PageRequest.of(page, size, Sort.by(sortBy).descending()));
+				}
+
+			} else {
+				return echeanceRepository.getEcheanceLinkedByModeleName(numContrat,nameModele, year, PageRequest.of(page, size));
+			}
 		}
 		
 	}
 
+	@Override
+	public Page<Echeance> getEcheancesNotLinked(String date, String nameModele, int page, int size, String sortBy,
+			String sortType) {
+		Calendar cal = Calendar.getInstance();
+		int year = cal.get(Calendar.YEAR);
+
+		DateFormat sourceFormat = new java.text.SimpleDateFormat("dd/MM/yyyy");
+		Date date1 = null;
+
+		if (date != null && !date.isEmpty()) {
+			try {
+				date1 = sourceFormat.parse(date);
+
+			} catch (ParseException e) {
+				date1 = null;
+			}
+		}
+
+		if (date1 != null) {
+
+			if (nameModele == null) {
+				if (sortBy != null) {
+
+					if ("asc".equals(sortType)) {
+						return echeanceRepository.getEcheancesNotLinkedWithoutOrderDateParam(date1,
+								PageRequest.of(page, size, Sort.by(sortBy).ascending()));
+
+					} else {
+						return echeanceRepository.getEcheancesNotLinkedWithoutOrderDateParam(date1,
+								PageRequest.of(page, size, Sort.by(sortBy).descending()));
+					}
+
+				} else {
+					return echeanceRepository.getEcheancesNotLinkedDateParam(date1, PageRequest.of(page, size));
+				}
+			} else {
+				if (sortBy != null) {
+
+					if ("asc".equals(sortType)) {
+						return echeanceRepository.getEcheancesNotLinkedWithoutOrderDateParamByModele(nameModele, date1,
+								PageRequest.of(page, size, Sort.by(sortBy).ascending()));
+
+					} else {
+						return echeanceRepository.getEcheancesNotLinkedWithoutOrderDateParamByModele(nameModele, date1,
+								PageRequest.of(page, size, Sort.by(sortBy).descending()));
+					}
+
+				} else {
+					return echeanceRepository.getEcheancesNotLinkedDateParamByModele(nameModele, date1,
+							PageRequest.of(page, size));
+				}
+			}
+
+		} else {
+
+			if (nameModele == null) {
+
+				if (sortBy != null) {
+
+					if ("asc".equals(sortType)) {
+						return echeanceRepository.getEcheancesNotLinkedWithoutOrder(year,
+								PageRequest.of(page, size, Sort.by(sortBy).ascending()));
+
+					} else {
+						return echeanceRepository.getEcheancesNotLinkedWithoutOrder(year,
+								PageRequest.of(page, size, Sort.by(sortBy).descending()));
+					}
+
+				} else {
+					return echeanceRepository.getEcheancesNotLinked(year, PageRequest.of(page, size));
+				}
+			} else {
+				if (sortBy != null) {
+					if ("asc".equals(sortType)) {
+						return echeanceRepository.getEcheancesNotLinkedWithoutOrderByModeleName(nameModele, year,
+								PageRequest.of(page, size, Sort.by(sortBy).ascending()));
+
+					} else {
+						return echeanceRepository.getEcheancesNotLinkedWithoutOrderByModeleName(nameModele, year,
+								PageRequest.of(page, size, Sort.by(sortBy).descending()));
+					}
+
+				} else {
+
+					return echeanceRepository.getEcheancesNotLinkedByModele(nameModele,year, PageRequest.of(page, size));
+				}
+			}
+		}
+
+	}
+
+	@Override
+	public void deleteModele(Long idModele) {
+
+		ContratModel model = contratModelRepository.findById(idModele).orElse(null);
+
+		if (model != null) {
+			model.setCloture(true);
+			model.setDeleteByUser(true);
+
+			Collection<Echeance> echeances = echeanceRepository.getEcheanceByModele(model.getId());
+			if (!echeances.isEmpty()) {
+				for (Echeance e : echeances) {
+					deleteEcheance(e.getId(), false);
+
+				}
+			}
+
+			contratModelRepository.save(model);
+
+		}
+
+	}
+
+	@Override
+	public Page<Echeance> getEcheanceNotLinkedDelay(Long numContrat, String nameModele, int page, int size,
+			String sortBy, String sortType) {
+		Calendar cal = Calendar.getInstance();
+		int year = cal.get(Calendar.YEAR);
 	
+
+		if(nameModele==null) {
+			if (sortBy != null) {
+
+				if ("asc".equals(sortType)) {
+					return echeanceRepository.getEcheanceNotLinkedWithoutOrderDelay(numContrat, year,cal.getTime(),
+							PageRequest.of(page, size, Sort.by(sortBy).ascending()));
+
+				} else {
+					return echeanceRepository.getEcheanceNotLinkedWithoutOrderDelay(numContrat, year,cal.getTime(),
+							PageRequest.of(page, size, Sort.by(sortBy).descending()));
+				}
+
+			} else {
+				return echeanceRepository.getEcheanceNotLinkedDelay(numContrat, year,cal.getTime(), PageRequest.of(page, size));
+			}
+		}else {
+			if (sortBy != null) {
+
+				if ("asc".equals(sortType)) {
+					return echeanceRepository.getEcheanceNotLinkedWithoutOrderByModeleNameDelay(numContrat,nameModele, year,cal.getTime(),
+							PageRequest.of(page, size, Sort.by(sortBy).ascending()));
+
+				} else {
+					return echeanceRepository.getEcheanceNotLinkedWithoutOrderByModeleNameDelay(numContrat, nameModele,year,cal.getTime(),
+							PageRequest.of(page, size, Sort.by(sortBy).descending()));
+				}
+
+			} else {
+				return echeanceRepository.getEcheanceNotLinkedByModeleNameDelay(numContrat, nameModele,year,cal.getTime(), PageRequest.of(page, size));
+			}
+		}
+	}
+
+	@Override
+	public Page<Echeance> getEcheancesNotLinkedDelay(String date, String nameModele, int page, int size, String sortBy,
+			String sortType) {
+		Calendar cal = Calendar.getInstance();
+		int year = cal.get(Calendar.YEAR);
+
+		DateFormat sourceFormat = new java.text.SimpleDateFormat("dd/MM/yyyy");
+		Date date1 = null;
+
+		if (date != null && !date.isEmpty()) {
+			try {
+				date1 = sourceFormat.parse(date);
+
+			} catch (ParseException e) {
+				date1 = null;
+			}
+		}
+
+		if (date1 != null) {
+
+			if (nameModele == null) {
+				if (sortBy != null) {
+
+					if ("asc".equals(sortType)) {
+						return echeanceRepository.getEcheancesNotLinkedWithoutOrderDateParamDelay(date1,
+								PageRequest.of(page, size, Sort.by(sortBy).ascending()));
+
+					} else {
+						return echeanceRepository.getEcheancesNotLinkedWithoutOrderDateParamDelay(date1,
+								PageRequest.of(page, size, Sort.by(sortBy).descending()));
+					}
+
+				} else {
+					return echeanceRepository.getEcheancesNotLinkedDateParamDelay(date1, PageRequest.of(page, size));
+				}
+			} else {
+				if (sortBy != null) {
+
+					if ("asc".equals(sortType)) {
+						return echeanceRepository.getEcheancesNotLinkedWithoutOrderDateParamByModeleDelay(nameModele, date1,
+								PageRequest.of(page, size, Sort.by(sortBy).ascending()));
+
+					} else {
+						return echeanceRepository.getEcheancesNotLinkedWithoutOrderDateParamByModeleDelay(nameModele, date1,
+								PageRequest.of(page, size, Sort.by(sortBy).descending()));
+					}
+
+				} else {
+					return echeanceRepository.getEcheancesNotLinkedDateParamByModeleDelay(nameModele, date1,
+							PageRequest.of(page, size));
+				}
+			}
+
+		} else {
+
+			Calendar ca = Calendar.getInstance();
+			
+			if (nameModele == null) {
+
+				if (sortBy != null) {
+
+					if ("asc".equals(sortType)) {
+						return echeanceRepository.getEcheancesNotLinkedWithoutOrderDelay(year,ca.getTime(),
+								PageRequest.of(page, size, Sort.by(sortBy).ascending()));
+
+					} else {
+						return echeanceRepository.getEcheancesNotLinkedWithoutOrderDelay(year,ca.getTime(),
+								PageRequest.of(page, size, Sort.by(sortBy).descending()));
+					}
+
+				} else {
+					return echeanceRepository.getEcheancesNotLinkedDelay(year,ca.getTime(), PageRequest.of(page, size));
+				}
+			} else {
+				if (sortBy != null) {
+					if ("asc".equals(sortType)) {
+						return echeanceRepository.getEcheancesNotLinkedWithoutOrderByModeleNameDelay(nameModele, year,ca.getTime(),
+								PageRequest.of(page, size, Sort.by(sortBy).ascending()));
+
+					} else {
+						return echeanceRepository.getEcheancesNotLinkedWithoutOrderByModeleNameDelay(nameModele, year,ca.getTime(),
+								PageRequest.of(page, size, Sort.by(sortBy).descending()));
+					}
+
+				} else {
+
+					return echeanceRepository.getEcheancesNotLinkedByModeleDelay(nameModele,year,ca.getTime(), PageRequest.of(page, size));
+				}
+			}
+		}
+	}
 
 }

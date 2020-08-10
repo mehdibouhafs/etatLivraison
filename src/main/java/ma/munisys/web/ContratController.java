@@ -162,9 +162,21 @@ public class ContratController {
 			return contratModelRepository.getAllContratsModel(numContrat, PageRequest.of(page - 1, size));
 		}
 	}
+	
+	@RequestMapping(value = "/getAllDistinctNameContratModeles", method = RequestMethod.GET)
+	public Collection<String> getContratModel(@RequestParam(name = "numContrat") long numContrat)
+			 {
+		
+		Calendar c = Calendar.getInstance();
+		return echeanceRepository.getAllDistinctNameContratModeles(numContrat,c.get(Calendar.YEAR));
+			
+			
+		
+	}
 
 	@RequestMapping(value = "/getEcheance", method = RequestMethod.GET)
 	public Page<Echeance> getEcheance(@RequestParam(name = "numContrat") long numContrat,
+			@RequestParam(name = "nameModele", required = false) String nameModele,
 			@RequestParam(name = "page", defaultValue = "1") int page,
 			@RequestParam(name = "size", defaultValue = "5") int size,
 			@RequestParam(name = "sortBy", required = false) String sortBy,
@@ -172,18 +184,33 @@ public class ContratController {
 		
 		
 
-		return echeanceService.getEcheance(numContrat, page-1, size,sortBy,sortType);
+		return echeanceService.getEcheance(numContrat,nameModele, page-1, size,sortBy,sortType);
 		
 	}
 	
 	@RequestMapping(value = "/getEcheanceNotLinked", method = RequestMethod.GET)
 	public Page<Echeance> getEcheanceNotLinked(@RequestParam(name = "numContrat") long numContrat,
+			@RequestParam(name = "nameModele", required = false) String nameModele,
 			@RequestParam(name = "page", defaultValue = "1") int page,
 			@RequestParam(name = "size", defaultValue = "5") int size,
 			@RequestParam(name = "sortBy", required = false) String sortBy,
 			@RequestParam(name = "sortType", required = false) String sortType) {
 		
-		return echeanceService.getEcheanceNotLinked(numContrat, page-1, size,sortBy,sortType);
+		return echeanceService.getEcheanceNotLinked(numContrat,nameModele, page-1, size,sortBy,sortType);
+		
+		
+		
+	}
+	
+	@RequestMapping(value = "/getEcheanceNotLinkedDelay", method = RequestMethod.GET)
+	public Page<Echeance> getEcheanceNotLinkedDelay(@RequestParam(name = "numContrat") long numContrat,
+			@RequestParam(name = "nameModele", required = false) String nameModele,
+			@RequestParam(name = "page", defaultValue = "1") int page,
+			@RequestParam(name = "size", defaultValue = "5") int size,
+			@RequestParam(name = "sortBy", required = false) String sortBy,
+			@RequestParam(name = "sortType", required = false) String sortType) {
+		
+		return echeanceService.getEcheanceNotLinkedDelay(numContrat,nameModele, page-1, size,sortBy,sortType);
 		
 		
 		
@@ -192,13 +219,14 @@ public class ContratController {
 	@RequestMapping(value = "/getEcheancesNotLinked", method = RequestMethod.GET)
 	public Page<EcheanceDto> getEcheanceNotLinked(
 			@RequestParam(name = "date", required = false) String date,
+			@RequestParam(name = "nameModele", required = false) String nameModele,
 			@RequestParam(name = "page", defaultValue = "1") int page,
 			@RequestParam(name = "size", defaultValue = "5") int size,
 			@RequestParam(name = "sortBy", required = false) String sortBy,
 			@RequestParam(name = "sortType", required = false) String sortType) {
 		
 	
-		Page<Echeance> echeances= echeanceService.getEcheancesNotLinked(date,page-1, size,sortBy,sortType);
+		Page<Echeance> echeances= echeanceService.getEcheancesNotLinked(date,nameModele,page-1, size,sortBy,sortType);
 		
 		List<EcheanceDto> echeancesDto=new ArrayList<EcheanceDto>();
 		 
@@ -231,20 +259,70 @@ public class ContratController {
 				
 			}
 			
-			Page<EcheanceDto> pageEcheance = new PageImpl<>(echeancesDto,  PageRequest.of(page, size), echeancesDto.size());
+			Page<EcheanceDto> pageEcheance = new PageImpl<>(echeancesDto,  PageRequest.of(page-1, size), echeances.getTotalElements());
 			return pageEcheance;
 		
 	}
 	
+	@RequestMapping(value = "/getEcheancesNotLinkedDelay", method = RequestMethod.GET)
+	public Page<EcheanceDto> getEcheanceNotLinkedDelay(
+			@RequestParam(name = "date", required = false) String date,
+			@RequestParam(name = "nameModele", required = false) String nameModele,
+			@RequestParam(name = "page", defaultValue = "1") int page,
+			@RequestParam(name = "size", defaultValue = "5") int size,
+			@RequestParam(name = "sortBy", required = false) String sortBy,
+			@RequestParam(name = "sortType", required = false) String sortType) {
+		
+	
+		Page<Echeance> echeances= echeanceService.getEcheancesNotLinkedDelay(date,nameModele,page-1, size,sortBy,sortType);
+		
+		List<EcheanceDto> echeancesDto=new ArrayList<EcheanceDto>();
+		 
+		 for(Echeance e :echeances.getContent()) {
+				EcheanceDto eto=new EcheanceDto();
+				eto.setId(e.getId());
+				eto.setAddedByUser(e.isAddedByUser());
+				eto.setDu(e.getDu());
+				eto.setAu(e.getAu());
+				ma.munisys.dto.Contrat c =new ma.munisys.dto.Contrat();
+				c.setNumContrat(e.getContrat().getNumContrat());
+				c.setNom(e.getContrat().getDescription());
+				c.setClient(e.getContrat().getNomPartenaire());
+				c.setPilote(e.getContrat().getPilote());
+				c.setNumMarche(e.getContrat().getNumMarche());
+				eto.setContrat(c);
+				eto.setCommentaire(e.getCommentaire());
+				eto.setNomModele(e.getNomModele());
+				eto.setMontant(e.getMontant());
+				eto.setMontantFacture(e.getMontantFacture());
+				eto.setMontantPrevision(e.getMontantPrevision());
+				eto.setMontantRestFacture(e.getMontantRestFacture());
+				eto.setAddedByUser(e.isAddedByUser());
+				eto.setDeletedByUser(e.isDeletedByUser());
+				eto.setCloture(e.getCloture());
+				eto.setPeriodeFacturation(e.getPeriodeFacturation());
+				eto.setOccurenceFacturation(e.getOccurenceFacturation());
+				
+				echeancesDto.add(eto);
+				
+			}
+			
+			Page<EcheanceDto> pageEcheance = new PageImpl<>(echeancesDto,  PageRequest.of(page-1, size), echeances.getTotalElements());
+			return pageEcheance;
+		
+	}
+	
+	
 	@RequestMapping(value = "/getEcheanceLinked", method = RequestMethod.GET)
 	public Page<Echeance> getEcheanceLinked(@RequestParam(name = "numContrat") long numContrat,
+			@RequestParam(name = "nameModele", required = false) String nameModele,
 			@RequestParam(name = "page", defaultValue = "1") int page,
 			@RequestParam(name = "size", defaultValue = "5") int size,
 			@RequestParam(name = "sortBy", required = false) String sortBy,
 			@RequestParam(name = "sortType", required = false) String sortType) {
 		
 		
-		return echeanceService.getEcheanceLinked(numContrat, page-1, size,sortBy,sortType);
+		return echeanceService.getEcheanceLinked(numContrat,nameModele, page-1, size,sortBy,sortType);
 		
 	}
 
@@ -491,6 +569,15 @@ public class ContratController {
 
 		return echeanceService.updateEcheance(echeance.getId(), echeance.getCommentaire().getId());
 
+	}
+	
+	
+	
+	@RequestMapping(value = "/genereateEcheanceAutomatique/{numContrat}", method = RequestMethod.PUT)
+	public FactureEcheance genereateEcheanceAutomatique(@PathVariable("numContrat") final Long numContrat,@RequestBody FactureEcheance factureEcheance) {
+
+		return factureService.genereateEcheanceAutomatique(numContrat,factureEcheance);
+		
 	}
 
 	@RequestMapping(value = "/editEcheance/{numContrat}", method = RequestMethod.PUT)

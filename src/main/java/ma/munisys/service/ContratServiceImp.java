@@ -232,7 +232,7 @@ public class ContratServiceImp implements ContratService {
 				
 				Calendar ca= Calendar.getInstance();
 				int currentYear =ca.get(Calendar.YEAR);
-				int nbEcheances = echeanceRepository.getNbEcheanceAFacturer(entry.getKey(), currentYear);
+				int nbEcheances = echeanceRepository.getNbEcheanceAFacturer(entry.getKey(), currentYear,ca.getTime());
 				c.setNbEcheancesNonFactureEnRetard(nbEcheances);
 				
 				contratRepository.save(c);

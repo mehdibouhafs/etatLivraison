@@ -25,14 +25,19 @@ public interface EcheanceService {
 	
 	public Collection<Echeance> getAllEcheancesFromContrat(Long numContrat);
 	
-	public Page<Echeance> getEcheance(Long numContrat ,int page,int size,String sortBy,String sortType);
+	public Page<Echeance> getEcheance(Long numContrat ,String nameModele,int page,int size,String sortBy,String sortType);
 
 	
-	public Page<Echeance> getEcheanceNotLinked(Long numContrat ,int page,int size,String sortBy,String sortType);
+	public Page<Echeance> getEcheanceNotLinked(Long numContrat,String nameModele,int page,int size,String sortBy,String sortType);
 
-	public Page<Echeance> getEcheancesNotLinked(String date,int page,int size,String sortBy,String sortType);
+	public Page<Echeance> getEcheanceNotLinkedDelay(Long numContrat,String nameModele,int page,int size,String sortBy,String sortType);
+	
+	public Page<Echeance> getEcheancesNotLinked(String date,String nameModele,int page,int size,String sortBy,String sortType);
 
-	public Page<Echeance> getEcheanceLinked(Long numContrat ,int page,int size,String sortBy,String sortType);
+	public Page<Echeance> getEcheancesNotLinkedDelay(String date,String nameModele,int page,int size,String sortBy,String sortType);
+
+	
+	public Page<Echeance> getEcheanceLinked(Long numContrat ,String nameModele,int page,int size,String sortBy,String sortType);
 
 
 	public Echeance addNewEcheanceByUser(Long numContrat, Echeance echeance);

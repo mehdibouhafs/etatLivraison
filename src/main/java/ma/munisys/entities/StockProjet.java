@@ -44,7 +44,7 @@ public class StockProjet implements Serializable {
 	private String chef_projet;
     @Column(name="nom_lot")
     private String nom_lot; 
-    private String magasin;
+    //private String magasin;
     @Column(name="date_rec")
     private Date date_rec;
     
@@ -69,7 +69,7 @@ public class StockProjet implements Serializable {
 	this.montant = montant;
 	this.chef_projet = chefProjet;
 	this.nom_lot = nomLot;
-	this.magasin = magasin;
+	//this.magasin = magasin;
 	this.date_rec = dateRec;
 	this.commentaires = commentaires;
 }
@@ -147,12 +147,12 @@ public class StockProjet implements Serializable {
 		this.id_stock = id_stock;
 	}
 
-	public String getMagasin() {
+	/*public String getMagasin() {
 		return magasin;
 	}
 	public void setMagasin(String magasin) {
 		this.magasin = magasin;
-	}
+	}*/
 
 	public String getNom_lot() {
 		return nom_lot;

@@ -619,4 +619,45 @@ public class FactureImpl implements FactureService {
 
 	}
 
+	@Override
+	public FactureEcheance genereateEcheanceAutomatique(Long numContrat,FactureEcheance factureEcheance) {
+		
+		FactureEcheance feSaved=null;
+		Facture facture = factureRepository.findById(factureEcheance.getFacture().getNumFacture()).orElse(null);
+		
+		if(facture!=null) {
+			Echeance e = new Echeance();
+			
+			if(facture.getDebutPeriode()!=null) {
+				e.setDu(facture.getDebutPeriode());
+			}
+			if(facture.getFinPeriode()!=null) {
+				e.setAu(facture.getFinPeriode());
+			}
+			
+			e.setAddedByUser(true);
+			e.setCloture(false);
+			Echeance ec = this.echeanceRepository.save(e);
+			ec.setFactureEcheances(new HashSet<FactureEcheance>());
+			FactureEcheance fe = new FactureEcheance();
+			fe.setId(facture.getNumFacture() + "/" + ec.getId() + "/" + numContrat);
+			fe.setContrat(new Contrat(numContrat));
+			fe.setFacture(facture);
+			fe.setAffectedByUser(true);
+			fe.setMontant(facture.getMontantHT());
+			fe.setEcheance(ec);
+			fe.setCloture(false);
+			feSaved= factureEcheanceRepository.save(fe);
+			ec.getFactureEcheances().add(fe);
+			
+			ec.calculMontantFacture();
+			
+			factureEcheanceRepository.deleteById(factureEcheance.getId());
+			
+			
+		}
+
+		return feSaved;
+	}
+
 }

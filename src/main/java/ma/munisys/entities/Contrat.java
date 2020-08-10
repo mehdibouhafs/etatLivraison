@@ -155,6 +155,14 @@ public class Contrat implements Serializable,Cloneable {
 		
 		
 	}
+	
+
+	public Contrat(Long numContrat) {
+		super();
+		this.numContrat = numContrat;
+	}
+
+
 
 
 

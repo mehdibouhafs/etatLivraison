@@ -14,6 +14,7 @@ public interface ContratModelRepository extends JpaRepository<ContratModel, Long
 	@Query("select f from ContratModel f where f.contrat.numContrat =:x and f.cloture = false order by f.du DESC")
 	public Collection<ContratModel> getAllContratModel(@Param("x") Long numContrat);
 
+	
 
 	@Query("select f from ContratModel f where f.contrat.numContrat=:x and f.cloture = false order by f.du asc")
 	public Page<ContratModel> getAllContratsModel(@Param("x") Long numContrat,Pageable pageable);

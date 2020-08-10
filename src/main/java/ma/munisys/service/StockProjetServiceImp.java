@@ -487,7 +487,7 @@ public class StockProjetServiceImp implements StockProjetService {
 												    		   }								     
 							       
 	 
-		return stockProjetRepository.getStockProjetByFiltre(numLot,client,annee,magasin,com,cp);
+		return stockProjetRepository.getStockProjetByFiltre(numLot,client,annee,com,cp);
 	}
 	
 	@Override
@@ -551,12 +551,12 @@ public class StockProjetServiceImp implements StockProjetService {
 					p.setChef_projet(rs1.getString(7));
 				}
 	
-				if (rs1.getString(8) != null && !rs1.getString(8).equals("null")) {
+				/*if (rs1.getString(8) != null && !rs1.getString(8).equals("null")) {
 				
-						p.setMagasin(rs1.getString(8));
+						//p.setMagasin(rs1.getString(8));
 
 					
-				}
+				}*/
 	
 
 				if (rs1.getString(9) != null && !rs1.getString(9).equals("null")) {
@@ -590,7 +590,7 @@ public class StockProjetServiceImp implements StockProjetService {
 	
 	public List<String> getMontantByNature(String numLot,String magasin){
 		
-		return stockProjetRepository.getMontantByNature(numLot,magasin);
+		return stockProjetRepository.getMontantByNature(numLot);
 	}
 
 	

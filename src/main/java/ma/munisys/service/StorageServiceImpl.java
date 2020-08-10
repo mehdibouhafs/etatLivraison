@@ -451,8 +451,8 @@ public class StorageServiceImpl {
 			Row row = sheet.createRow(rowNum++);
 
 			Cell cell0 = row.createCell(0);
-			if (produit.getMagasin() != null)
-				cell0.setCellValue(produit.getMagasin());
+			/*if (produit.getMagasin() != null)
+				cell0.setCellValue(produit.getMagasin());*/
 
 			System.out.println("NUM LOT " + produit);
 			Cell cell1 = row.createCell(1);
