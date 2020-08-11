@@ -49,8 +49,6 @@ public class ProduitServiceImpl implements ProduitService {
 	public ProduitServiceImpl() {
 
 	}
-<<<<<<< HEAD
-=======
 	
 	
 	
@@ -61,7 +59,7 @@ public class ProduitServiceImpl implements ProduitService {
 	
 	
 	
->>>>>>> munisysRepo/main
+
 
 	@Override
 	@Transactional
@@ -72,11 +70,9 @@ public class ProduitServiceImpl implements ProduitService {
 
 		ResultSet rs1 = null;
 		try {
-<<<<<<< HEAD
-			String req1 = "SELECT * FROM DB_MUNISYS.\"V_STK_PRJ\" ";
-=======
+
 			String req1 = "SELECT * FROM DB_MUNISYS.\"V_ALL_STK\" ";
->>>>>>> munisysRepo/main
+
 			rs1 = DBA.request(req1);
 			java.sql.ResultSetMetaData rsmd = rs1.getMetaData();
 			for (int columnCount = rsmd.getColumnCount(), i = 1; i <= columnCount; ++i) {
@@ -95,8 +91,6 @@ public class ProduitServiceImpl implements ProduitService {
 				if (rs1.getString(2) != null && !rs1.getString(2).equals("null")) {
 					p.setNomMagasin(rs1.getString(2));
 				}
-<<<<<<< HEAD
-=======
 				
 				if(rs1.getString(2).equals("Stock commercial") || rs1.getString(2).equals("Rabat - stock commercial")) {
 					p.setType_magasin("Commercial");
@@ -127,7 +121,7 @@ public class ProduitServiceImpl implements ProduitService {
 					p.setType_magasin("Pré Obsolète Stock Commercial");
 				}
 				
->>>>>>> munisysRepo/main
+
 				if (rs1.getString(3) != null && !rs1.getString(3).equals("null")) {
 
 					p.setItemCode(rs1.getString(3));
@@ -187,9 +181,7 @@ public class ProduitServiceImpl implements ProduitService {
 					p.setPmp(rs1.getDouble(19));
 				}
 				if (rs1.getString(20) != null && !rs1.getString(20).equals("null")) {
-<<<<<<< HEAD
-					p.setMontant(rs1.getDouble(20));
-=======
+
 					if (rs1.getString(2).equals("Déploiement Rabat") || rs1.getString(2).equals("Déploiement" )) {
 						p.setMontant(0.0);
 					}
@@ -197,7 +189,7 @@ public class ProduitServiceImpl implements ProduitService {
 				
 					p.setMontant(rs1.getDouble(20));
 					}
->>>>>>> munisysRepo/main
+
 				}
 				if (rs1.getString(21) != null && !rs1.getString(21).equals("null")) {
 					//System.out.println("codeProjet " + rs1.getString(1) + " dateCMD " + rs1.getString(3));
@@ -323,25 +315,14 @@ public class ProduitServiceImpl implements ProduitService {
 
 	@Override
 	public Collection<Produit> getProduitByPredicate(String nature, String sousNature, String domaine,
-<<<<<<< HEAD
-			String sousDomaine, String numLot, String client, String nomMagasin) {
-=======
+
 			String sousDomaine, String numLot, String client, String nomMagasin,String type) {
->>>>>>> munisysRepo/main
+
 		// TODO Auto-generated method stub
 
 		// aucun filtre
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") // all undefined
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined") ){
-	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero());
-	        
-	       }
 
-	       // filtre par nature uniquement.  A
-	       if(!nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined")  ){
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero());
 	        
@@ -396,16 +377,12 @@ public class ProduitServiceImpl implements ProduitService {
 	       // filtre par nature uniquement.  A
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined")   ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature)));
 	       }
 
-<<<<<<< HEAD
-	       // filtre par sousNature uniquement.  B
-	       if(nature.equals("undefined") && !sousNature.equals("undefined") && domaine.equals("undefined") 
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	       // filtre par nature uniquement.  A
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined")  ){
@@ -416,129 +393,104 @@ public class ProduitServiceImpl implements ProduitService {
 	       // filtre par sousNature uniquement.  B
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && domaine.equals("undefined") 
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined")  ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(sousNature)));
 	       }
 
 	       // filtre par domaine uniquement.  C
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byDomaine(domaine)));
 	       }
 
 	       // filtre par SousDomaine uniquement.  D
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined")  ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousDomaine(sousDomaine)));
 	       }
 
 	       // filtre par SousDomaine uniquement.  E
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined")  ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNumLot(numLot)));
 	       }
 
 	       // filtre par SousDomaine uniquement.  F
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined")  ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byClient(client)));
 	       }
 
 	       // filtre par SousDomaine uniquement.  G
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNomMagasin(nomMagasin)));
 	       }
 
 	       // filtre par nature et sousNature uniquement.  AB
 	       if(!nature.equals("undefined") && !sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.bySousNature(sousNature))));
 	       }
 
 	       // filtre par nature et domaine uniquement.  AC
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.byDomaine(domaine))));
 	       }
 
 	       // filtre par nature et sousDomaine uniquement.  AD
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.bySousDomaine(sousDomaine))));
 	       }
 
 	       // filtre par nature et numLot uniquement.  AD
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.byNumLot(numLot))));
 	       }
 
 	       // filtre par nature et client uniquement.  AE
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.byClient(client))));
 	       }
 
 	       // filtre par nature et client uniquement.  AF
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
 
-	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.byNomMagasin(nomMagasin))));
-	       }
-=======
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.byNomMagasin(nomMagasin))));
@@ -551,60 +503,49 @@ public class ProduitServiceImpl implements ProduitService {
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNumLot(numLot).and(ProduitSpecification.byNomMagasin(nomMagasin))));
 	       }
 
->>>>>>> munisysRepo/main
 
 
 	       // filtre par sousNature et domaine uniquement.  BC
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byDomaine(domaine))));
 	       }
 
 	        // filtre par sousNature et Sousdomaine uniquement.  BD
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.bySousDomaine(sousDomaine))));
 	       }
 
 	         // filtre par sousNature et Sousdomaine uniquement.  BE
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byNumLot(numLot))));
 	       }
 
 	        // filtre par sousNature et client uniquement.  BF
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byClient(client))));
 	       }
 
 	         // filtre par sousNature et client uniquement.  BG
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byNomMagasin(nomMagasin))));
 	       }
@@ -612,22 +553,18 @@ public class ProduitServiceImpl implements ProduitService {
 
 	         // filtre par sousNature et client uniquement.  CE
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine))));
 	       }
 
 	        // filtre par sousNature et client uniquement.  CD
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.byNumLot(numLot))));
 	       }
@@ -635,88 +572,66 @@ public class ProduitServiceImpl implements ProduitService {
 
 	        // filtre par sousNature et client uniquement.  CF
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.byClient(client))));
 	       }
 
 	        // filtre par sousNature et client uniquement.  CG
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.byNomMagasin(nomMagasin))));
 	       }
 
 	        // filtre par sousNature et client uniquement.  DE
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
 
+	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNumLot(numLot))));
 	       }
 
 	        // filtre par sousNature et client uniquement.  DF
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byClient(client))));
 	       }
 
 	        // filtre par sousNature et client uniquement.  DG
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNomMagasin(nomMagasin))));
 	       }
 
 	       // filtre par sousNature et client uniquement.  EF
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNumLot(sousDomaine).and(ProduitSpecification.byClient(client))));
 	       }
 
 	        // filtre par sousNature et client uniquement.  EG
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNumLot(sousDomaine).and(ProduitSpecification.byNomMagasin(nomMagasin))));
 	       }
 
 	        // filtre par sousNature et client uniquement.  FG
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byClient(client).and(ProduitSpecification.byNomMagasin(nomMagasin))));
 	       }
@@ -724,165 +639,127 @@ public class ProduitServiceImpl implements ProduitService {
 
 	       // filtre par nature et sousNature  et domaineuniquement.  ABC
 	       if(!nature.equals("undefined") && !sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byDomaine(domaine)))));
 	       }
 
 	        // filtre par nature et sousNature et sousDomaine uniquement.  ABD
 	       if(!nature.equals("undefined") && !sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.bySousDomaine(sousDomaine)))));
 	       }
 
 	        // filtre par nature et sousNature et numLot uniquement.  ABE
 	       if(!nature.equals("undefined") && !sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byNumLot(numLot)))));
 	       }
 
 	        // filtre par nature et sousNature uniquement.  ABF
 	       if(!nature.equals("undefined") && !sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byClient(numLot)))));
 	       }
 
 	         // filtre par nature et sousNature uniquement.  ABG
 	       if(!nature.equals("undefined") && !sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byNomMagasin(nomMagasin)))));
 	       }
 	       
 	    // filtre par nature et sousNature  et domaineuniquement.  ACD
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine)))));
 	       }
 	       
 	    // filtre par nature et sousNature  et domaineuniquement.  ACE
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.byNumLot(numLot)))));
 	       }
 	       
 	       // filtre par nature et sousNature  et domaineuniquement.  ACF
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.byClient(client)))));
 	       }
 	       
 	    // filtre par nature et sousNature  et domaineuniquement.  ACG
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.byNomMagasin(nomMagasin)))));
 	       }
 	       
 	       // filtre par nature et sousNature  et domaineuniquement.  ADE
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNumLot(numLot)))));
 	       }
 	       
 	       // filtre par nature et sousNature  et domaineuniquement.  ADF
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byClient(client)))));
 	       }
 	       
 	    // filtre par nature et sousNature  et domaineuniquement.  ADF
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNomMagasin(nomMagasin)))));
 	       }
 	       
 	    // filtre par nature et sousNature  et domaineuniquement.  AEF
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.byNumLot(numLot).and(ProduitSpecification.byClient(client)))));
 	       }
 	       
 	       // filtre par nature et sousNature  et domaineuniquement.  AEG
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.byNumLot(numLot).and(ProduitSpecification.byNomMagasin(nomMagasin)))));
 	       }
 	       
 	       // filtre par nature et sousNature  et domaineuniquement.  AFG
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.byClient(client).and(ProduitSpecification.byNomMagasin(nomMagasin)))));
 	       }
@@ -890,176 +767,143 @@ public class ProduitServiceImpl implements ProduitService {
 	       
 	         // filtre par nature et sousNature uniquement.  BCD
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byDomaine(domaine)).and(ProduitSpecification.bySousDomaine(sousDomaine))));
 	       }
 
 	       // filtre par nature et sousNature uniquement.  BCE
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byDomaine(domaine)).and(ProduitSpecification.byNumLot(numLot))));
 	       }
 
 	       // filtre par nature et sousNature uniquement.  BCF
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byDomaine(domaine)).and(ProduitSpecification.byClient(client))));
 	       }
 
 	        // filtre par nature et sousNature uniquement.  BCG
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byDomaine(domaine)).and(ProduitSpecification.byNomMagasin(nomMagasin))));
 	       }
 	       
 	    // filtre par nature et sousNature uniquement.  BDE
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.bySousDomaine(sousDomaine)).and(ProduitSpecification.byNumLot(numLot))));
 	       }
 	       
 	    // filtre par nature et sousNature uniquement.  BDF
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.bySousDomaine(sousDomaine)).and(ProduitSpecification.byClient(client))));
 	       }
 	       
 	       // filtre par nature et sousNature uniquement.  BDG
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.bySousDomaine(sousDomaine)).and(ProduitSpecification.byNomMagasin(nomMagasin))));
 	       }
 	       
 	    // filtre par nature et sousNature uniquement.  BEF
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byNumLot(numLot)).and(ProduitSpecification.byClient(client))));
 	       }
 	       
 	       // filtre par nature et sousNature uniquement.  BEG
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
 	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byNumLot(numLot)).and(ProduitSpecification.byNomMagasin(nomMagasin))));
 	       }
 	       
 	    // filtre par nature et sousNature uniquement.  BFG
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byClient(client)).and(ProduitSpecification.byNomMagasin(nomMagasin))));
 	       }
 
 	        // filtre par domaine et sousDoamne et numLot uniquement.  CDE
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine)).and(ProduitSpecification.byNumLot(numLot))));
 	       }
 
 	        // filtre par domaine et sousDoamne et numLot uniquement.  CDF
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine)).and(ProduitSpecification.byClient(client))));
 	       }
 
 	       // filtre par domaine et sousDoamne et numLot uniquement.  CDG
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine)).and(ProduitSpecification.byNomMagasin(nomMagasin))));
 	       }
 	       
 	    // filtre par domaine et sousDoamne et numLot uniquement.  CEF
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.byNumLot(numLot)).and(ProduitSpecification.byClient(client))));
 	       }
 	       
 	       // filtre par domaine et sousDoamne et numLot uniquement.  CEG
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.byNumLot(numLot)).and(ProduitSpecification.byNomMagasin(nomMagasin))));
 	       }
 	       
 	    // filtre par domaine et sousDoamne et numLot uniquement.  CFG
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.byClient(client)).and(ProduitSpecification.byNomMagasin(nomMagasin))));
 	       }
@@ -1067,154 +911,125 @@ public class ProduitServiceImpl implements ProduitService {
 
 	       // filtre par domaine et sousDoamne et numLot uniquement.  DEF
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNumLot(numLot)).and(ProduitSpecification.byClient(client))));
 	       }
 
 	       // filtre par domaine et sousDoamne et numLot uniquement.  DEG
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNumLot(numLot)).and(ProduitSpecification.byNomMagasin(nomMagasin))));
 	       }
 	       
 	    // filtre par domaine et sousDoamne et numLot uniquement.  DFG
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byClient(client)).and(ProduitSpecification.byNomMagasin(nomMagasin))));
 	       }
 
 	       // filtre par domaine et sousDoamne et numLot uniquement.  EFG
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNumLot(sousDomaine).and(ProduitSpecification.byClient(client)).and(ProduitSpecification.byNomMagasin(nomMagasin))));
 	       }
 
 	        // filtre par nature et sousNature  et domaineuniquement.  ABCD
 	       if(!nature.equals("undefined") && !sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine))))));
 	       }
 
 	       // filtre par nature et sousNature  et domaineuniquement.  ABCE
 	       if(!nature.equals("undefined") && !sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.byNumLot(numLot))))));
 	       }
 
 	        // filtre par nature et sousNature  et domaineuniquement.  ABCF
 	       if(!nature.equals("undefined") && !sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.byClient(client))))));
 	       }
 
 	        // filtre par nature et sousNature  et domaineuniquement.  ABCG
 	       if(!nature.equals("undefined") && !sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.byNomMagasin(nomMagasin))))));
 	       }
 	       
 	    // filtre par nature et sousNature  et domaineuniquement.  ACDE
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNumLot(numLot))))));
 	       }
 	       
 	       // filtre par nature et sousNature  et domaineuniquement.  ACDF
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byClient(client))))));
 	       }
 	       
 	       // filtre par nature et sousNature  et domaineuniquement.  ACDG
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNomMagasin(nomMagasin))))));
 	       }
 	       
 	       // filtre par nature et sousNature  et domaineuniquement.  ADEF
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNumLot(numLot).and(ProduitSpecification.byClient(client))))));
 	       }
 	       
 	       // filtre par nature et sousNature  et domaineuniquement.  ADEG
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNumLot(numLot).and(ProduitSpecification.byNomMagasin(nomMagasin))))));
 	       }
 	       
 	    // filtre par nature et sousNature  et domaineuniquement.  AEFG
 	       if(!nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.byClient(client).and(ProduitSpecification.byNumLot(numLot).and(ProduitSpecification.byNomMagasin(nomMagasin))))));
 	       }
@@ -1225,220 +1040,180 @@ public class ProduitServiceImpl implements ProduitService {
 
 	       // filtre par nature et sousNature  et domaineuniquement.  BCDE
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(nature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNumLot(numLot))))));
 	       }
 
 	       // filtre par nature et sousNature  et domaineuniquement.  BCDF
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(nature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byClient(client))))));
 	       }
 
 	        // filtre par nature et sousNature  et domaineuniquement.  BCDG
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(nature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNomMagasin(nomMagasin))))));
 	       }
 	       
 	       // filtre par nature et sousNature  et domaineuniquement.  BDEF
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(nature).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNumLot(numLot).and(ProduitSpecification.byClient(client))))));
 	       }
 	       
 	    // filtre par nature et sousNature  et domaineuniquement.  BDEG
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(nature).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNumLot(numLot).and(ProduitSpecification.byNomMagasin(nomMagasin))))));
 	       }
 	       
 	       //filtre par nature et sousNature  et domaineuniquement.  BEFG
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(nature).and(ProduitSpecification.byNumLot(numLot).and(ProduitSpecification.byClient(client).and(ProduitSpecification.byNomMagasin(nomMagasin))))));
 	       }
 
 	       // filtre par nature et sousNature  et domaineuniquement.  CDEF
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNumLot(numLot).and(ProduitSpecification.byClient(client))))));
 	       }
 
 	       // filtre par nature et sousNature  et domaineuniquement.  CDEG
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNumLot(numLot).and(ProduitSpecification.byNomMagasin(nomMagasin))))));
 	       }
 	       
 	    // filtre par nature et sousNature  et domaineuniquement.  CEFG
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.byClient(client).and(ProduitSpecification.byNumLot(numLot).and(ProduitSpecification.byNomMagasin(nomMagasin))))));
 	       }
 
 	       // filtre par nature et sousNature  et domaineuniquement.  DEFG
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNumLot(numLot).and(ProduitSpecification.byClient(client).and(ProduitSpecification.byNomMagasin(nomMagasin))))));
 	       }
 
 	         // filtre par nature et sousNature  et domaineuniquement.  ABCDE
 	       if(!nature.equals("undefined") && !sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNumLot(numLot)))))));
 	       }
 
 	         // filtre par nature et sousNature  et domaineuniquement.  ABCDF
 	       if(!nature.equals("undefined") && !sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byClient(client)))))));
 	       }
 
 	         // filtre par nature et sousNature  et domaineuniquement.  ABCDG
 	       if(!nature.equals("undefined") && !sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNomMagasin(nomMagasin)))))));
 	       }
 
 	       // filtre par nature et sousNature  et domaineuniquement.  BCDEF
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(nature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNumLot(numLot).and(ProduitSpecification.byClient(client)))))));
 	       }
 
 	       // filtre par nature et sousNature  et domaineuniquement.  BCDEG
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(nature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNumLot(numLot).and(ProduitSpecification.byNomMagasin(nomMagasin)))))));
 	       }
 
 	       // filtre par nature et sousNature  et domaineuniquement.  CDEFG
 	       if(nature.equals("undefined") && sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNumLot(numLot).and(ProduitSpecification.byClient(client).and(ProduitSpecification.byNomMagasin(nomMagasin)))))));
 	       }
 
 	          // filtre par nature et sousNature  et domaineuniquement.  ABCDEF
 	       if(!nature.equals("undefined") && !sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNumLot(numLot).and(ProduitSpecification.byClient(client))))))));
 	       }
 
 	          // filtre par nature et sousNature  et domaineuniquement.  ABCDEG
 	       if(!nature.equals("undefined") && !sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNumLot(numLot).and(ProduitSpecification.byNomMagasin(nomMagasin))))))));
 	       }
 
 	        // filtre par nature et sousNature  et domaineuniquement.  BCDEFG
 	       if(nature.equals("undefined") && !sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined")  && type.equals("undefined")){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.bySousNature(nature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNumLot(numLot).and(ProduitSpecification.byClient(client).and(ProduitSpecification.byNomMagasin(nomMagasin))))))));
 	       }
 
 	          // filtre par nature et sousNature  et domaineuniquement.  ABCDEFG
 	       if(!nature.equals("undefined") && !sousNature.equals("undefined") && !domaine.equals("undefined") 
-<<<<<<< HEAD
-	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined")  ){
-=======
+
 	          && !sousDomaine.equals("undefined") && !numLot.equals("undefined") && !client.equals("undefined") && !nomMagasin.equals("undefined") && type.equals("undefined") ){
->>>>>>> munisysRepo/main
+
 
 	        return produitRepository.findAll(ProduitSpecification.byQteGreaterThanZero().and(ProduitSpecification.byNature(nature).and(ProduitSpecification.bySousNature(sousNature).and(ProduitSpecification.byDomaine(domaine).and(ProduitSpecification.bySousDomaine(sousDomaine).and(ProduitSpecification.byNumLot(numLot).and(ProduitSpecification.byClient(client).and(ProduitSpecification.byNomMagasin(nomMagasin)))))))));
 	       }
@@ -1447,11 +1222,9 @@ public class ProduitServiceImpl implements ProduitService {
 
 
 		return produitRepository.getAllStockByFiltre(nature, sousNature, domaine, sousDomaine, numLot, client,
-<<<<<<< HEAD
-				nomMagasin);
-=======
+
 				nomMagasin,type);
->>>>>>> munisysRepo/main
+
 	}
 
 	@Override

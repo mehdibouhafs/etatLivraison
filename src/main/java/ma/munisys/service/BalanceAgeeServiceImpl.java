@@ -107,9 +107,7 @@ public class BalanceAgeeServiceImpl implements BalanceAgeeService {
 		
 	}
 	
-<<<<<<< HEAD
 
-=======
 	public Collection<String> FindByStatus(String[] status){
 		
 		return balanceAgeeRepo.FindByStatus(status);
@@ -119,7 +117,7 @@ public class BalanceAgeeServiceImpl implements BalanceAgeeService {
 		
 		return balanceAgeeRepo.FindByAM(am);
 	}
->>>>>>> munisysRepo/main
+
 
 
 

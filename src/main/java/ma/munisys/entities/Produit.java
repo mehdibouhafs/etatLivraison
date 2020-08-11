@@ -78,11 +78,9 @@ public class Produit {
 	
 	@OneToOne
 	private AppUser updatedBy;
-<<<<<<< HEAD
-=======
+
 	
 	private String type_magasin;
->>>>>>> munisysRepo/main
 
 	public Produit() {
 		this.commentaires = new HashSet<CommentaireProduit>();
@@ -318,10 +316,6 @@ public class Produit {
 	public void setUpdatedBy(AppUser updatedBy) {
 		this.updatedBy = updatedBy;
 	}
-
-<<<<<<< HEAD
-=======
-	
 	
 	
 	public String getType_magasin() {
@@ -332,7 +326,7 @@ public class Produit {
 		this.type_magasin = type_magasin;
 	}
 
->>>>>>> munisysRepo/main
+
 	@Override
 	public String toString() {
 		return "Produit [id=" + id + ", codeMagasin=" + codeMagasin + ", nomMagasin=" + nomMagasin + ", itemCode="

@@ -44,19 +44,13 @@ public class StockProjet implements Serializable {
 	private String chef_projet;
     @Column(name="nom_lot")
     private String nom_lot; 
-<<<<<<< HEAD
-    //private String magasin;
-    @Column(name="date_rec")
-    private Date date_rec;
-    
-=======
+
     @Column(name="date_rec")
     private Date date_rec;
     
     @Column(name="type_magasin")
     private String type_magasin;
    
->>>>>>> munisysRepo/main
    @JsonManagedReference
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "stock", cascade = { CascadeType.ALL }, orphanRemoval = true)
     @OrderBy("date DESC")
@@ -68,11 +62,9 @@ public class StockProjet implements Serializable {
 	
 	
 	public StockProjet(Long id_stock, String annee, String client, String numLot, String commercial, Double montant,
-<<<<<<< HEAD
-		String chefProjet, String nomLot, String magasin, Date dateRec, Set<CommentaireStock> commentaires) {
-=======
+
 		String chefProjet, String nomLot, Date dateRec,String type, Set<CommentaireStock> commentaires) {
->>>>>>> munisysRepo/main
+
 	super();
 	this.id_stock = id_stock;
 	this.annee = annee;
@@ -82,13 +74,10 @@ public class StockProjet implements Serializable {
 	this.montant = montant;
 	this.chef_projet = chefProjet;
 	this.nom_lot = nomLot;
-<<<<<<< HEAD
-	//this.magasin = magasin;
-	this.date_rec = dateRec;
-=======
+
 	this.date_rec = dateRec;
 	this.type_magasin= type;
->>>>>>> munisysRepo/main
+
 	this.commentaires = commentaires;
 }
 	public StockProjet() {
@@ -165,16 +154,8 @@ public class StockProjet implements Serializable {
 		this.id_stock = id_stock;
 	}
 
-<<<<<<< HEAD
-	/*public String getMagasin() {
-		return magasin;
-	}
-	public void setMagasin(String magasin) {
-		this.magasin = magasin;
-	}*/
 
-=======
->>>>>>> munisysRepo/main
+
 	public String getNom_lot() {
 		return nom_lot;
 	}
@@ -199,16 +180,14 @@ public class StockProjet implements Serializable {
 	public void setChef_projet(String chef_projet) {
 		this.chef_projet = chef_projet;
 	}
-<<<<<<< HEAD
-=======
+
 	public String getType_magasin() {
 		return type_magasin;
 	}
 	public void setType_magasin(String type_magasin) {
 		this.type_magasin = type_magasin;
 	}
-	
->>>>>>> munisysRepo/main
+
 	
 	
 	

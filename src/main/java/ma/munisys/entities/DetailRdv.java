@@ -19,14 +19,11 @@ public class DetailRdv {
 	private String sousDomaine;
 	
 	private String marque;
-	
-<<<<<<< HEAD
-=======
+
 	private double prixAchat;
 	
 	private double prixVente;
 	
->>>>>>> munisysRepo/main
 	private Double montantAchat;
 	
 	private Double montantVente;
@@ -46,13 +43,11 @@ public class DetailRdv {
 	
 	private Double montantLNF;
 	
-<<<<<<< HEAD
-=======
+
 	private String codeFrs;
 	
 	private String Frs;
 	
->>>>>>> munisysRepo/main
 	public DetailRdv() {
 		
 	}
@@ -200,8 +195,6 @@ public class DetailRdv {
 	public void setMarque(String marque) {
 		this.marque = marque;
 	}
-<<<<<<< HEAD
-=======
 
 	public double getPrixAchat() {
 		return prixAchat;
@@ -234,9 +227,6 @@ public class DetailRdv {
 	public void setFrs(String frs) {
 		Frs = frs;
 	}
-	
-	
->>>>>>> munisysRepo/main
-	
+
 
 }

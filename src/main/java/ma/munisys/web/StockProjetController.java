@@ -30,17 +30,12 @@ public class StockProjetController {
 	
 	
 	@RequestMapping(value="/getAllStockProjetByFiltre",method=RequestMethod.GET)
-<<<<<<< HEAD
-	public Collection<StockProjet> getStockProjetByFiltre( @RequestParam("numLot") String numLot,@RequestParam("client") String client,@RequestParam("annee")String annee,@RequestParam("magasin")String magasin,@RequestParam("com")String com,@RequestParam("cp")String cp){
-	
-		System.out.println("NIVEAU 1" + magasin);
-		return stockProjetService.getStockProjetByFiltre(numLot, client, annee, magasin,com,cp);
-=======
+
 	public Collection<StockProjet> getStockProjetByFiltre( @RequestParam("numLot") String numLot,@RequestParam("client") String client,@RequestParam("annee")String annee,@RequestParam("magasin")String magasin,@RequestParam("com")String com,@RequestParam("cp")String cp,@RequestParam("type") String type){
 	
 		System.out.println("NIVEAU 1" + magasin);
 		return stockProjetService.getStockProjetByFiltre(numLot, client, annee, magasin,com,cp,type);
->>>>>>> munisysRepo/main
+
 	}
 	
 	@RequestMapping(value = "/getStockParProjet", method = RequestMethod.GET)

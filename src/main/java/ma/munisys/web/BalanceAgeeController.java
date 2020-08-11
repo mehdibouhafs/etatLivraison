@@ -53,9 +53,7 @@ public class BalanceAgeeController {
 	return balanceAgeeService.getBalanceByFiltre(client,cr,age);
 	
 	}
-	
-<<<<<<< HEAD
-=======
+
 	@RequestMapping(value = "/getBalanceByStatus", method = RequestMethod.GET)	
 	public Collection<String> FindByStatus(String[] status){
 		
@@ -67,8 +65,7 @@ public class BalanceAgeeController {
 		
 		return balanceAgeeService.FindByAM(client,cr, am);
 	}
-	
->>>>>>> munisysRepo/main
+
 
 
 	

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 package ma.munisys;
 
 import java.sql.ResultSetMetaData;
@@ -88,7 +87,7 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 	@Autowired
 	StorageService storageService;
 	@Autowired
-	ProjetRepository projetRepository;;
+	ProjetRepository projetRepository;
 	
 	@Autowired
 	EtatProjetService etatProjetService;
@@ -129,6 +128,8 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 		LOGGER.warn("Strat app warn");
 		LOGGER.debug("Strat app");
 		SpringApplication.run((Class) EtatLvSvcApplication.class, args);
+		loadProduitFromSap2();
+		loadFromSap3();
 	}
 
 	@PostConstruct
@@ -154,10 +155,14 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 		LOGGER.info("Start PDC 360");
 		System.out.println("run");
 		
+		
+		//EtatLvSvcApplication.loadProduitDEPFromSap();
+		//EtatLvSvcApplication.loadStockFromSap();
 		//EtatLvSvcApplication.loadFromSap();
 		//commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();
-		//EtatLvSvcApplication.loadProduitFromSap();
+		//EtatLvSvcApplication.loadFromSap3();
 		//factureServiceStatic.loadFactureFromSap2();
+		//EtatLvSvcApplication.loadFromSap3();
 		//EtatLvSvcApplication.loadContrat();
 		//loadFromSap();
 		//EtatLvSvcApplication.factureServiceStatic.loadFactureFromSapByContrat(1L);
@@ -168,7 +173,6 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 		/*CompletableFuture<String> pieces =EtatLvSvcApplication.contratServiceStatic.loadContratPieceSap();
 		CompletableFuture<String> factures =factureServiceStatic.loadFactureFromSap();
 		CompletableFuture<String> commandes =commandeFournisseurServiceStatic.loadCommandeFournisseurFromSap();
-
 		CompletableFuture.allOf(contrats,pieces,commandes,factures).join();*/
 		//loadDocumentsFromSap();
 		//factureRepository.deleteAll();
@@ -197,6 +201,15 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 		//loadDocumentsFromSap();
 		//LOGGER.debug("ENDING TASK Documents CRON ");
 	}
+	
+	@Scheduled(cron = "0 15 1 * * ?")
+	public static void loadFromSap3() {
+		LOGGER.debug("STARTING TASK Projetcts DEP ");
+		// loadProjetsFromSap();
+		etatProjetServiceStatic.loadProjetsDepFromSap();
+		// loadDocumentsFromSap();
+		//LOGGER.debug("ENDING TASK Projects CRON ");
+	}
 
 	@Scheduled(cron = "0 05 13 * * *")
 	public static void loadContrat() {
@@ -212,25 +225,17 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 		LOGGER.debug("ENDING TASK synchro contrat");
 	}
 
-	@Scheduled(cron = "0 0 1 * * *")
-	public static void loadProduitFromSap() {
-		//LOGGER.debug("STARTING TASK Produits CRON ");
-		// loadProjetsFromSap();
-		// etatProjetServiceStatic.loadProjetsFromSap();
-		// loadDocumentsFromSap();
-		EtatLvSvcApplication.produitServiceStatic.loadProduitFromSap();
-		loadFromSap();
-		//LOGGER.debug("ENDING TASK Produits CRON ");
-	}
 	
-	@Scheduled(cron = "0 0 1 * * *")
+
+	
 	public static void loadStockFromSap() {
-	
+		System.out.println("stock update");
 		EtatLvSvcApplication.stockProjetServiceStatic.loadStockFromSap();
 		loadFromSap();
+		loadFromSap3();
 	}
 	
-	@Scheduled(cron = "0 0 13 * * *")
+	@Scheduled(cron = "0 05 1 * * ?")
 	public static void loadProduitFromSap2() {
 		//LOGGER.debug("STARTING TASK Produits CRON ");
 		// loadProjetsFromSap();
@@ -238,6 +243,8 @@ public class EtatLvSvcApplication extends SpringBootServletInitializer implement
 		// loadDocumentsFromSap();
 		EtatLvSvcApplication.produitServiceStatic.loadProduitFromSap();
 		loadFromSap();
+		loadStockFromSap();
+		loadFromSap3();
 		//LOGGER.debug("ENDING TASK Produits CRON ");
 	}
 

@@ -70,8 +70,7 @@ public class ProduitSpecification {
 	     };
 	  }
 	
-<<<<<<< HEAD
-=======
+
 	public static Specification<Produit> byType(String type) {
 		
 	     return (root, query, cb) -> {
@@ -79,7 +78,7 @@ public class ProduitSpecification {
 	     };
 	  }
 	
->>>>>>> munisysRepo/main
+
 	
 
 }
